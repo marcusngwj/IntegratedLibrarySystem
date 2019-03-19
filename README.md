@@ -1,2 +1,4 @@
-# IntegratedLibrarySystem
-IS2103 Spring Group Assignment
+## Description
+An enterprise-scale software system that implements business model of various library services.
+
+## Setup
