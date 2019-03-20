@@ -7,6 +7,8 @@ package ejb.session.singleton;
 
 import ejb.session.stateless.StaffEntityControllerLocal;
 import entity.StaffEntity;
+import java.util.List;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
@@ -14,6 +16,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import util.exception.StaffNotFoundException;
+import util.logger.Logger;
 
 /**
  *
@@ -30,7 +34,7 @@ public class DataInitializationSessionBean {
     
     @EJB
     private StaffEntityControllerLocal staffEntityControllerLocal;
-    
+        
     public DataInitializationSessionBean() {}
     
     @PostConstruct
@@ -39,12 +43,13 @@ public class DataInitializationSessionBean {
     }
     
     private void verifyStaffEntityTable() {
-//        try {
-//            List<StaffEntity> staffList = staffEntityControllerLocal.retrieveAllStaffs();
-//        }
-//        catch(EntityManagerException ex) {
+        try {
+            staffEntityControllerLocal.retrieveStaffByUsername("manager");
+        }
+        catch(StaffNotFoundException ex) {
+            Logger.log(Logger.INFO, "DataInitializationSessionBean", "verifyStaffEntityTable", "StaffEntityTable is empty");
             initializeStaffEntityTable();
-//        }
+        }
     }
     
     private void initializeStaffEntityTable() {

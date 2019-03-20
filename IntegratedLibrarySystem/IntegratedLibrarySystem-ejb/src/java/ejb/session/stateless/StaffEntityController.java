@@ -6,11 +6,16 @@
 package ejb.session.stateless;
 
 import entity.StaffEntity;
+import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import util.exception.StaffNotFoundException;
 
 /**
  *
@@ -24,11 +29,32 @@ public class StaffEntityController implements StaffEntityControllerRemote, Staff
     @PersistenceContext(unitName = "IntegratedLibrarySystem-ejbPU")
     private EntityManager em;
     
+    public StaffEntityController() {}
+    
     @Override
     public StaffEntity persistNewStaffEntity(StaffEntity staffEntity) {
         em.persist(staffEntity);
         em.flush();
         em.refresh(staffEntity);
         return staffEntity;
+    }
+    
+    @Override
+    public List<StaffEntity> retrieveAllStaffs() {
+        Query query = em.createQuery("SELECT s FROM StaffEntity s");
+        return query.getResultList();
+    }
+    
+    @Override
+    public StaffEntity retrieveStaffByUsername(String username) throws StaffNotFoundException {
+        Query query = em.createQuery("SELECT s FROM StaffEntity s WHERE s.username = :inUsername");
+        query.setParameter("inUsername", username);
+        
+        try {
+            return (StaffEntity)query.getSingleResult();
+        }
+        catch(NoResultException | NonUniqueResultException ex) {
+            throw new StaffNotFoundException("Staff Username " + username + " does not exist!");
+        }
     }
 }
