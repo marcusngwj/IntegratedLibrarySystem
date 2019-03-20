@@ -4,3 +4,14 @@
 /LibraryAdminTerminal/nbproject/private/
 /IntegratedLibrarySystemLibrary/nbproject/private/
 /SelfServiceKioskTerminal/nbproject/private/
+/IntegratedLibrarySystemLibrary/build
+/LibraryAdminTerminal/build/
+/IntegratedLibrarySystemLibrary/dist/
+/IntegratedLibrarySystem/build/
+/IntegratedLibrarySystem/IntegratedLibraryWebServices-war/dist/
+/IntegratedLibrarySystem/IntegratedLibraryWebServices-war/build/
+/IntegratedLibrarySystem/IntegratedLibrarySystem-ejb/dist/
+/LibraryAdminTerminal/dist/
+/IntegratedLibrarySystem/dist/
+/SelfServiceKioskTerminal/build/
+/SelfServiceKioskTerminal/dist/
