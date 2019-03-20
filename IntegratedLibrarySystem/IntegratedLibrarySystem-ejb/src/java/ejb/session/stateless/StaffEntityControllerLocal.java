@@ -6,9 +6,14 @@
 package ejb.session.stateless;
 
 import entity.StaffEntity;
+import java.util.List;
+import util.exception.StaffNotFoundException;
 
 public interface StaffEntityControllerLocal {
-
     public StaffEntity persistNewStaffEntity(StaffEntity staffEntity);
+
+    public List<StaffEntity> retrieveAllStaffs();
+
+    public StaffEntity retrieveStaffByUsername(String username) throws StaffNotFoundException;
     
 }
