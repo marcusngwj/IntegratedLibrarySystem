@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package entity;
 
 import java.io.Serializable;
@@ -12,27 +7,28 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-/**
- *
- * @author Marcus
- */
 @Entity
 public class StaffEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long staffId;
+
+    @Column(length = 50, nullable = false)
     private String firstName;
+
+    @Column(length = 50, nullable = false)
     private String lastName;
-    @Column(unique = true)
+
+    @Column(length = 50, nullable = false, unique = true)
     private String username;
+
+    @Column(length = 50, nullable = false)
     private String password;
 
-    public StaffEntity() {}
-    
-    public Long getStaffId() {
-        return staffId;
+    public StaffEntity() {
     }
 
     public StaffEntity(String firstName, String lastName, String username, String password) {
@@ -42,10 +38,14 @@ public class StaffEntity implements Serializable {
         this.password = password;
     }
 
+    public Long getStaffId() {
+        return staffId;
+    }
+
     public void setStaffId(Long staffId) {
         this.staffId = staffId;
     }
-    
+
     public String getFirstName() {
         return firstName;
     }
@@ -92,7 +92,7 @@ public class StaffEntity implements Serializable {
             return false;
         }
         StaffEntity other = (StaffEntity) object;
-        if ((this.getStaffId() == null && other.getStaffId() != null) || (this.getStaffId() != null && !this.staffId.equals(other.staffId))) {
+        if ((this.getStaffId() == null && other.getStaffId() != null) || (this.getStaffId() != null && !this.getStaffId().equals(other.getStaffId()))) {
             return false;
         }
         return true;
@@ -102,5 +102,4 @@ public class StaffEntity implements Serializable {
     public String toString() {
         return "entity.StaffEntity[ id=" + getStaffId() + " ]";
     }
-
 }

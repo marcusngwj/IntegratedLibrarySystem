@@ -3,6 +3,11 @@
   <persistence-unit name="IntegratedLibrarySystem-ejbPU" transaction-type="JTA">
     <jta-data-source>jdbc/integratedLibrarySystem</jta-data-source>
     <class>entity.StaffEntity</class>
+    <class>entity.BookEntity</class>
+    <class>entity.FineEntity</class>
+    <class>entity.LoanEntity</class>
+    <class>entity.MemberEntity</class>
+    <class>entity.ReservationEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>
