@@ -48,6 +48,19 @@ public class StaffEntityController implements StaffEntityControllerRemote, Staff
     }
     
     @Override
+    public StaffEntity retrieveStaffById(Long staffId) throws StaffNotFoundException {
+        Query query = em.createQuery("SELECT s FROM StaffEntity s WHERE s.staffId = :inStaffId");
+        query.setParameter("inStaffId", staffId);
+        
+        try {
+            return (StaffEntity)query.getSingleResult();
+        }
+        catch(NoResultException | NonUniqueResultException ex) {
+            throw new StaffNotFoundException("Staff Id " + staffId + " does not exist!");
+        }
+    }
+    
+    @Override
     public StaffEntity retrieveStaffByUsername(String username) throws StaffNotFoundException {
         Query query = em.createQuery("SELECT s FROM StaffEntity s WHERE s.username = :inUsername");
         query.setParameter("inUsername", username);
@@ -58,6 +71,11 @@ public class StaffEntityController implements StaffEntityControllerRemote, Staff
         catch(NoResultException | NonUniqueResultException ex) {
             throw new StaffNotFoundException("Staff Username " + username + " does not exist!");
         }
+    }
+    
+    @Override
+    public void updateStaff(StaffEntity staffEntity) {
+        em.merge(staffEntity);
     }
     
     @Override

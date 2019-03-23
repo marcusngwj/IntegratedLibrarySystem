@@ -7,13 +7,20 @@ package ejb.session.stateless;
 
 import entity.StaffEntity;
 import java.util.List;
+import util.exception.InvalidLoginException;
 import util.exception.StaffNotFoundException;
 
 public interface StaffEntityControllerLocal {
     public StaffEntity persistNewStaffEntity(StaffEntity staffEntity);
 
     public List<StaffEntity> retrieveAllStaffs();
+    
+    public StaffEntity retrieveStaffById(Long staffId) throws StaffNotFoundException;
 
     public StaffEntity retrieveStaffByUsername(String username) throws StaffNotFoundException;
+
+    public void updateStaff(StaffEntity staffEntity);
     
+    public StaffEntity staffLogin(String username, String password) throws InvalidLoginException;
+
 }

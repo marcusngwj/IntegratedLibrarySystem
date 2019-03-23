@@ -41,7 +41,7 @@ public class StaffManagementModule {
                     viewStaffDetail();
                 }
                 else if (response == UPDATE_STAFF) {
-
+                    updateStaff();
                 }
                 else if (response == DELETE_STAFF) {
 
@@ -58,6 +58,9 @@ public class StaffManagementModule {
             }
             catch (StaffNotFoundException ex) {
                 displayMessage(ex.getMessage());
+            }
+            catch (NumberFormatException ex) {
+                displayMessage("You have not entered a valid numerical value.\n");
             }
             finally {
                 System.out.println();
@@ -106,6 +109,44 @@ public class StaffManagementModule {
         
         StaffEntity staff = staffEntityControllerRemote.retrieveStaffByUsername(username);
         displayMessage(formatStaffDetail(staff));
+    }
+    
+    private void updateStaff() throws StaffNotFoundException, NumberFormatException {
+        Scanner scanner = new Scanner(System.in);
+        String input = "";
+        
+        System.out.println();
+        System.out.println("*** ILS :: Administration Operation :: Staff Management :: Update Staff ***\n");
+        System.out.print("Enter staff id> ");
+        long staffId = Long.valueOf(scanner.nextLine().trim());
+        StaffEntity staff = staffEntityControllerRemote.retrieveStaffById(staffId);
+        
+        System.out.print("Enter First Name (blank if no change)> ");
+        input = scanner.nextLine().trim();
+        if (input.length() > 0) {
+            staff.setFirstName(input);
+        }
+        
+        System.out.print("Enter Last Name (blank if no change)> ");
+        input = scanner.nextLine().trim();
+        if(input.length() > 0) {
+            staff.setLastName(input);
+        }
+        
+        System.out.print("Enter Username (blank if no change)> ");
+        input = scanner.nextLine().trim();
+        if(input.length() > 0) {
+            staff.setUsername(input);
+        }
+        
+        System.out.print("Enter Password (blank if no change)> ");
+        input = scanner.nextLine().trim();
+        if(input.length() > 0) {
+            staff.setPassword(input);
+        }
+        
+        staffEntityControllerRemote.updateStaff(staff);
+        displayMessage("Staff updated successfully!\n");
     }
     
     private void viewAllStaff() {
