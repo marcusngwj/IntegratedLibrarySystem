@@ -1,5 +1,6 @@
 package libraryadminterminal.module;
 
+import ejb.session.stateless.StaffEntityControllerRemote;
 import java.util.Scanner;
 
 public class AdministrationOperationModule {
@@ -8,10 +9,15 @@ public class AdministrationOperationModule {
     private static final int STAFF_MANAGEMENT = 3;
     private static final int BACK = 4;
     
+    private StaffEntityControllerRemote staffEntityControllerRemote;
+    
     private StaffManagementModule staffManagementModule;
 
-    public AdministrationOperationModule() {
-        this.staffManagementModule = new StaffManagementModule();
+    public AdministrationOperationModule() {}
+    
+    public AdministrationOperationModule(StaffEntityControllerRemote staffEntityControllerRemote) {
+        this.staffEntityControllerRemote = staffEntityControllerRemote;
+        this.staffManagementModule = new StaffManagementModule(staffEntityControllerRemote);
     }
     
     public void enterAdministrationOperationMode(){

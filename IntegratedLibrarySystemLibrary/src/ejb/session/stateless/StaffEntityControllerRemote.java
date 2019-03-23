@@ -15,7 +15,13 @@ public interface StaffEntityControllerRemote {
     
     public List<StaffEntity> retrieveAllStaffs();
     
+    public StaffEntity retrieveStaffById(Long staffId) throws StaffNotFoundException;
+    
     public StaffEntity retrieveStaffByUsername(String username) throws StaffNotFoundException;
+    
+    public void updateStaff(StaffEntity staffEntity);
+    
+    public void deleteStaff(Long staffId) throws StaffNotFoundException;
 
     public StaffEntity staffLogin(String username, String password) throws InvalidLoginException;
 }

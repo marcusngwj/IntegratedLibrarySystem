@@ -7,7 +7,6 @@ package ejb.session.stateless;
 
 import entity.StaffEntity;
 import java.util.List;
-import java.util.logging.Level;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -49,6 +48,19 @@ public class StaffEntityController implements StaffEntityControllerRemote, Staff
     }
     
     @Override
+    public StaffEntity retrieveStaffById(Long staffId) throws StaffNotFoundException {
+        Query query = em.createQuery("SELECT s FROM StaffEntity s WHERE s.staffId = :inStaffId");
+        query.setParameter("inStaffId", staffId);
+        
+        try {
+            return (StaffEntity)query.getSingleResult();
+        }
+        catch(NoResultException | NonUniqueResultException ex) {
+            throw new StaffNotFoundException("Staff Id " + staffId + " does not exist!");
+        }
+    }
+    
+    @Override
     public StaffEntity retrieveStaffByUsername(String username) throws StaffNotFoundException {
         Query query = em.createQuery("SELECT s FROM StaffEntity s WHERE s.username = :inUsername");
         query.setParameter("inUsername", username);
@@ -62,8 +74,19 @@ public class StaffEntityController implements StaffEntityControllerRemote, Staff
     }
     
     @Override
+    public void updateStaff(StaffEntity staffEntity) {
+        em.merge(staffEntity);
+    }
+    
+    @Override
+    public void deleteStaff(Long staffId) throws StaffNotFoundException {
+        StaffEntity staffToRemove = retrieveStaffById(staffId);
+        em.remove(staffToRemove);
+    }
+    
+    @Override
     public StaffEntity staffLogin(String username, String password) throws InvalidLoginException {
-        Logger.log(Level.INFO, "StaffEntityController", "staffLogin", username + " || " + password);
+        Logger.log(Logger.INFO, "StaffEntityController", "staffLogin", username + " || " + password);
         Query query = em.createQuery("SELECT s FROM StaffEntity s WHERE s.username = :inUsername AND s.password = :inPassword");
         query.setParameter("inUsername", username);
         query.setParameter("inPassword", password);
