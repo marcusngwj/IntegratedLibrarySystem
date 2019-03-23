@@ -6,7 +6,6 @@
 package ejb.session.stateless;
 
 import entity.MemberEntity;
-import javax.ejb.Local;
 import util.exception.ExistingMemberException;
 import util.exception.InvalidLoginException;
 
@@ -14,7 +13,6 @@ import util.exception.InvalidLoginException;
  *
  * @author limwe
  */
-@Local
 public interface MemberEntityControllerLocal {
     public MemberEntity persistNewMemberEntity(MemberEntity MemberEntity);
     

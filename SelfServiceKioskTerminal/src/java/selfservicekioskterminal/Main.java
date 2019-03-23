@@ -5,12 +5,16 @@
  */
 package selfservicekioskterminal;
 
+import ejb.session.stateless.MemberEntityControllerRemote;
+import javax.ejb.EJB;
+
 /**
  *
  * @author
  */
 public class Main {
-
+    @EJB
+    private static MemberEntityControllerRemote memberEntityControllerRemote;
     
     /**
      *  
@@ -23,13 +27,13 @@ public class Main {
     private static ReservationControllerRemote reservationControllerRemote;
     @EJB
     private static FineControllerRemote fineControllerRemote;
-    @EJB
-    private static MemberContorllerRemote memberControllerRemote;
+   
 
     */
     public static void main(String[] args) {
-      //  MainApp mainApp = new MainApp(bookControllerRemote, loanControllerRemote, reservationControllerRemote, fineControllerRemote, memberControllerRemote);
-      //  mainApp.runApp();
+//        MainApp mainApp = new MainApp(bookControllerRemote, loanControllerRemote, reservationControllerRemote, fineControllerRemote, memberEntityControllerRemote);
+        MainApp mainApp = new MainApp(memberEntityControllerRemote);
+        mainApp.runApp();
     }
     
 }

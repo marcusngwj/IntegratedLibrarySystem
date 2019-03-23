@@ -7,7 +7,7 @@ package ejb.session.stateless;
 
 import entity.MemberEntity;
 import java.util.List;
-import javax.ejb.Remote;
+
 import util.exception.ExistingMemberException;
 import util.exception.InvalidLoginException;
 
@@ -15,7 +15,6 @@ import util.exception.InvalidLoginException;
  *
  * @author limwe
  */
-@Remote
 public interface MemberEntityControllerRemote {
     public MemberEntity persistNewMemberEntity(MemberEntity MemberEntity);
     
