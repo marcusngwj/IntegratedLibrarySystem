@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.StaffEntity;
 import java.util.List;
+import util.exception.InvalidLoginException;
 import util.exception.StaffNotFoundException;
 
 public interface StaffEntityControllerRemote {
@@ -15,4 +16,6 @@ public interface StaffEntityControllerRemote {
     public List<StaffEntity> retrieveAllStaffs();
     
     public StaffEntity retrieveStaffByUsername(String username) throws StaffNotFoundException;
+
+    public StaffEntity staffLogin(String username, String password) throws InvalidLoginException;
 }

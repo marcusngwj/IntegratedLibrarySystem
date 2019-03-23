@@ -1,11 +1,21 @@
 package libraryadminterminal;
 
+import ejb.session.stateless.StaffEntityControllerRemote;
+import entity.StaffEntity;
 import java.util.Scanner;
+import javax.ejb.EJB;
 import util.exception.InvalidLoginException;
 
 public class MainApp {
+    private StaffEntity currentStaff;
+    
+    private StaffEntityControllerRemote staffEntityControllerRemote;
 
     public MainApp() {}
+    
+    public MainApp(StaffEntityControllerRemote staffEntityControllerRemote) {
+        this.staffEntityControllerRemote = staffEntityControllerRemote;
+    }
     
     public void runApp() {
         final int LOGIN_OPERATION = 1;
@@ -25,8 +35,8 @@ public class MainApp {
 //                    libraryOperationModule = new LibraryOperationModule(libraryOperationRemote);
                     executeMainAction();
                 }
-                catch (InvalidLoginException e) {
-                    // Log: Invalid Login Exception
+                catch (InvalidLoginException ex) {
+                    displayMessage(ex.getMessage());
                 }
                 
             }
@@ -41,7 +51,19 @@ public class MainApp {
     }
     
     private void executeLogin() throws InvalidLoginException {
+        Scanner scanner = new Scanner(System.in);
+        String username = "";
+        String password = "";
         
+        System.out.println();
+        System.out.println("*** ILS :: Login ***\n");
+        System.out.print("Enter username> ");
+        username = scanner.nextLine().trim();
+        System.out.print("Enter password> ");
+        password = scanner.nextLine().trim();
+        
+        currentStaff = staffEntityControllerRemote.staffLogin(username, password);
+        displayMessage("Login successful!\n");
     }
     
     private void executeMainAction() {
@@ -95,8 +117,7 @@ public class MainApp {
     
     private String getMainMenu() {
         return "*** ILS :: Main ***\n\n" +
-//               "You are login as " + currentStaffEntity.getFullName + "\n\n" +
-               "You are login as XXXXXX" + "\n\n" + 
+               "You are login as " + currentStaff.getFullName() + "\n\n" +
                "1: Registration Operation\n" +
                "2: Library Operation\n" +
                "3: Administration Operation\n" +
