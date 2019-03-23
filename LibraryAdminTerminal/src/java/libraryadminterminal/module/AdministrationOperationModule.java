@@ -14,6 +14,7 @@ public class AdministrationOperationModule {
     private BookEntityControllerRemote bookEntityControllerRemote;
     
     private StaffManagementModule staffManagementModule;
+    private BookManagementModule bookManagementModule;
 
     public AdministrationOperationModule() {}
     
@@ -22,6 +23,7 @@ public class AdministrationOperationModule {
         this.bookEntityControllerRemote = bookEntityControllerRemote;
         
         this.staffManagementModule = new StaffManagementModule(staffEntityControllerRemote);
+        this.bookManagementModule = new BookManagementModule(bookEntityControllerRemote);
     }
     
     public void enterAdministrationOperationMode(){
@@ -38,7 +40,7 @@ public class AdministrationOperationModule {
                 
             }
             else if (response == BOOK_MANAGEMENT) {
-                
+                bookManagementModule.enterBookManagementMode();
             }
             else if (response == STAFF_MANAGEMENT) {
                 staffManagementModule.enterStaffManagementMode();
