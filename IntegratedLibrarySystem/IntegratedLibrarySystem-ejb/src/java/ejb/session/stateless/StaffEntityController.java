@@ -10,7 +10,10 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.EntityManagerException;
+import util.exception.RuntimeExceptionTranslator;
 import util.exception.InvalidLoginException;
+import util.exception.StaffExistsException;
 import util.exception.StaffNotFoundException;
 import util.logger.Logger;
 
@@ -25,11 +28,21 @@ public class StaffEntityController implements StaffEntityControllerRemote, Staff
     public StaffEntityController() {}
     
     @Override
-    public StaffEntity persistNewStaffEntity(StaffEntity staffEntity) {
-        em.persist(staffEntity);
-        em.flush();
-        em.refresh(staffEntity);
-        return staffEntity;
+    public StaffEntity persistNewStaffEntity(StaffEntity staffEntity) throws StaffExistsException, EntityManagerException {
+        try {
+            em.persist(staffEntity);
+            em.flush();
+            em.refresh(staffEntity);
+            return staffEntity;
+        }
+        catch (RuntimeException ex) {
+            if (RuntimeExceptionTranslator.isDatabseIntegrityConstantViolation(ex)) {
+                throw new StaffExistsException("The username has already been taken. Please try again.");
+            }
+            else {
+                throw new EntityManagerException("An unknown error has occurred.");
+            }
+        }
     }
     
     @Override

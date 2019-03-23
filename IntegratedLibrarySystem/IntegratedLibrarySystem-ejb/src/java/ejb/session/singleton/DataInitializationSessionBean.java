@@ -17,6 +17,8 @@ import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import util.exception.BookNotFoundException;
+import util.exception.EntityManagerException;
+import util.exception.StaffExistsException;
 import util.exception.StaffNotFoundException;
 import util.logger.Logger;
 
@@ -67,10 +69,16 @@ public class DataInitializationSessionBean {
     }
     
     private void initializeStaffEntityTable() {
-        StaffEntity staffEntity = new StaffEntity("Linda", "Chua", "manager", "password");
-        staffEntity = staffEntityControllerLocal.persistNewStaffEntity(staffEntity);
-        staffEntity = new StaffEntity("Barbara", "Durham", "assistant", "password");
-        staffEntity = staffEntityControllerLocal.persistNewStaffEntity(staffEntity);
+        try {
+            StaffEntity staffEntity = new StaffEntity("Linda", "Chua", "manager", "password");
+            staffEntity = staffEntityControllerLocal.persistNewStaffEntity(staffEntity);
+            staffEntity = new StaffEntity("Barbara", "Durham", "assistant", "password");
+            staffEntity = staffEntityControllerLocal.persistNewStaffEntity(staffEntity);
+        }
+        catch (StaffExistsException | EntityManagerException ex) {
+            Logger.log(Logger.SEVERE, "DataInitializationSessionBean", "initializeStaffEntityTable", ex.getMessage());
+        }
+        
     }
     
     private void initializeBookEntityTable() {
