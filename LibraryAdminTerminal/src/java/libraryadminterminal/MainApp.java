@@ -83,7 +83,7 @@ public class MainApp {
         final int ADMINISTRATION_OPERATION = 3;
         final int LOGOUT = 4;
         
-        registerationOperationModule = new RegisterationOperationModule();
+        registerationOperationModule = new RegisterationOperationModule(memberEntityControllerRemote);
         libraryOperationModule = new LibraryOperationModule();
         administrationOperationModule = new AdministrationOperationModule(staffEntityControllerRemote, memberEntityControllerRemote, bookEntityControllerRemote);
                 
