@@ -161,6 +161,10 @@ public class MemberEntity implements Serializable {
     public void setReservations(List<ReservationEntity> reservations) {
         this.reservations = reservations;
     }
+    
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 
     @Override
     public int hashCode() {

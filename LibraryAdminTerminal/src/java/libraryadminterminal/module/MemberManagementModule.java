@@ -2,6 +2,7 @@ package libraryadminterminal.module;
 
 import ejb.session.stateless.MemberEntityControllerRemote;
 import entity.MemberEntity;
+import java.util.List;
 import java.util.Scanner;
 import util.exception.EntityManagerException;
 import util.exception.MemberExistsException;
@@ -42,13 +43,13 @@ public class MemberManagementModule {
                     viewMemberDetails();
                 }
                 else if (response == UPDATE_MEMBER) {
-//                    updateStaff();
+                    updateMember();
                 }
                 else if (response == DELETE_MEMBER) {
-//                    deleteStaff();
+                    deleteMember();
                 }
                 else if (response == VIEW_ALL_MEMBERS) {
-//                    viewAllStaff();
+                    viewAllMembers();
                 }
                 else if (response == BACK) {
                     break;
@@ -114,6 +115,111 @@ public class MemberManagementModule {
         
         MemberEntity staff = memberEntityControllerRemote.retrieveMemberByIdentityNumber(identityNumber);
         displayMessage(formatStaffDetail(staff));
+    }
+    
+    private void updateMember() throws MemberNotFoundException, NumberFormatException {
+        Scanner scanner = new Scanner(System.in);
+        String input = "";
+        
+        System.out.println();
+        System.out.println("*** ILS :: Administration Operation :: Member Management :: Update Member ***\n");
+        System.out.print("Enter member id> ");
+        long memberId = Long.valueOf(scanner.nextLine().trim());
+        MemberEntity member = memberEntityControllerRemote.retrieveMemberById(memberId);
+        
+        System.out.print("Enter Identity Number (blank if no change)> ");
+        input = scanner.nextLine().trim();
+        if (input.length() > 0) {
+            member.setIdentityNumber(input);
+        }
+        
+        System.out.print("Enter Security Code (blank if no change)> ");
+        input = scanner.nextLine().trim();
+        if (input.length() > 0) {
+            member.setSecurityCode(input);
+        }
+        
+        System.out.print("Enter First Name (blank if no change)> ");
+        input = scanner.nextLine().trim();
+        if(input.length() > 0) {
+            member.setFirstName(input);
+        }
+        
+        System.out.print("Enter Last Name (blank if no change)> ");
+        input = scanner.nextLine().trim();
+        if(input.length() > 0) {
+            member.setLastName(input);
+        }
+        
+        System.out.print("Enter Gender (blank if no change)> ");
+        input = scanner.nextLine().trim();
+        if(input.length() > 0) {
+            member.setGender(input);
+        }
+        
+        System.out.print("Enter Age (blank if no change)> ");
+        input = scanner.nextLine().trim();
+        if (input.length()>0) {
+            int age = Integer.valueOf(scanner.nextLine().trim());
+            if (age >= 0) {
+                member.setAge(age);
+            }
+            else {
+                throw new NumberFormatException();
+            }
+        }
+        
+        System.out.print("Enter Phone (blank if no change)> ");
+        input = scanner.nextLine().trim();
+        if(input.length() > 0) {
+            member.setPhone(input);
+        }
+        
+        System.out.print("Enter Address (blank if no change)> ");
+        input = scanner.nextLine().trim();
+        if(input.length() > 0) {
+            member.setAddress(input);
+        }
+        
+        
+        displayMessage("Updating...");
+        memberEntityControllerRemote.updateMember(member);
+        displayMessage("Member updated successfully!\n");
+    }
+    
+    
+    private void deleteMember() throws MemberNotFoundException, NumberFormatException {
+        Scanner scanner = new Scanner(System.in);
+        String input = "";
+        
+        System.out.println();
+        System.out.println("*** ILS :: Administration Operation :: Member Management :: Delete Member ***\n");
+        System.out.print("Enter member id> ");
+        long memberId = Long.valueOf(scanner.nextLine().trim());
+        
+        MemberEntity memberToRemove = memberEntityControllerRemote.retrieveMemberById(memberId);
+        
+        System.out.printf("Confirm Delete Member %s (Member ID: %d) (Enter 'Y' to Delete)> ", memberToRemove.getFullName(), memberToRemove.getMemberId());
+        input = scanner.nextLine().trim();
+        if (input.equalsIgnoreCase("Y")) {
+            displayMessage("Deleting...");
+            memberEntityControllerRemote.deleteMember(memberToRemove.getMemberId());
+            displayMessage("Member deleted successfully!\n");
+        }
+        else {
+            displayMessage("Member NOT deleted!\n");
+        }
+    }
+    
+    private void viewAllMembers() {
+        List<MemberEntity> memberList = memberEntityControllerRemote.retrieveAllMembers();
+        String table = formatTableRow("Id", "Identity Number", "Security Code", "First Name", "Last Name", "Gender", "Age", "Phone", "Address");
+        for (MemberEntity member : memberList) {
+            table += "\n" + formatTableRow(member.getMemberId().toString(), member.getIdentityNumber(), member.getSecurityCode(), 
+                member.getFirstName(), member.getLastName(), member.getGender(), member.getAge().toString(), 
+                member.getPhone(), member.getAddress());
+        }
+        displayMessage(table);
     }
     
     private String formatStaffDetail(MemberEntity member) {
