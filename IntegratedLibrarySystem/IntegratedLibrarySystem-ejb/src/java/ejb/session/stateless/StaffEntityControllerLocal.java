@@ -21,6 +21,8 @@ public interface StaffEntityControllerLocal {
 
     public void updateStaff(StaffEntity staffEntity);
     
+    public void deleteStaff(Long staffId) throws StaffNotFoundException;
+    
     public StaffEntity staffLogin(String username, String password) throws InvalidLoginException;
 
 }

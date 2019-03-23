@@ -44,7 +44,7 @@ public class StaffManagementModule {
                     updateStaff();
                 }
                 else if (response == DELETE_STAFF) {
-
+                    deleteStaff();
                 }
                 else if (response == VIEW_ALL_STAFF) {
                     viewAllStaff();
@@ -145,8 +145,33 @@ public class StaffManagementModule {
             staff.setPassword(input);
         }
         
+        displayMessage("Updating...");
         staffEntityControllerRemote.updateStaff(staff);
         displayMessage("Staff updated successfully!\n");
+    }
+    
+    
+    private void deleteStaff() throws StaffNotFoundException, NumberFormatException {
+        Scanner scanner = new Scanner(System.in);
+        String input = "";
+        
+        System.out.println();
+        System.out.println("*** ILS :: Administration Operation :: Staff Management :: Delete Staff ***\n");
+        System.out.print("Enter staff id> ");
+        long staffId = Long.valueOf(scanner.nextLine().trim());
+        
+        StaffEntity staffToRemove = staffEntityControllerRemote.retrieveStaffById(staffId);
+        
+        System.out.printf("Confirm Delete Staff %s (Staff ID: %d) (Enter 'Y' to Delete)> ", staffToRemove.getFullName(), staffToRemove.getStaffId());
+        input = scanner.nextLine().trim();
+        if (input.equalsIgnoreCase("Y")) {
+            displayMessage("Deleting...");
+            staffEntityControllerRemote.deleteStaff(staffToRemove.getStaffId());
+            displayMessage("Staff deleted successfully!\n");
+        }
+        else {
+            displayMessage("Staff NOT deleted!\n");
+        }
     }
     
     private void viewAllStaff() {

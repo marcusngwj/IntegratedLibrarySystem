@@ -79,6 +79,12 @@ public class StaffEntityController implements StaffEntityControllerRemote, Staff
     }
     
     @Override
+    public void deleteStaff(Long staffId) throws StaffNotFoundException {
+        StaffEntity staffToRemove = retrieveStaffById(staffId);
+        em.remove(staffToRemove);
+    }
+    
+    @Override
     public StaffEntity staffLogin(String username, String password) throws InvalidLoginException {
         Logger.log(Logger.INFO, "StaffEntityController", "staffLogin", username + " || " + password);
         Query query = em.createQuery("SELECT s FROM StaffEntity s WHERE s.username = :inUsername AND s.password = :inPassword");
