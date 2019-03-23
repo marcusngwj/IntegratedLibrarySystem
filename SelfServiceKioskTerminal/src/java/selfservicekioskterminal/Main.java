@@ -7,15 +7,29 @@ package selfservicekioskterminal;
 
 /**
  *
- * @author Marcus
+ * @author
  */
 public class Main {
 
+    
     /**
-     * @param args the command line arguments
-     */
+     *  
+    
+    @EJB
+    private static BookControllerRemote bookControllerRemote;
+    @EJB
+    private static LoanControllerRemote loanControllerRemote;
+    @EJB
+    private static ReservationControllerRemote reservationControllerRemote;
+    @EJB
+    private static FineControllerRemote fineControllerRemote;
+    @EJB
+    private static MemberContorllerRemote memberControllerRemote;
+
+    */
     public static void main(String[] args) {
-        // TODO code application logic here
+      //  MainApp mainApp = new MainApp(bookControllerRemote, loanControllerRemote, reservationControllerRemote, fineControllerRemote, memberControllerRemote);
+      //  mainApp.runApp();
     }
     
 }
