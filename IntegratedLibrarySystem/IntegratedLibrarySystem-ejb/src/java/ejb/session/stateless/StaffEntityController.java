@@ -7,7 +7,6 @@ package ejb.session.stateless;
 
 import entity.StaffEntity;
 import java.util.List;
-import java.util.logging.Level;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -63,7 +62,7 @@ public class StaffEntityController implements StaffEntityControllerRemote, Staff
     
     @Override
     public StaffEntity staffLogin(String username, String password) throws InvalidLoginException {
-        Logger.log(Level.INFO, "StaffEntityController", "staffLogin", username + " || " + password);
+        Logger.log(Logger.INFO, "StaffEntityController", "staffLogin", username + " || " + password);
         Query query = em.createQuery("SELECT s FROM StaffEntity s WHERE s.username = :inUsername AND s.password = :inPassword");
         query.setParameter("inUsername", username);
         query.setParameter("inPassword", password);

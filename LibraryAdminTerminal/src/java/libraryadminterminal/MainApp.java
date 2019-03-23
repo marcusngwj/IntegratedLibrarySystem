@@ -79,7 +79,7 @@ public class MainApp {
         
         registerationOperationModule = new RegisterationOperationModule();
         libraryOperationModule = new LibraryOperationModule();
-        administrationOperationModule = new AdministrationOperationModule();
+        administrationOperationModule = new AdministrationOperationModule(staffEntityControllerRemote);
                 
         while (true) {
             int response = 0;
