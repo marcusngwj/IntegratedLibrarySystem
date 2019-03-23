@@ -78,8 +78,14 @@ public class StaffEntityController implements StaffEntityControllerRemote, Staff
     }
     
     @Override
-    public void updateStaff(StaffEntity staffEntity) {
-        em.merge(staffEntity);
+    public void updateStaff(StaffEntity staffToUpdate) throws StaffExistsException, EntityManagerException {
+        List<StaffEntity> staffList = retrieveAllStaffs();
+        for (StaffEntity staff : staffList) {
+            if (!staff.getStaffId().equals(staffToUpdate.getStaffId()) && staff.getUsername().equals(staffToUpdate.getUsername())) {
+                throw new StaffExistsException("The username has already been taken. Please try again.");
+            }
+        }
+        em.merge(staffToUpdate);
     }
     
     @Override

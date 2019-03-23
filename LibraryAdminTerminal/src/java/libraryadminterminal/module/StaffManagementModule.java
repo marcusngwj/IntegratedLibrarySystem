@@ -113,7 +113,7 @@ public class StaffManagementModule {
         displayMessage(formatStaffDetail(staff));
     }
     
-    private void updateStaff() throws StaffNotFoundException, NumberFormatException {
+    private void updateStaff() throws StaffNotFoundException, StaffExistsException, EntityManagerException, NumberFormatException {
         Scanner scanner = new Scanner(System.in);
         String input = "";
         

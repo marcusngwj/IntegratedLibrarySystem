@@ -21,7 +21,7 @@ public interface StaffEntityControllerLocal {
 
     public StaffEntity retrieveStaffByUsername(String username) throws StaffNotFoundException;
 
-    public void updateStaff(StaffEntity staffEntity);
+    public void updateStaff(StaffEntity staffToUpdate) throws StaffExistsException, EntityManagerException;
     
     public void deleteStaff(Long staffId) throws StaffNotFoundException;
     
