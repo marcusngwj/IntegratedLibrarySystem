@@ -136,7 +136,6 @@ public class BookManagementModule {
             else {
                 throw new NumberFormatException();
             }
-            
         }
         
         displayMessage("Updating...");
