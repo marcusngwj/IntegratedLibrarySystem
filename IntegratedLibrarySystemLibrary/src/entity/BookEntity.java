@@ -34,6 +34,15 @@ public class BookEntity implements Serializable {
     @OneToMany(mappedBy = "book")
     private List<ReservationEntity> reservations;
 
+    public BookEntity() {
+    }
+
+    public BookEntity(String title, String isbn, Integer year) {
+        this.title = title;
+        this.isbn = isbn;
+        this.year = year;
+    }
+    
     public Long getBookId() {
         return bookId;
     }
