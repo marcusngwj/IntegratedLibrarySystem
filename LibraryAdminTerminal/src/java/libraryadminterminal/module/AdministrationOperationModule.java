@@ -1,6 +1,7 @@
 package libraryadminterminal.module;
 
 import ejb.session.stateless.BookEntityControllerRemote;
+import ejb.session.stateless.MemberEntityControllerRemote;
 import ejb.session.stateless.StaffEntityControllerRemote;
 import java.util.Scanner;
 
@@ -11,18 +12,22 @@ public class AdministrationOperationModule {
     private static final int BACK = 4;
     
     private StaffEntityControllerRemote staffEntityControllerRemote;
+    private MemberEntityControllerRemote memberEntityControllerRemote;
     private BookEntityControllerRemote bookEntityControllerRemote;
     
     private StaffManagementModule staffManagementModule;
+    private MemberManagementModule memberManagementModule;
     private BookManagementModule bookManagementModule;
 
     public AdministrationOperationModule() {}
     
-    public AdministrationOperationModule(StaffEntityControllerRemote staffEntityControllerRemote, BookEntityControllerRemote bookEntityControllerRemote) {
+    public AdministrationOperationModule(StaffEntityControllerRemote staffEntityControllerRemote, MemberEntityControllerRemote memberEntityControllerRemote, BookEntityControllerRemote bookEntityControllerRemote) {
         this.staffEntityControllerRemote = staffEntityControllerRemote;
+        this.memberEntityControllerRemote = memberEntityControllerRemote;
         this.bookEntityControllerRemote = bookEntityControllerRemote;
         
         this.staffManagementModule = new StaffManagementModule(staffEntityControllerRemote);
+        this.memberManagementModule = new MemberManagementModule(memberEntityControllerRemote);
         this.bookManagementModule = new BookManagementModule(bookEntityControllerRemote);
     }
     
@@ -37,7 +42,7 @@ public class AdministrationOperationModule {
             }
             
             if (response == MEMBER_MANAGEMENT) {
-                
+                memberManagementModule.enterMemberManageMentMode();
             }
             else if (response == BOOK_MANAGEMENT) {
                 bookManagementModule.enterBookManagementMode();

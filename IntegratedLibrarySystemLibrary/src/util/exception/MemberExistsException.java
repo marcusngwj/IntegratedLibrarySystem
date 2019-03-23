@@ -9,12 +9,12 @@ package util.exception;
  *
  * @author limwe
  */
-public class ExistingMemberException extends Exception {
+public class MemberExistsException extends Exception {
 
-    public ExistingMemberException() {
+    public MemberExistsException() {
     }
 
-    public ExistingMemberException(String msg) {
+    public MemberExistsException(String msg) {
         super(msg);
     }
 }

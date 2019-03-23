@@ -52,6 +52,20 @@ public class MemberEntity implements Serializable {
     @OneToMany(mappedBy = "member")
     private List<ReservationEntity> reservations;
 
+    public MemberEntity() {
+    }
+
+    public MemberEntity(String identityNumber, String securityCode, String firstName, String lastName, String gender, Integer age, String phone, String address) {
+        this.identityNumber = identityNumber;
+        this.securityCode = securityCode;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = gender;
+        this.age = age;
+        this.phone = phone;
+        this.address = address;
+    }
+
     public Long getMemberId() {
         return memberId;
     }

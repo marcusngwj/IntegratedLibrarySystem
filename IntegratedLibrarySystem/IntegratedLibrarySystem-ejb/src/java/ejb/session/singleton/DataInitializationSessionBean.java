@@ -6,8 +6,10 @@
 package ejb.session.singleton;
 
 import ejb.session.stateless.BookEntityControllerLocal;
+import ejb.session.stateless.MemberEntityControllerLocal;
 import ejb.session.stateless.StaffEntityControllerLocal;
 import entity.BookEntity;
+import entity.MemberEntity;
 import entity.StaffEntity;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -18,6 +20,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import util.exception.BookNotFoundException;
 import util.exception.EntityManagerException;
+import util.exception.MemberExistsException;
+import util.exception.MemberNotFoundException;
 import util.exception.StaffExistsException;
 import util.exception.StaffNotFoundException;
 import util.logger.Logger;
@@ -38,6 +42,8 @@ public class DataInitializationSessionBean {
     @EJB
     private StaffEntityControllerLocal staffEntityControllerLocal;
     @EJB
+    private MemberEntityControllerLocal memberEntityControllerLocal;
+    @EJB
     private BookEntityControllerLocal bookEntityControllerLocal;
         
     public DataInitializationSessionBean() {}
@@ -45,6 +51,7 @@ public class DataInitializationSessionBean {
     @PostConstruct
     public void postConstruct() {               
         verifyStaffEntityTable();
+        verifyMemberEntityTable();
         verifyBookEntityTable();
     }
     
@@ -55,6 +62,16 @@ public class DataInitializationSessionBean {
         catch(StaffNotFoundException ex) {
             Logger.log(Logger.INFO, "DataInitializationSessionBean", "verifyStaffEntityTable", "StaffEntityTable is empty");
             initializeStaffEntityTable();
+        }
+    }
+    
+    private void verifyMemberEntityTable() {
+        try {
+            memberEntityControllerLocal.retrieveMemberById((long)1);
+        }
+        catch(MemberNotFoundException ex) {
+            Logger.log(Logger.INFO, "DataInitializationSessionBean", "verifyMemberEntityTable", "MemberEntityTable is empty");
+            initializeMemberEntityTable();
         }
     }
     
@@ -78,7 +95,18 @@ public class DataInitializationSessionBean {
         catch (StaffExistsException | EntityManagerException ex) {
             Logger.log(Logger.SEVERE, "DataInitializationSessionBean", "initializeStaffEntityTable", ex.getMessage());
         }
-        
+    }
+    
+    private void initializeMemberEntityTable() {
+        try {
+            MemberEntity memberEntity = new MemberEntity("S7483027A", "987654", "Tony", "Teo", "Male", 44, "87297373", "11 Tampines Ave 3");
+            memberEntity = memberEntityControllerLocal.persistNewMemberEntity(memberEntity);
+            memberEntity = new MemberEntity("S8381028X", "456789", "Wendy", "Tan", "Female", 35, "97502837", "15 Computing Dr");
+            memberEntity = memberEntityControllerLocal.persistNewMemberEntity(memberEntity);
+        }
+        catch (MemberExistsException | EntityManagerException ex) {
+            Logger.log(Logger.SEVERE, "DataInitializationSessionBean", "initializeStaffEntityTable", ex.getMessage());
+        }
     }
     
     private void initializeBookEntityTable() {
