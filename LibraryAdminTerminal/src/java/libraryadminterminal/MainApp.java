@@ -3,11 +3,17 @@ package libraryadminterminal;
 import ejb.session.stateless.StaffEntityControllerRemote;
 import entity.StaffEntity;
 import java.util.Scanner;
-import javax.ejb.EJB;
+import libraryadminterminal.module.AdministrationOperationModule;
+import libraryadminterminal.module.LibraryOperationModule;
+import libraryadminterminal.module.RegisterationOperationModule;
 import util.exception.InvalidLoginException;
 
 public class MainApp {
     private StaffEntity currentStaff;
+    
+    private RegisterationOperationModule registerationOperationModule;
+    private LibraryOperationModule libraryOperationModule;
+    private AdministrationOperationModule administrationOperationModule;
     
     private StaffEntityControllerRemote staffEntityControllerRemote;
 
@@ -32,7 +38,6 @@ public class MainApp {
             if (response == LOGIN_OPERATION) {
                 try {
                     executeLogin();
-//                    libraryOperationModule = new LibraryOperationModule(libraryOperationRemote);
                     executeMainAction();
                 }
                 catch (InvalidLoginException ex) {
@@ -42,7 +47,7 @@ public class MainApp {
             }
             else if (response == EXIT_OPERATION) {
                 System.out.println();
-                System.out.println("Goodbye!");
+                displayMessage("Goodbye!");
                 break;
             }
             
@@ -71,6 +76,10 @@ public class MainApp {
         final int LIBRARY_OPERATION = 2;
         final int ADMINISTRATION_OPERATION = 3;
         final int LOGOUT = 4;
+        
+        registerationOperationModule = new RegisterationOperationModule();
+        libraryOperationModule = new LibraryOperationModule();
+        administrationOperationModule = new AdministrationOperationModule();
                 
         while (true) {
             int response = 0;
@@ -82,14 +91,15 @@ public class MainApp {
             }
             
             if (response == REGISTRATION_OPERATION) {
-                
+                System.out.println();
+                registerationOperationModule.enterRegisterationOperationMode();
             }
             else if (response == LIBRARY_OPERATION) {
                 System.out.println();
-//                libraryOperationModule.bootUpLibraryProgram();
+                libraryOperationModule.enterLibraryOperationMode();
             }
             else if (response == ADMINISTRATION_OPERATION) {
-                
+                administrationOperationModule.enterAdministrationOperationMode();
             }
             else if (response == LOGOUT) {
                 System.out.println();
