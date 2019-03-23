@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.StaffEntity;
 import java.util.List;
+import java.util.logging.Level;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -15,7 +16,9 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.InvalidLoginException;
 import util.exception.StaffNotFoundException;
+import util.logger.Logger;
 
 /**
  *
@@ -55,6 +58,21 @@ public class StaffEntityController implements StaffEntityControllerRemote, Staff
         }
         catch(NoResultException | NonUniqueResultException ex) {
             throw new StaffNotFoundException("Staff Username " + username + " does not exist!");
+        }
+    }
+    
+    @Override
+    public StaffEntity staffLogin(String username, String password) throws InvalidLoginException {
+        Logger.log(Level.INFO, "StaffEntityController", "staffLogin", username + " || " + password);
+        Query query = em.createQuery("SELECT s FROM StaffEntity s WHERE s.username = :inUsername AND s.password = :inPassword");
+        query.setParameter("inUsername", username);
+        query.setParameter("inPassword", password);
+        
+        try {
+            return (StaffEntity)query.getSingleResult();
+        }
+        catch(NoResultException | NonUniqueResultException ex) {
+            throw new InvalidLoginException(InvalidLoginException.INVALID_CREDENTIALS);
         }
     }
 }
