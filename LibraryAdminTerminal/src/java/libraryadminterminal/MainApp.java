@@ -1,5 +1,6 @@
 package libraryadminterminal;
 
+import ejb.session.stateless.BookEntityControllerRemote;
 import ejb.session.stateless.StaffEntityControllerRemote;
 import entity.StaffEntity;
 import java.util.Scanner;
@@ -16,11 +17,13 @@ public class MainApp {
     private AdministrationOperationModule administrationOperationModule;
     
     private StaffEntityControllerRemote staffEntityControllerRemote;
+    private BookEntityControllerRemote bookEntityControllerRemote;
 
     public MainApp() {}
     
-    public MainApp(StaffEntityControllerRemote staffEntityControllerRemote) {
+    public MainApp(StaffEntityControllerRemote staffEntityControllerRemote, BookEntityControllerRemote bookEntityControllerRemote) {
         this.staffEntityControllerRemote = staffEntityControllerRemote;
+        this.bookEntityControllerRemote = bookEntityControllerRemote;
     }
     
     public void runApp() {
@@ -79,7 +82,7 @@ public class MainApp {
         
         registerationOperationModule = new RegisterationOperationModule();
         libraryOperationModule = new LibraryOperationModule();
-        administrationOperationModule = new AdministrationOperationModule(staffEntityControllerRemote);
+        administrationOperationModule = new AdministrationOperationModule(staffEntityControllerRemote, bookEntityControllerRemote);
                 
         while (true) {
             int response = 0;

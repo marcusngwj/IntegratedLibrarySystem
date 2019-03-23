@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ejb.session.stateless;
 
 import entity.StaffEntity;
@@ -19,10 +14,6 @@ import util.exception.InvalidLoginException;
 import util.exception.StaffNotFoundException;
 import util.logger.Logger;
 
-/**
- *
- * @author Marcus
- */
 @Stateless
 @Local(StaffEntityControllerLocal.class)
 @Remote(StaffEntityControllerRemote.class)
