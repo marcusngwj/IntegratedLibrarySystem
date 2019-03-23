@@ -4,7 +4,6 @@ import ejb.session.stateless.MemberEntityControllerRemote;
 import entity.MemberEntity;
 import java.util.List;
 import java.util.Scanner;
-import util.exception.EntityManagerException;
 import util.exception.MemberExistsException;
 import util.exception.MemberNotFoundException;
 
@@ -58,7 +57,7 @@ public class MemberManagementModule {
                     displayMessage("Invalid option, please try again!\n");
                 }
             }
-            catch (MemberNotFoundException | MemberExistsException | EntityManagerException ex) {
+            catch (MemberNotFoundException | MemberExistsException ex) {
                 displayMessage(ex.getMessage());
             }
             catch (NumberFormatException ex) {
@@ -71,7 +70,7 @@ public class MemberManagementModule {
         }
     }
     
-    private void addMember() throws MemberExistsException, EntityManagerException, NumberFormatException {
+    private void addMember() throws MemberExistsException, NumberFormatException {
         Scanner scanner = new Scanner(System.in);
         
         System.out.println();
@@ -117,7 +116,7 @@ public class MemberManagementModule {
         displayMessage(formatStaffDetail(staff));
     }
     
-    private void updateMember() throws MemberNotFoundException, NumberFormatException {
+    private void updateMember() throws MemberNotFoundException, MemberExistsException, NumberFormatException {
         Scanner scanner = new Scanner(System.in);
         String input = "";
         

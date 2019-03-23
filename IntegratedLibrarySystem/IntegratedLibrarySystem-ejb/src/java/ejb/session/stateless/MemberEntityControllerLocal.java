@@ -2,13 +2,12 @@ package ejb.session.stateless;
 
 import entity.MemberEntity;
 import java.util.List;
-import util.exception.EntityManagerException;
 import util.exception.MemberExistsException;
 import util.exception.InvalidLoginException;
 import util.exception.MemberNotFoundException;
 
 public interface MemberEntityControllerLocal {
-    public MemberEntity persistNewMemberEntity(MemberEntity MemberEntity) throws MemberExistsException, EntityManagerException;
+    public MemberEntity persistNewMemberEntity(MemberEntity newMember) throws MemberExistsException;
     
     public List<MemberEntity> retrieveAllMembers();
     
@@ -16,7 +15,7 @@ public interface MemberEntityControllerLocal {
     
     public MemberEntity retrieveMemberByIdentityNumber(String identityNumber) throws MemberNotFoundException;
     
-    public void updateMember(MemberEntity memberEntity);
+    public void updateMember(MemberEntity memberToUpdate) throws MemberExistsException;
 
     public void deleteMember(Long memberId) throws MemberNotFoundException;
     

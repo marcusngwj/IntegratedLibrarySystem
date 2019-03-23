@@ -4,7 +4,6 @@ import ejb.session.stateless.StaffEntityControllerRemote;
 import entity.StaffEntity;
 import java.util.List;
 import java.util.Scanner;
-import util.exception.EntityManagerException;
 import util.exception.StaffExistsException;
 import util.exception.StaffNotFoundException;
 
@@ -58,7 +57,7 @@ public class StaffManagementModule {
                     displayMessage("Invalid option, please try again!\n");
                 }
             }
-            catch (StaffNotFoundException | StaffExistsException | EntityManagerException ex) {
+            catch (StaffNotFoundException | StaffExistsException ex) {
                 displayMessage(ex.getMessage());
             }
             catch (NumberFormatException ex) {
@@ -71,7 +70,7 @@ public class StaffManagementModule {
         }
     }
     
-    private void addStaff() throws StaffExistsException, EntityManagerException {
+    private void addStaff() throws StaffExistsException {
         Scanner scanner = new Scanner(System.in);
         String firstName = "";
         String lastName = "";
@@ -113,7 +112,7 @@ public class StaffManagementModule {
         displayMessage(formatStaffDetail(staff));
     }
     
-    private void updateStaff() throws StaffNotFoundException, NumberFormatException {
+    private void updateStaff() throws StaffNotFoundException, StaffExistsException, NumberFormatException {
         Scanner scanner = new Scanner(System.in);
         String input = "";
         

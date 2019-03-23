@@ -10,11 +10,9 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import util.exception.EntityManagerException;
 import util.exception.MemberExistsException;
 import util.exception.InvalidLoginException;
 import util.exception.MemberNotFoundException;
-import util.exception.RuntimeExceptionTranslator;
 import util.logger.Logger;
 
 @Stateless
@@ -28,21 +26,18 @@ public class MemberEntityController implements MemberEntityControllerRemote, Mem
     public MemberEntityController() {}
     
     @Override
-    public MemberEntity persistNewMemberEntity(MemberEntity memberEntity) throws MemberExistsException, EntityManagerException {
-        try {
-            em.persist(memberEntity);
-            em.flush();
-            em.refresh(memberEntity);
-            return memberEntity;
-        }
-        catch (RuntimeException ex) {
-            if (RuntimeExceptionTranslator.isDatabseIntegrityConstantViolation(ex)) {
-                throw new MemberExistsException("The username has already been taken. Please try again.");
-            }
-            else {
-                throw new EntityManagerException("An unknown error has occurred.");
+    public MemberEntity persistNewMemberEntity(MemberEntity newMember) throws MemberExistsException {
+        List<MemberEntity> staffList = retrieveAllMembers();
+        for (MemberEntity member : staffList) {
+            if (!member.getMemberId().equals(newMember.getMemberId()) && member.getIdentityNumber().equals(newMember.getIdentityNumber())) {
+                throw new MemberExistsException("The identity number already exists. Please try again.");
             }
         }
+        
+        em.persist(newMember);
+        em.flush();
+        em.refresh(newMember);
+        return newMember;
     }
     
     @Override
@@ -78,8 +73,15 @@ public class MemberEntityController implements MemberEntityControllerRemote, Mem
     }
     
     @Override
-    public void updateMember(MemberEntity memberEntity) {
-        em.merge(memberEntity);
+    public void updateMember(MemberEntity memberToUpdate) throws MemberExistsException {
+        List<MemberEntity> staffList = retrieveAllMembers();
+        for (MemberEntity member : staffList) {
+            if (!member.getMemberId().equals(memberToUpdate.getMemberId()) && member.getIdentityNumber().equals(memberToUpdate.getIdentityNumber())) {
+                throw new MemberExistsException("The identity number already exists. Please try again.");
+            }
+        }
+        
+        em.merge(memberToUpdate);
     }
     
     @Override
