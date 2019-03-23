@@ -10,8 +10,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import util.exception.EntityManagerException;
-import util.exception.RuntimeExceptionTranslator;
 import util.exception.InvalidLoginException;
 import util.exception.StaffExistsException;
 import util.exception.StaffNotFoundException;
@@ -28,21 +26,18 @@ public class StaffEntityController implements StaffEntityControllerRemote, Staff
     public StaffEntityController() {}
     
     @Override
-    public StaffEntity persistNewStaffEntity(StaffEntity staffEntity) throws StaffExistsException, EntityManagerException {
-        try {
-            em.persist(staffEntity);
-            em.flush();
-            em.refresh(staffEntity);
-            return staffEntity;
-        }
-        catch (RuntimeException ex) {
-            if (RuntimeExceptionTranslator.isDatabseIntegrityConstantViolation(ex)) {
+    public StaffEntity persistNewStaffEntity(StaffEntity newStaff) throws StaffExistsException {
+        List<StaffEntity> staffList = retrieveAllStaffs();
+        for (StaffEntity staff : staffList) {
+            if (!staff.getStaffId().equals(newStaff.getStaffId()) && staff.getUsername().equals(newStaff.getUsername())) {
                 throw new StaffExistsException("The username has already been taken. Please try again.");
             }
-            else {
-                throw new EntityManagerException("An unknown error has occurred.");
-            }
         }
+        
+        em.persist(newStaff);
+        em.flush();
+        em.refresh(newStaff);
+        return newStaff;
     }
     
     @Override
@@ -78,13 +73,14 @@ public class StaffEntityController implements StaffEntityControllerRemote, Staff
     }
     
     @Override
-    public void updateStaff(StaffEntity staffToUpdate) throws StaffExistsException, EntityManagerException {
+    public void updateStaff(StaffEntity staffToUpdate) throws StaffExistsException {
         List<StaffEntity> staffList = retrieveAllStaffs();
         for (StaffEntity staff : staffList) {
             if (!staff.getStaffId().equals(staffToUpdate.getStaffId()) && staff.getUsername().equals(staffToUpdate.getUsername())) {
                 throw new StaffExistsException("The username has already been taken. Please try again.");
             }
         }
+        
         em.merge(staffToUpdate);
     }
     
