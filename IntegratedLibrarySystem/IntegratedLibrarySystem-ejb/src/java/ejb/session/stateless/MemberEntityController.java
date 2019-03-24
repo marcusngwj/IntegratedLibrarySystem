@@ -91,7 +91,7 @@ public class MemberEntityController implements MemberEntityControllerRemote, Mem
     }
 
     @Override
-    public MemberEntity registerMember(MemberEntity newMember) throws MemberExistsException{
+    public MemberEntity createNewMember(MemberEntity newMember) throws MemberExistsException{
     List<MemberEntity> allMembers = retrieveAllMembers();
         Boolean memberExist = false;
 
@@ -102,7 +102,6 @@ public class MemberEntityController implements MemberEntityControllerRemote, Mem
             }
         }
         if (!memberExist) {
-
              em.persist(newMember);
              em.flush();
              em.refresh(newMember);

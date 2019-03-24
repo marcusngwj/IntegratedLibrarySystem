@@ -5,16 +5,21 @@
  */
 package selfservicekioskterminal.module;
 
+import ejb.session.stateless.MemberEntityControllerRemote;
+import entity.MemberEntity;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import util.exception.MemberExistsException;
 
 /**
  *
  * @author limwe
  */
 public class RegisterationKioskOperationModule {
-    
+    MemberEntityControllerRemote memberEntityControllerRemote;
     private final String REGISTER_SUCCESS = "You have been registered successfully!";
     private final String INVALID_ID = "Invalid ID or Duplicate Identity Number! Please try again.";
     private final String INVALID_CODE = "Invalid Security Code. Please try again.";
@@ -42,7 +47,7 @@ public class RegisterationKioskOperationModule {
         System.out.println("Enter Age> ");
         Integer age = scanner.nextInt();
         System.out.println("Enter Phone> ");
-        Integer phone = scanner.nextInt();
+        String phone = scanner.nextLine().trim();
         System.out.println("Enter Address> ");
         String address = scanner.nextLine().trim();
 
@@ -57,7 +62,13 @@ public class RegisterationKioskOperationModule {
         
         
         if(idValid && securityCodeValid && nameValid && genderValid && ageValid && phoneValid && addressValid) {
-            System.out.println(REGISTER_SUCCESS);
+            try {
+                MemberEntity newMember = new MemberEntity(identityNumber, securityCode, firstName, lastName, gender, age, phone, address);
+                newMember = memberEntityControllerRemote.createNewMember(newMember);
+                System.out.println(REGISTER_SUCCESS);
+            } catch (MemberExistsException ex) {
+                Logger.getLogger(RegisterationKioskOperationModule.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         printInvalidMessages(idValid, securityCodeValid, nameValid, genderValid , ageValid, phoneValid, addressValid);
       
@@ -67,7 +78,7 @@ public class RegisterationKioskOperationModule {
         return true;
     }
     
-    private boolean checkPhoneValidity(Integer phone) {
+    private boolean checkPhoneValidity(String phone) {
         //TO-DO
         return true;
     }
@@ -125,6 +136,7 @@ public class RegisterationKioskOperationModule {
         if(!phoneValid) {
             System.out.println(INVALID_PHONE);
         }
+        
         if(!addressValid) {
             System.out.println(INVALID_ADDRESS);
         }

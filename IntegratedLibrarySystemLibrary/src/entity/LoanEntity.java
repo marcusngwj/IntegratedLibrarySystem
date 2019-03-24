@@ -32,7 +32,13 @@ public class LoanEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "MEMBERID", nullable = false)
     private MemberEntity member;
-
+    
+    public LoanEntity(BookEntity bookEntity, Date endDate, MemberEntity memberEntity) {
+        
+        this.book = bookEntity;
+        this.endDate = endDate;
+        this.member = memberEntity;
+    }
     public Long getLoanId() {
         return loanId;
     }

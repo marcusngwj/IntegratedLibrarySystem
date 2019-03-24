@@ -20,7 +20,7 @@ public interface MemberEntityControllerRemote {
 
     public void deleteMember(Long memberId) throws MemberNotFoundException;
     
-    public MemberEntity registerMember(MemberEntity memberEntity) throws MemberExistsException;
+    public MemberEntity createNewMember(MemberEntity memberEntity) throws MemberExistsException;
     
     public MemberEntity memberLogin(String username, String password) throws InvalidLoginException;
     
