@@ -115,9 +115,9 @@ public class MemberEntityController implements MemberEntityControllerRemote, Mem
     @Override
     public MemberEntity memberLogin(String username, String password) throws InvalidLoginException{
         Logger.log(Logger.INFO, "MemberEntityController", "memberLogin", username + " || " + password);
-        Query query = em.createQuery("SELECT m FROM MemberEntity m WHERE m.username = :inUsername AND m.password = :inPassword");
-        query.setParameter("inUsername", username);
-        query.setParameter("inPassword", password);
+        Query query = em.createQuery("SELECT m FROM MemberEntity m WHERE m.identityNumber = :inIdentityNumber AND m.securityCode = :inSecurityCode");
+        query.setParameter("inIdentityNumber", username);
+        query.setParameter("inSecurityCode", password);
         
         try {
             return (MemberEntity)query.getSingleResult();

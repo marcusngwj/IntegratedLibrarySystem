@@ -5,6 +5,8 @@
  */
 package selfservicekioskterminal;
 
+import ejb.session.stateless.BookEntityControllerRemote;
+import ejb.session.stateless.LoanEntityControllerRemote;
 import ejb.session.stateless.MemberEntityControllerRemote;
 import javax.ejb.EJB;
 
@@ -15,14 +17,15 @@ import javax.ejb.EJB;
 public class Main {
     @EJB
     private static MemberEntityControllerRemote memberEntityControllerRemote;
+    @EJB
+    private static BookEntityControllerRemote bookEntityControllerRemote;
+    @EJB
+    private static LoanEntityControllerRemote loanEntityControllerRemote;
     
     /**
      *  
     
-    @EJB
-    private static BookControllerRemote bookControllerRemote;
-    @EJB
-    private static LoanControllerRemote loanControllerRemote;
+   
     @EJB
     private static ReservationControllerRemote reservationControllerRemote;
     @EJB
@@ -32,7 +35,7 @@ public class Main {
     */
     public static void main(String[] args) {
 //        MainApp mainApp = new MainApp(bookControllerRemote, loanControllerRemote, reservationControllerRemote, fineControllerRemote, memberEntityControllerRemote);
-        MainApp mainApp = new MainApp(memberEntityControllerRemote);
+        MainApp mainApp = new MainApp(memberEntityControllerRemote, bookEntityControllerRemote, loanEntityControllerRemote);
         mainApp.runApp();
     }
     

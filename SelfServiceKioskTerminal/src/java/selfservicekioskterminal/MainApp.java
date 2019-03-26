@@ -5,6 +5,8 @@
  */
 package selfservicekioskterminal;
 
+import ejb.session.stateless.BookEntityControllerRemote;
+import ejb.session.stateless.LoanEntityControllerRemote;
 import ejb.session.stateless.MemberEntityControllerRemote;
 import entity.MemberEntity;
 import java.util.Scanner;
@@ -22,13 +24,19 @@ import util.exception.InvalidLoginException;
 public class MainApp {
 
     private MemberEntityControllerRemote memberEntityControllerRemote;
+    private LoanEntityControllerRemote loanEntityControllerRemote;
+    private BookEntityControllerRemote bookEntityControllerRemote;
     private RegisterationKioskOperationModule registerationKioskOperationModule;
     private KioskOperationModule kioskOperationModule;
     private KioskBookOperationModule kioskBookOperationModule;
     MemberEntity currentMember;
 
-    MainApp(MemberEntityControllerRemote memberEntityControllerRemote) {
+    MainApp(MemberEntityControllerRemote memberEntityControllerRemote,
+    BookEntityControllerRemote bookEntityControllerRemote, LoanEntityControllerRemote loanEntityControllerRemote) {
         this.memberEntityControllerRemote = memberEntityControllerRemote;
+        this.bookEntityControllerRemote = bookEntityControllerRemote;
+        this.loanEntityControllerRemote = loanEntityControllerRemote;
+        
     }
 
     void runApp() {
@@ -52,7 +60,7 @@ public class MainApp {
                     System.out.println(ex);
                 }
             } else if (response == EXIT_NUMBER) {
-
+                break;
             } else {
                 printInvalidResponseMessage();
             }
@@ -72,8 +80,11 @@ public class MainApp {
         final int RESERVE_BOOK = 7;
         final int LOGOUT = 8;
         
-        kioskOperationModule = new KioskOperationModule();
+        kioskOperationModule = new KioskOperationModule(memberEntityControllerRemote, bookEntityControllerRemote 
+                ,loanEntityControllerRemote);
         int option = 0;
+        System.out.println();
+        System.out.print(">");
         Scanner scanner = new Scanner(System.in);
         while (true) {
             option = scanner.nextInt();
