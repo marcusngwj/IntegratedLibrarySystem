@@ -25,6 +25,16 @@ public class FineEntity implements Serializable {
     @JoinColumn(name = "MEMBERID", nullable = false)
     private MemberEntity member;
 
+    public FineEntity(Long amount, MemberEntity member) {
+       
+        this.amount = amount;
+        this.member = member;
+    }
+
+    public FineEntity() {
+    }
+    
+    
     public Long getFineId() {
         return fineId;
     }

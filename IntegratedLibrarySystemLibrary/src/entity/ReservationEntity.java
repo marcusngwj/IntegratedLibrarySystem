@@ -34,6 +34,17 @@ public class ReservationEntity implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdOn;
 
+    public ReservationEntity(BookEntity book, MemberEntity member, Date createdOn) {
+      
+        this.book = book;
+        this.member = member;
+        this.createdOn = createdOn;
+    }
+
+    public ReservationEntity() {
+   
+    }
+
     public Long getReservationId() {
         return reservationId;
     }
