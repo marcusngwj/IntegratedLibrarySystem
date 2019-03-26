@@ -39,6 +39,10 @@ public class LoanEntity implements Serializable {
         this.endDate = endDate;
         this.member = memberEntity;
     }
+
+    public LoanEntity() {
+    }
+    
     public Long getLoanId() {
         return loanId;
     }

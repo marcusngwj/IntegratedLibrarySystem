@@ -41,6 +41,10 @@ public class ReservationEntity implements Serializable {
         this.createdOn = createdOn;
     }
 
+    public ReservationEntity() {
+   
+    }
+
     public Long getReservationId() {
         return reservationId;
     }

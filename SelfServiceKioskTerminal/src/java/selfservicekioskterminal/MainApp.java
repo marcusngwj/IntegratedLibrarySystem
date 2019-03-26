@@ -42,6 +42,7 @@ public class MainApp {
             response = getUserResponse();
 
             if (response == REGISTER_NUMBER) {
+                registerationKioskOperationModule = new RegisterationKioskOperationModule(memberEntityControllerRemote);
                 registerationKioskOperationModule.doRegisterMember();
             } else if (response == LOGIN_NUMBER) {
                 try {
@@ -70,7 +71,8 @@ public class MainApp {
         final int SEARCH_BOOK = 6;
         final int RESERVE_BOOK = 7;
         final int LOGOUT = 8;
-
+        
+        kioskOperationModule = new KioskOperationModule();
         int option = 0;
         Scanner scanner = new Scanner(System.in);
         while (true) {

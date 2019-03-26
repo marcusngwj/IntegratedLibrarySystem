@@ -30,6 +30,9 @@ public class FineEntity implements Serializable {
         this.amount = amount;
         this.member = member;
     }
+
+    public FineEntity() {
+    }
     
     
     public Long getFineId() {

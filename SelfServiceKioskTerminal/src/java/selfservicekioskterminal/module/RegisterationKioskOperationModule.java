@@ -31,24 +31,28 @@ public class RegisterationKioskOperationModule {
     
     public RegisterationKioskOperationModule() {
     }
+    public RegisterationKioskOperationModule(MemberEntityControllerRemote memberEntityControllerRemote) {
+          this.memberEntityControllerRemote = memberEntityControllerRemote;
+    }
 
     public void doRegisterMember() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter Identity Number> ");
+        System.out.print("Enter Identity Number> ");
         String identityNumber = scanner.nextLine().trim();
-        System.out.println("Enter Security Code> ");
+        System.out.print("Enter Security Code> ");
         String securityCode = scanner.nextLine().trim();
-        System.out.println("Enter First Name> ");
+        System.out.print("Enter First Name> ");
         String firstName = scanner.nextLine().trim();
-        System.out.println("Enter Last Name> ");
+        System.out.print("Enter Last Name> ");
         String lastName = scanner.nextLine().trim();
-        System.out.println("Enter Gender> ");
+        System.out.print("Enter Gender> ");
         String gender = scanner.nextLine().trim();
-        System.out.println("Enter Age> ");
+        System.out.print("Enter Age> ");
         Integer age = scanner.nextInt();
-        System.out.println("Enter Phone> ");
+        scanner.nextLine();
+        System.out.print("Enter Phone> ");
         String phone = scanner.nextLine().trim();
-        System.out.println("Enter Address> ");
+        System.out.print("Enter Address> ");
         String address = scanner.nextLine().trim();
 
         //Check for identityNumber as it has to be unique

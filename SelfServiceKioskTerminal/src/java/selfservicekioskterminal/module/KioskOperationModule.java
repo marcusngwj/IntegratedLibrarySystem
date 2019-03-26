@@ -35,7 +35,10 @@ public class KioskOperationModule {
     
     final int MAX_LOAN = 3;
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
+    
+    public KioskOperationModule() {
+        
+    }
     public void enterBorrowBook(MemberEntity member) {
         printBorrowBookMain();
 
