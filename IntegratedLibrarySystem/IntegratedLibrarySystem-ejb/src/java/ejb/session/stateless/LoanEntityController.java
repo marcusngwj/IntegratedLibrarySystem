@@ -107,5 +107,18 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
         
         return loanToUpdate;
     }
+    
+    @Override
+    public void deleteLoan(Long bookId) throws LoanNotFoundException {
+        LoanEntity loanToRemove = retrieveLoanByBookId(bookId);
+        
+        Date today = Calendar.getInstance().getTime();
+        
+        if (today.after(loanToRemove.getEndDate())) {
+            // TODO: Generate fines
+        }
+        
+        em.remove(loanToRemove);
+    }
 
 }
