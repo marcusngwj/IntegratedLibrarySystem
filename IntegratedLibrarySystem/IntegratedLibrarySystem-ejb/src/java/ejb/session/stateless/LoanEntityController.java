@@ -1,13 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ejb.session.stateless;
 
 import entity.LoanEntity;
 import java.util.List;
-import java.util.logging.Level;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -17,10 +11,6 @@ import javax.persistence.Query;
 import util.exception.UnsuccessfulLoanException;
 import util.logger.Logger;
 
-/**
- *
- * @author limwe
- */
 @Stateless
 @Local(LoanEntityControllerLocal.class)
 @Remote(LoanEntityControllerRemote.class)
@@ -31,7 +21,7 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
     
     @Override
     public LoanEntity persistNewLoanEntity(LoanEntity newLoan) throws UnsuccessfulLoanException {
-        Logger.log(Level.SEVERE, "LoanEntityController", "persistNewLoanEntity");
+        Logger.log(Logger.SEVERE, "LoanEntityController", "persistNewLoanEntity");
         
         List<LoanEntity> loanList = retrieveLoansByMemberId(newLoan.getMember().getMemberId());
         if (loanList.size() >= 3) {
