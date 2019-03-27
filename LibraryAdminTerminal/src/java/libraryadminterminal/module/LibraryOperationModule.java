@@ -8,12 +8,12 @@ import entity.LoanEntity;
 import entity.MemberEntity;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
 import util.exception.BookNotFoundException;
 import util.exception.MemberNotFoundException;
-import util.exception.UnsuccessfulLoanException;
+import util.exception.LoanException;
+import util.exception.LoanNotFoundException;
 
 public class LibraryOperationModule {
     private static final int LOAN_BOOK = 1;
@@ -24,10 +24,12 @@ public class LibraryOperationModule {
     private static final int MANAGE_RESERVATION = 6;
     private static final int BACK = 7;
     
+    private static DateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+    
     private MemberEntityControllerRemote memberEntityControllerRemote;
     private BookEntityControllerRemote bookEntityControllerRemote;
     private LoanEntityControllerRemote loanEntityControllerRemote;
-            
+    
     public LibraryOperationModule() {}
 
     public LibraryOperationModule(MemberEntityControllerRemote memberEntityControllerRemote, BookEntityControllerRemote bookEntityControllerRemote, LoanEntityControllerRemote loanEntityControllerRemote) {
@@ -72,7 +74,7 @@ public class LibraryOperationModule {
                     displayMessage("Invalid option, please try again!\n");
                 }
             }
-            catch (MemberNotFoundException | BookNotFoundException | UnsuccessfulLoanException ex) {
+            catch (MemberNotFoundException | BookNotFoundException | LoanNotFoundException | LoanException ex) {
                 displayMessage(ex.getMessage());
             }
             catch (NumberFormatException ex) {
@@ -81,12 +83,10 @@ public class LibraryOperationModule {
             finally {
                 System.out.println();
             }
-            
-            
         }
     }
     
-    private void loanBook() throws NumberFormatException, MemberNotFoundException, BookNotFoundException, UnsuccessfulLoanException {
+    private void loanBook() throws MemberNotFoundException, BookNotFoundException, LoanException, NumberFormatException {
         Scanner scanner = new Scanner(System.in);
         
         System.out.println();
@@ -94,18 +94,14 @@ public class LibraryOperationModule {
         System.out.print("Enter Member Identity Number> ");
         String identityNumber = scanner.nextLine().trim();
         System.out.print("Enter Book ID> ");
-        Long bookID = Long.valueOf(scanner.nextLine().trim());
+        Long bookId = Long.valueOf(scanner.nextLine().trim());
         
         MemberEntity member = memberEntityControllerRemote.retrieveMemberByIdentityNumber(identityNumber);
-        BookEntity book = bookEntityControllerRemote.retrieveBookById(bookID);
+        BookEntity book = bookEntityControllerRemote.retrieveBookById(bookId);
         
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.WEEK_OF_MONTH, 2);
-
-        LoanEntity newLoan = new LoanEntity(book, cal.getTime(), member);
+        LoanEntity newLoan = new LoanEntity(book, member);
         newLoan = loanEntityControllerRemote.persistNewLoanEntity(newLoan);
-        displayMessage("Successfully lent book to member. Due Date: " + dateFormat.format(cal.getTime()));
+        displayMessage("Successfully lent book to member. Due Date: " + FORMATTER.format(newLoan.getEndDate()));
     }
     
     private void viewLoanedBooks() throws MemberNotFoundException {
@@ -121,12 +117,44 @@ public class LibraryOperationModule {
         displayLoanTable(loanList);
     }
     
-    private void returnBook() {
+    private void returnBook() throws MemberNotFoundException, NumberFormatException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println();
+        System.out.println("*** ILS :: Library Operation :: Return Book ***\n");
+        System.out.print("Enter Member Identity Number> ");
+        String identityNumber = scanner.nextLine().trim();
         
+        MemberEntity member = memberEntityControllerRemote.retrieveMemberByIdentityNumber(identityNumber);
+        List<LoanEntity> loanList = loanEntityControllerRemote.retrieveLoansByMemberId(member.getMemberId());
+        
+        displayLoanTable(loanList);
+        System.out.println();
+        
+        System.out.print("Enter Book ID to Return> ");
+        Long bookId = Long.valueOf(scanner.nextLine().trim());
+        
+        // TODO: generate fine
     }
     
-    private void extendBook() {
+    private void extendBook() throws MemberNotFoundException, LoanNotFoundException, LoanException, NumberFormatException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println();
+        System.out.println("*** ILS :: Library Operation :: Extend Book ***\n");
+        System.out.print("Enter Member Identity Number> ");
+        String identityNumber = scanner.nextLine().trim();
         
+        MemberEntity member = memberEntityControllerRemote.retrieveMemberByIdentityNumber(identityNumber);
+        List<LoanEntity> loanList = loanEntityControllerRemote.retrieveLoansByMemberId(member.getMemberId());
+        
+        displayLoanTable(loanList);
+        System.out.println();
+        
+        System.out.print("Enter Book ID to Extend> ");
+        Long bookId = Long.valueOf(scanner.nextLine().trim());
+        
+        LoanEntity loan = loanEntityControllerRemote.retrieveLoanByBookId(bookId);
+        loan = loanEntityControllerRemote.updateLoan(loan);
+        displayMessage("Book successfully extended. New due date: " + FORMATTER.format(loan.getEndDate()));
     }
     
     private void payFines() {
@@ -144,7 +172,7 @@ public class LibraryOperationModule {
         
         String table = "";
         for (LoanEntity loan : loanList) {
-            table += String.format("%-5s| %-50s| %-11s", loan.getLoanId(), loan.getBook().getTitle(), loan.getEndDate());
+            table += String.format("%-5s| %-50s| %-11s", loan.getBook().getBookId(), loan.getBook().getTitle(), FORMATTER.format(loan.getEndDate()));
         }
         
         displayMessage(header);
