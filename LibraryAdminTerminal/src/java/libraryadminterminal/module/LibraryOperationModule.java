@@ -117,7 +117,7 @@ public class LibraryOperationModule {
         displayLoanTable(loanList);
     }
     
-    private void returnBook() throws MemberNotFoundException, NumberFormatException {
+    private void returnBook() throws MemberNotFoundException, LoanNotFoundException, NumberFormatException {
         Scanner scanner = new Scanner(System.in);
         System.out.println();
         System.out.println("*** ILS :: Library Operation :: Return Book ***\n");
@@ -133,7 +133,8 @@ public class LibraryOperationModule {
         System.out.print("Enter Book ID to Return> ");
         Long bookId = Long.valueOf(scanner.nextLine().trim());
         
-        // TODO: generate fine
+        loanEntityControllerRemote.deleteLoan(bookId);
+        displayMessage("Book successfully returned.");
     }
     
     private void extendBook() throws MemberNotFoundException, LoanNotFoundException, LoanException, NumberFormatException {
@@ -172,11 +173,11 @@ public class LibraryOperationModule {
         
         String table = "";
         for (LoanEntity loan : loanList) {
-            table += String.format("%-5s| %-50s| %-11s", loan.getBook().getBookId(), loan.getBook().getTitle(), FORMATTER.format(loan.getEndDate()));
+            table += "\n" + String.format("%-5s| %-50s| %-11s", loan.getBook().getBookId(), loan.getBook().getTitle(), FORMATTER.format(loan.getEndDate()));
         }
         
-        displayMessage(header);
-        displayMessage(table);
+        System.out.print(header);
+        System.out.println(table);
     }
     
     private int getUserResponse() {
