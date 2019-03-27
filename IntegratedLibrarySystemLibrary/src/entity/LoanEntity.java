@@ -34,6 +34,11 @@ public class LoanEntity implements Serializable {
     private MemberEntity member;
     
     public LoanEntity() {}
+
+    public LoanEntity(BookEntity book, MemberEntity member) {
+        this.book = book;
+        this.member = member;
+    }
     
     public LoanEntity(BookEntity bookEntity, Date endDate, MemberEntity memberEntity) {
         this.book = bookEntity;

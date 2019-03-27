@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Scanner;
 import util.exception.BookNotFoundException;
 import util.exception.MemberExistsException;
-import util.exception.UnsuccessfulLoanException;
+import util.exception.LoanException;
 
 /**
  *
@@ -79,7 +79,7 @@ public class KioskOperationModule {
                 //Print Success Message
                 printLentSuccessMessage(dueDate);
                 
-            } catch (UnsuccessfulLoanException stlne) {
+            } catch (LoanException stlne) {
                 System.out.println(stlne.getMessage());
             } catch (BookNotFoundException bnfe) {
                 System.out.println(bnfe.getMessage());
