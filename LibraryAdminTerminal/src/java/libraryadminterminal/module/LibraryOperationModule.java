@@ -9,6 +9,7 @@ import entity.MemberEntity;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Scanner;
 import util.exception.BookNotFoundException;
 import util.exception.MemberNotFoundException;
@@ -85,7 +86,7 @@ public class LibraryOperationModule {
         }
     }
     
-    public void loanBook() throws NumberFormatException, MemberNotFoundException, BookNotFoundException, UnsuccessfulLoanException {
+    private void loanBook() throws NumberFormatException, MemberNotFoundException, BookNotFoundException, UnsuccessfulLoanException {
         Scanner scanner = new Scanner(System.in);
         
         System.out.println();
@@ -107,24 +108,47 @@ public class LibraryOperationModule {
         displayMessage("Successfully lent book to member. Due Date: " + dateFormat.format(cal.getTime()));
     }
     
-    public void viewLoanedBooks() {
+    private void viewLoanedBooks() throws MemberNotFoundException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println();
+        System.out.println("*** ILS :: Library Operation :: View Lent Book ***\n");
+        System.out.print("Enter Member Identity Number> ");
+        String identityNumber = scanner.nextLine().trim();
+        
+        MemberEntity member = memberEntityControllerRemote.retrieveMemberByIdentityNumber(identityNumber);
+        List<LoanEntity> loanList = loanEntityControllerRemote.retrieveLoansByMemberId(member.getMemberId());
+        
+        displayLoanTable(loanList);
+    }
+    
+    private void returnBook() {
         
     }
     
-    public void returnBook() {
+    private void extendBook() {
         
     }
     
-    public void extendBook() {
+    private void payFines() {
         
     }
     
-    public void payFines() {
+    private void manageReservation() {
         
     }
     
-    public void manageReservation() {
+    private void displayLoanTable(List<LoanEntity> loanList) {
+        System.out.println("Currently Lent Books:\n");
         
+        String header = String.format("%-5s| %-50s| %-11s", "Id", "Title", "Due Date");
+        
+        String table = "";
+        for (LoanEntity loan : loanList) {
+            table += String.format("%-5s| %-50s| %-11s", loan.getLoanId(), loan.getBook().getTitle(), loan.getEndDate());
+        }
+        
+        displayMessage(header);
+        displayMessage(table);
     }
     
     private int getUserResponse() {
