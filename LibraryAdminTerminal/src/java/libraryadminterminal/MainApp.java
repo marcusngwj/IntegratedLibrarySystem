@@ -1,6 +1,7 @@
 package libraryadminterminal;
 
 import ejb.session.stateless.BookEntityControllerRemote;
+import ejb.session.stateless.LoanEntityControllerRemote;
 import ejb.session.stateless.MemberEntityControllerRemote;
 import ejb.session.stateless.StaffEntityControllerRemote;
 import entity.StaffEntity;
@@ -20,13 +21,17 @@ public class MainApp {
     private StaffEntityControllerRemote staffEntityControllerRemote;
     private MemberEntityControllerRemote memberEntityControllerRemote;
     private BookEntityControllerRemote bookEntityControllerRemote;
+    
+    private LoanEntityControllerRemote loanEntityControllerRemote;
 
     public MainApp() {}
     
-    public MainApp(StaffEntityControllerRemote staffEntityControllerRemote, MemberEntityControllerRemote memberEntityControllerRemote, BookEntityControllerRemote bookEntityControllerRemote) {
+    public MainApp(StaffEntityControllerRemote staffEntityControllerRemote, MemberEntityControllerRemote memberEntityControllerRemote, BookEntityControllerRemote bookEntityControllerRemote, LoanEntityControllerRemote loanEntityControllerRemote) {
         this.staffEntityControllerRemote = staffEntityControllerRemote;
         this.memberEntityControllerRemote = memberEntityControllerRemote;
         this.bookEntityControllerRemote = bookEntityControllerRemote;
+        
+        this.loanEntityControllerRemote = loanEntityControllerRemote;
     }
     
     public void runApp() {
@@ -84,7 +89,7 @@ public class MainApp {
         final int LOGOUT = 4;
         
         registerationOperationModule = new RegisterationOperationModule(memberEntityControllerRemote);
-        libraryOperationModule = new LibraryOperationModule();
+        libraryOperationModule = new LibraryOperationModule(memberEntityControllerRemote, bookEntityControllerRemote, loanEntityControllerRemote);
         administrationOperationModule = new AdministrationOperationModule(staffEntityControllerRemote, memberEntityControllerRemote, bookEntityControllerRemote);
                 
         while (true) {

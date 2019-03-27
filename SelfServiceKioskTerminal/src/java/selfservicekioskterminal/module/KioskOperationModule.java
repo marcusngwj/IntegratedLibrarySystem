@@ -17,11 +17,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import util.exception.BookNotFoundException;
 import util.exception.MemberExistsException;
-import util.exception.StillLoaningException;
+import util.exception.UnsuccessfulLoanException;
 
 /**
  *
@@ -81,7 +79,7 @@ public class KioskOperationModule {
                 //Print Success Message
                 printLentSuccessMessage(dueDate);
                 
-            } catch (StillLoaningException stlne) {
+            } catch (UnsuccessfulLoanException stlne) {
                 System.out.println(stlne.getMessage());
             } catch (BookNotFoundException bnfe) {
                 System.out.println(bnfe.getMessage());
