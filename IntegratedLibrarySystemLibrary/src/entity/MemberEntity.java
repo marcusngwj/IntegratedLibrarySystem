@@ -1,6 +1,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -64,6 +65,9 @@ public class MemberEntity implements Serializable {
         this.age = age;
         this.phone = phone;
         this.address = address;
+        this.fines = new ArrayList<FineEntity>();
+        this.loans = new ArrayList<LoanEntity>();
+        this.reservations = new ArrayList<ReservationEntity>();
     }
 
     public Long getMemberId() {

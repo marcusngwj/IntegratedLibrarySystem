@@ -27,7 +27,10 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
 
     @PersistenceContext(unitName = "IntegratedLibrarySystem-ejbPU")
     private EntityManager em;
+
+    public LoanEntityController() {}
     
+   
     @Override
     public LoanEntity persistNewLoanEntity(LoanEntity newLoan) throws StillLoaningException{
         List<LoanEntity> loanList = retrieveAllLoans();

@@ -163,7 +163,7 @@ public class KioskOperationModule {
     }
 
     private boolean checkUnpaidFine(MemberEntity member) {
-        if (member.getFines().isEmpty()) {
+        if (member.getFines().size() < 1) {
             return false;
         } else {
             return true;
