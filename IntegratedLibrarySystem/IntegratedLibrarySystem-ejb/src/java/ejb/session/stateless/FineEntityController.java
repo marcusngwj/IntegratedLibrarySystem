@@ -1,6 +1,8 @@
 package ejb.session.stateless;
 
 import entity.FineEntity;
+import entity.LoanEntity;
+import entity.MemberEntity;
 import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Remote;
@@ -11,19 +13,24 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.FineNotFoundException;
+import util.helper.DateHelper;
 import util.logger.Logger;
 
 @Stateless
 @Local(FineEntityControllerLocal.class)
 @Remote(FineEntityControllerRemote.class)
 public class FineEntityController implements FineEntityControllerRemote, FineEntityControllerLocal {
-
+    private static final long FIX_FINE_RATE = 1;
+    
     @PersistenceContext(unitName = "IntegratedLibrarySystem-ejbPU")
     private EntityManager em;
     
     @Override
-    public FineEntity persistNewFineEntity(FineEntity newFine) {
+    public FineEntity createNewFineEntity(LoanEntity loan, MemberEntity member) {
         Logger.log(Logger.INFO, "FineEntityController", "persistNewFineEntity");
+        
+        long fineAmt = calculateFine(loan);
+        FineEntity newFine = new FineEntity(fineAmt, member);
         
         em.persist(newFine);
         em.flush();
@@ -56,6 +63,11 @@ public class FineEntityController implements FineEntityControllerRemote, FineEnt
     public void deleteFine(Long fineId) throws FineNotFoundException {
         FineEntity fineToRemove = retrieveFineByFindId(fineId);
         em.remove(fineToRemove);
+    }
+    
+    private static long calculateFine(LoanEntity loan) {
+        long daysOverdue = DateHelper.getNumDaysFromDate(loan.getEndDate());
+        return daysOverdue * FIX_FINE_RATE;
     }
     
 }

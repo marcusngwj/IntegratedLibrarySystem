@@ -30,7 +30,7 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
     private FineEntityControllerLocal fineEntityControllerLocal;
     
     @Override
-    public LoanEntity persistNewLoanEntity(LoanEntity newLoan) throws LoanException {
+    public LoanEntity createNewLoanEntity(LoanEntity newLoan) throws LoanException {
         Logger.log(Logger.INFO, "LoanEntityController", "persistNewLoanEntity");
         
         List<LoanEntity> loanList = retrieveLoansByMemberId(newLoan.getMember().getMemberId());
@@ -89,12 +89,15 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
     }
     
     @Override
-    public LoanEntity updateLoan(LoanEntity loanToUpdate) throws LoanException {
+    public LoanEntity extendLoan(LoanEntity loanToUpdate) throws LoanException {
         if (isLoanOverdue(loanToUpdate)) {
             throw new LoanException(LoanException.BOOK_IS_OVERDUE);
         }
         
-        // TODO: Check unpaid fines
+        List<FineEntity> fineList = fineEntityControllerLocal.retrieveFinesByMemberIdentityNumber(loanToUpdate.getMember().getIdentityNumber());
+        if (fineList.size() > 0) {
+            throw new LoanException(LoanException.UNPAID_FINE);
+        }
         
         // TODO: Check reservation
         
@@ -108,8 +111,13 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
     
     @Override
     public void deleteLoan(Long bookId) throws LoanNotFoundException {
-        LoanEntity loanToRemove = retrieveLoanByBookId(bookId);
-        em.remove(loanToRemove);
+        LoanEntity loan = retrieveLoanByBookId(bookId);
+        
+        if (isLoanOverdue(loan)) {
+            fineEntityControllerLocal.createNewFineEntity(loan, loan.getMember());
+        }
+        
+        em.remove(loan);
     }
     
     private static boolean isLoanOverdue(LoanEntity loan) {

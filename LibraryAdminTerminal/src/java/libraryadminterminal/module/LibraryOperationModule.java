@@ -103,7 +103,7 @@ public class LibraryOperationModule {
         BookEntity book = bookEntityControllerRemote.retrieveBookById(bookId);
         
         LoanEntity newLoan = new LoanEntity(book, member);
-        newLoan = loanEntityControllerRemote.persistNewLoanEntity(newLoan);
+        newLoan = loanEntityControllerRemote.createNewLoanEntity(newLoan);
         displayMessage("Successfully lent book to member. Due Date: " + DateHelper.format(newLoan.getEndDate()));
     }
     
@@ -138,12 +138,6 @@ public class LibraryOperationModule {
         
         LoanEntity loan = loanEntityControllerRemote.retrieveLoanByBookId(bookId);
         
-        if (DateHelper.isDateAfterToday(loan.getEndDate())) {
-            long fineAmt = FineEntity.calculateFine(loan);
-            FineEntity newFine = new FineEntity(fineAmt, member);
-            fineEntityControllerRemote.persistNewFineEntity(newFine);
-        }
-        
         loanEntityControllerRemote.deleteLoan(bookId);
         displayMessage("Book successfully returned.");
     }
@@ -165,7 +159,7 @@ public class LibraryOperationModule {
         Long bookId = Long.valueOf(scanner.nextLine().trim());
         
         LoanEntity loan = loanEntityControllerRemote.retrieveLoanByBookId(bookId);
-        loan = loanEntityControllerRemote.updateLoan(loan);
+        loan = loanEntityControllerRemote.extendLoan(loan);
         displayMessage("Book successfully extended. New due date: " + DateHelper.format(loan.getEndDate()));
     }
     
