@@ -6,16 +6,24 @@
 package selfservicekioskterminal;
 
 import ejb.session.stateless.BookEntityControllerRemote;
+import ejb.session.stateless.FineEntityControllerRemote;
 import ejb.session.stateless.LoanEntityControllerRemote;
 import ejb.session.stateless.MemberEntityControllerRemote;
+import ejb.session.stateless.ReservationEntityControllerRemote;
 import entity.MemberEntity;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import selfservicekioskterminal.module.KioskBookOperationModule;
 import selfservicekioskterminal.module.KioskOperationModule;
-import selfservicekioskterminal.module.RegisterationKioskOperationModule;
+import selfservicekioskterminal.module.KioskRegistrationOperationModule;
+import util.exception.BookNotFoundException;
+import util.exception.FineNotFoundException;
 import util.exception.InvalidLoginException;
+import util.exception.LoanException;
+import util.exception.LoanNotFoundException;
+import util.exception.MemberNotFoundException;
 
 /**
  *
@@ -26,16 +34,22 @@ public class MainApp {
     private MemberEntityControllerRemote memberEntityControllerRemote;
     private LoanEntityControllerRemote loanEntityControllerRemote;
     private BookEntityControllerRemote bookEntityControllerRemote;
-    private RegisterationKioskOperationModule registerationKioskOperationModule;
+    private FineEntityControllerRemote fineEntityControllerRemote;
+    private ReservationEntityControllerRemote reservationEntityControllerRemote;
+    
+    private KioskRegistrationOperationModule registerationKioskOperationModule;
     private KioskOperationModule kioskOperationModule;
-    private KioskBookOperationModule kioskBookOperationModule;
+ 
     MemberEntity currentMember;
 
-    MainApp(MemberEntityControllerRemote memberEntityControllerRemote,
-    BookEntityControllerRemote bookEntityControllerRemote, LoanEntityControllerRemote loanEntityControllerRemote) {
+    MainApp(MemberEntityControllerRemote memberEntityControllerRemote,BookEntityControllerRemote bookEntityControllerRemote, 
+            LoanEntityControllerRemote loanEntityControllerRemote, FineEntityControllerRemote fineEntityControllerRemote, 
+            ReservationEntityControllerRemote reservationEntityControllerRemote) {
         this.memberEntityControllerRemote = memberEntityControllerRemote;
         this.bookEntityControllerRemote = bookEntityControllerRemote;
         this.loanEntityControllerRemote = loanEntityControllerRemote;
+        this.fineEntityControllerRemote = fineEntityControllerRemote;
+        this.reservationEntityControllerRemote = reservationEntityControllerRemote;
         
     }
 
@@ -50,7 +64,7 @@ public class MainApp {
             response = getUserResponse();
 
             if (response == REGISTER_NUMBER) {
-                registerationKioskOperationModule = new RegisterationKioskOperationModule(memberEntityControllerRemote);
+                registerationKioskOperationModule = new KioskRegistrationOperationModule(memberEntityControllerRemote);
                 registerationKioskOperationModule.doRegisterMember();
             } else if (response == LOGIN_NUMBER) {
                 try {
@@ -80,45 +94,59 @@ public class MainApp {
         final int RESERVE_BOOK = 7;
         final int LOGOUT = 8;
         
-        kioskOperationModule = new KioskOperationModule(memberEntityControllerRemote, bookEntityControllerRemote 
-                ,loanEntityControllerRemote);
+        kioskOperationModule = new KioskOperationModule(memberEntityControllerRemote, bookEntityControllerRemote, 
+                loanEntityControllerRemote, fineEntityControllerRemote, reservationEntityControllerRemote);
         int option = 0;
         System.out.println();
         System.out.print(">");
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            option = scanner.nextInt();
-            boolean isLogout = false;
-            switch (option) {
-                case BORROW_BOOK:
-                    kioskOperationModule.enterBorrowBook(currentMember);
+            try {
+                option = scanner.nextInt();
+                boolean isLogout = false;
+                switch (option) {
+                    case BORROW_BOOK:
+                        kioskOperationModule.enterBorrowBook(currentMember);
+                        break;
+                    case VIEW_LENT_BOOK:
+                        kioskOperationModule.enterViewLentBook(currentMember);
+                        break;
+                    case RETURN_BOOK:
+                        kioskOperationModule.enterReturnBook(currentMember);
+                        break;
+                    case EXTEND_BOOK:
+                        kioskOperationModule.enterExtendBook(currentMember);
+                        break;
+                    case PAY_FINE:
+                        kioskOperationModule.enterPayFine(currentMember);
+                        break;
+                    case SEARCH_BOOK:
+                        kioskOperationModule.enterSearchBook();
+                        break;
+                    case RESERVE_BOOK:
+                        kioskOperationModule.enterReserveBook(currentMember);
+                        break;
+                    case LOGOUT:
+                        isLogout = true;
+                        break;
+                    default:
+                        printInvalidOption();
+                }
+                if (isLogout) {
                     break;
-                case VIEW_LENT_BOOK:
-                    kioskOperationModule.enterViewLentBook(currentMember);
-                    break;
-                case RETURN_BOOK:
-                    kioskOperationModule.enterReturnBook(currentMember);
-                    break;
-                case EXTEND_BOOK:
-                    kioskOperationModule.enterExtendBook(currentMember);
-                    break;
-                case PAY_FINE:
-                    kioskOperationModule.enterPayFine(currentMember);
-                    break;
-                case SEARCH_BOOK:
-                    kioskBookOperationModule.enterSearchBook();
-                    break;
-                case RESERVE_BOOK:
-                    kioskOperationModule.enterReserveBook(currentMember);
-                    break;
-                case LOGOUT:
-                    isLogout = true;
-                    break;
-                default:
-                    printInvalidOption();
-            }
-            if (isLogout) {
-                break;
+                }
+            } catch (MemberNotFoundException ex) {
+                Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (LoanNotFoundException ex) {
+                Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (LoanException ex) {
+                Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NumberFormatException ex) {
+                Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (FineNotFoundException ex) {
+                Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (BookNotFoundException ex) {
+                Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

@@ -63,6 +63,19 @@ public class BookEntityController implements BookEntityControllerRemote, BookEnt
     }
     
     @Override
+    public List<BookEntity> searchBookByTitle(String title) throws BookNotFoundException {
+        Query query = em.createQuery("SELECT b FROM BookEntity b WHERE b.title = :inTitle");
+        query.setParameter("inTitle", title);
+        
+        try {
+            return query.getResultList();
+        }
+        catch(NoResultException | NonUniqueResultException ex) {
+            throw new BookNotFoundException("Book Title" + title + " does not exist!");
+        }
+    }
+    
+    @Override
     public void updateBook(BookEntity bookEntity) {
         em.merge(bookEntity);
     }
