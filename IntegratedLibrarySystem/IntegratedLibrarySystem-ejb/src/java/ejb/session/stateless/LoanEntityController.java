@@ -1,8 +1,10 @@
 package ejb.session.stateless;
 
+import entity.FineEntity;
 import entity.LoanEntity;
 import java.util.Date;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -24,6 +26,9 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
     @PersistenceContext(unitName = "IntegratedLibrarySystem-ejbPU")
     private EntityManager em;
     
+    @EJB
+    private FineEntityControllerLocal fineEntityControllerLocal;
+    
     @Override
     public LoanEntity persistNewLoanEntity(LoanEntity newLoan) throws LoanException {
         Logger.log(Logger.INFO, "LoanEntityController", "persistNewLoanEntity");
@@ -33,7 +38,10 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
             throw new LoanException(LoanException.EXCEED_LOAN_LIMIT);
         }
         
-        // TODO: Check for fine
+        List<FineEntity> fineList = fineEntityControllerLocal.retrieveFinesByMemberIdentityNumber(newLoan.getMember().getIdentityNumber());
+        if (fineList.size() > 0) {
+            throw new LoanException(LoanException.UNPAID_FINE);
+        }
         
         // TODO: Check for reservation
         
