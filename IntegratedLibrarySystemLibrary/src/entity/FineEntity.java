@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import util.helper.DateHelper;
 
 @Entity
 public class FineEntity implements Serializable {
@@ -25,15 +26,12 @@ public class FineEntity implements Serializable {
     @JoinColumn(name = "MEMBERID", nullable = false)
     private MemberEntity member;
 
+    public FineEntity() {}
+
     public FineEntity(Long amount, MemberEntity member) {
-       
         this.amount = amount;
         this.member = member;
     }
-
-    public FineEntity() {
-    }
-    
     
     public Long getFineId() {
         return fineId;
@@ -58,7 +56,7 @@ public class FineEntity implements Serializable {
     public void setMember(MemberEntity member) {
         this.member = member;
     }
-
+    
     @Override
     public int hashCode() {
         int hash = 0;

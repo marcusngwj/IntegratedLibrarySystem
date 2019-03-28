@@ -1,13 +1,21 @@
 package libraryadminterminal.module;
 
+import ejb.session.stateless.MemberEntityControllerRemote;
 import entity.MemberEntity;
 import java.util.Scanner;
+import util.exception.MemberExistsException;
 
 public class RegisterationOperationModule {
     private static final int REGISTER_NEW_MEMBER = 1;
     private static final int BACK = 2;
+    
+    private MemberEntityControllerRemote memberEntityControllerRemote;
 
     public RegisterationOperationModule() {}
+
+    public RegisterationOperationModule(MemberEntityControllerRemote memberEntityControllerRemote) {
+        this.memberEntityControllerRemote = memberEntityControllerRemote;
+    }
     
     public void enterRegisterationOperationMode() {
         while (true) {
@@ -19,38 +27,58 @@ public class RegisterationOperationModule {
                 response = getUserResponse();
             }
             
-            if (response == REGISTER_NEW_MEMBER) {
-                registerNewMember();
+            try {
+                if (response == REGISTER_NEW_MEMBER) {
+                    registerNewMember();
+                }
+                else if (response == BACK) {
+                    break;
+                }
+                else {
+                    displayMessage("Invalid option, please try again!\n");
+                }
             }
-            else if (response == BACK) {
-                break;
+            catch (MemberExistsException ex) {
+                displayMessage(ex.getMessage());
             }
-            else {
-                displayMessage("Invalid option, please try again!\n");
+            finally {
+                System.out.println();
             }
-            
-            System.out.println();
         }
     }
     
-    private void registerNewMember() {
+    private void registerNewMember() throws MemberExistsException{
         Scanner scanner = new Scanner(System.in);
-        String identityNumber = "";
-        String securityCode = "";
-        String firstName = "";
-        String lastName = "";
-        String gender = "";
-        Integer age = 0;
-        String phone = "";
-        String address = "";
         
         System.out.println();
         System.out.println("*** ILS :: Registration Operation :: Register New Member ***\n");
+        System.out.print("Enter Identity Number> ");
+        String identityNumber = scanner.nextLine().trim();
+        System.out.print("Enter Security Code> ");
+        String securityCode = scanner.nextLine().trim();
+        System.out.print("Enter First Name> ");
+        String firstName = scanner.nextLine().trim();
+        System.out.print("Enter Last Name> ");
+        String lastName = scanner.nextLine().trim();
+        System.out.print("Enter Gender> ");
+        String gender = scanner.nextLine().trim();
+        System.out.print("Enter Age> ");
+        Integer age = Integer.valueOf(scanner.nextLine().trim());
+        System.out.print("Enter Phone> ");
+        String phone = scanner.nextLine().trim();
+        System.out.print("Enter Addrss> ");
+        String address = scanner.nextLine().trim();
 
-        
-//        MemberEntity newMember = new MemberEntity(identityNumber, securityCode, firstName, lastName, gender, age, phone, address);
-//        newMember = memberEntityControllerRemote.createNewMember();
-        displayMessage("Member has been registered successfully!\n");
+        if (identityNumber.length()>0 && securityCode.length()>0 && firstName.length()>0 && lastName.length()>0 
+                && gender.length()>0 && age>=0 && phone.length()>0 && address.length()>0) {
+            displayMessage("\nProcessing...");
+            MemberEntity newMember = new MemberEntity(identityNumber, securityCode, firstName, lastName, gender, age, phone, address);
+            newMember = memberEntityControllerRemote.persistNewMemberEntity(newMember);
+            displayMessage("Member has been registered successfully!\n");
+        }
+        else {
+            displayMessage("There were empty fields in your form. Please try again.");
+        }
     }
     
     private int getUserResponse() {

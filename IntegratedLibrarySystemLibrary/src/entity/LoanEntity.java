@@ -33,14 +33,17 @@ public class LoanEntity implements Serializable {
     @JoinColumn(name = "MEMBERID", nullable = false)
     private MemberEntity member;
     
+    public LoanEntity() {}
+
+    public LoanEntity(BookEntity book, MemberEntity member) {
+        this.book = book;
+        this.member = member;
+    }
+    
     public LoanEntity(BookEntity bookEntity, Date endDate, MemberEntity memberEntity) {
-        
         this.book = bookEntity;
         this.endDate = endDate;
         this.member = memberEntity;
-    }
-
-    public LoanEntity() {
     }
     
     public Long getLoanId() {

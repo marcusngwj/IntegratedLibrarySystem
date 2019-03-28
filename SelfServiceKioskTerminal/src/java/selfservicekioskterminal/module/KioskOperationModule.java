@@ -17,11 +17,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import util.exception.BookNotFoundException;
 import util.exception.MemberExistsException;
-import util.exception.StillLoaningException;
+import util.exception.LoanException;
 
 /**
  *
@@ -32,21 +30,13 @@ public class KioskOperationModule {
     LoanEntityControllerRemote loanEntityControllerRemote;
     BookEntityControllerRemote bookEntityControllerRemote;
     MemberEntityControllerRemote memberEntityControllerRemote;
-
+    
     final int MAX_LOAN = 3;
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
+    
     public KioskOperationModule() {
+        
     }
-
-    public KioskOperationModule(MemberEntityControllerRemote memberEntityControllerRemote, BookEntityControllerRemote bookEntityControllerRemote,
-             LoanEntityControllerRemote loanEntityControllerRemote) {
-
-        this.memberEntityControllerRemote = memberEntityControllerRemote;
-        this.bookEntityControllerRemote = bookEntityControllerRemote;
-        this.loanEntityControllerRemote = loanEntityControllerRemote;
-    }
-
     public void enterBorrowBook(MemberEntity member) {
         printBorrowBookMain();
 
@@ -63,33 +53,33 @@ public class KioskOperationModule {
         if (!hasUnpaidFine && !hasLentMax && !hasBeenReserved) {
             //Do lent book:
             //Create loanEntity
-
+          
             Calendar c = Calendar.getInstance();
             c.add(Calendar.DATE, 14);
             Date dueDate = c.getTime();
-
+            
             try {
                 BookEntity bookToLend = bookEntityControllerRemote.retrieveBookById(currBookId);
-
-                LoanEntity newLoan = new LoanEntity(bookToLend, dueDate, member); //bookEntity, endDate, memberEntity
-
+            
+                LoanEntity newLoan = new LoanEntity(bookToLend,dueDate,member); //bookEntity, endDate, memberEntity
+                
                 //Adds a new loan entity to database
-                loanEntityControllerRemote.persistNewLoanEntity(newLoan);
-
+                loanEntityControllerRemote.createNewLoanEntity(newLoan);
+                
                 //Update this loan onto the member's list of loans
                 List<LoanEntity> updatedLoanList = member.getLoans();
                 updatedLoanList.add(newLoan);
                 member.setLoans(updatedLoanList);
                 memberEntityControllerRemote.updateMember(member);
-
+                
                 //Update the loan entity within book entity
                 bookToLend.setLoan(newLoan);
                 bookEntityControllerRemote.updateBook(bookToLend);
-
+                
                 //Print Success Message
                 printLentSuccessMessage(dueDate);
-
-            } catch (StillLoaningException stlne) {
+                
+            } catch (LoanException stlne) {
                 System.out.println(stlne.getMessage());
             } catch (BookNotFoundException bnfe) {
                 System.out.println(bnfe.getMessage());
@@ -120,11 +110,10 @@ public class KioskOperationModule {
     public void enterReserveBook(MemberEntity member) {
         printReserveBookMain();
     }
-
+    
     private void printLentSuccessMessage(Date dueDate) {
         System.out.println("Successfully lent book. Due Date: " + dueDate + ".\n");
     }
-
     private void printBorrowError(boolean hasUnpaidFine, boolean hasLentMax, boolean hasBeenReserved) {
         if (hasUnpaidFine) {
             System.out.println("You have existing Unpaid Fines. Please pay them before borrowing");
@@ -163,7 +152,7 @@ public class KioskOperationModule {
     }
 
     private boolean checkUnpaidFine(MemberEntity member) {
-        if (member.getFines().size() < 1) {
+        if (member.getFines().isEmpty()) {
             return false;
         } else {
             return true;
