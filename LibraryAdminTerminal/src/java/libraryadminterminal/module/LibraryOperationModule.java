@@ -11,10 +11,12 @@ import entity.MemberEntity;
 import java.util.List;
 import java.util.Scanner;
 import util.exception.BookNotFoundException;
+import util.exception.FineNotFoundException;
 import util.exception.MemberNotFoundException;
 import util.exception.LoanException;
 import util.exception.LoanNotFoundException;
 import util.helper.DateHelper;
+import util.helper.MoneyHelper;
 
 public class LibraryOperationModule {
     private static final int LOAN_BOOK = 1;
@@ -75,7 +77,7 @@ public class LibraryOperationModule {
                     displayMessage("Invalid option, please try again!\n");
                 }
             }
-            catch (MemberNotFoundException | BookNotFoundException | LoanNotFoundException | LoanException ex) {
+            catch (MemberNotFoundException | BookNotFoundException | LoanNotFoundException | FineNotFoundException | LoanException ex) {
                 displayMessage(ex.getMessage());
             }
             catch (NumberFormatException ex) {
@@ -167,12 +169,48 @@ public class LibraryOperationModule {
         displayMessage("Book successfully extended. New due date: " + DateHelper.format(loan.getEndDate()));
     }
     
-    private void payFines() {
+    private void payFines() throws FineNotFoundException, NumberFormatException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println();
+        System.out.println("*** ILS :: Library Operation :: Pay Fines ***\n");
+        System.out.print("Enter Member Identity Number> ");
+        String identityNumber = scanner.nextLine().trim();
+        
+        List<FineEntity> fineList = fineEntityControllerRemote.retrieveFinesByMemberIdentityNumber(identityNumber);
+        
+        displayFineTable(fineList);
+        System.out.println();
+        
+        if (fineList.size() > 0) {
+            System.out.print("Enter Fine to Settle> ");
+            Long fineId = Long.valueOf(scanner.nextLine().trim());
+            System.out.print("Select Payment Method (1: Cash, 2: Card)> ");
+            int paymentMode = Integer.valueOf(scanner.nextLine().trim());
+            fineEntityControllerRemote.deleteFine(fineId);
+            displayMessage("Fine successfully paid.");
+        }
+        else {
+            displayMessage("There are no outstanding fine.");
+        }
         
     }
     
     private void manageReservation() {
         
+    }
+    
+    private void displayFineTable(List<FineEntity> fineList) {
+        System.out.println("Unpaid Fines for Member:\n");
+        
+        String header = String.format("%-5s| %-50s", "Id", "Amount");
+        
+        String table = "";
+        for (FineEntity fine : fineList) {
+            table += "\n" + String.format("%-5s| %-50s", fine.getFineId(), MoneyHelper.format(fine.getAmount()));
+        }
+        
+        System.out.print(header);
+        System.out.println(table);
     }
     
     private void displayLoanTable(List<LoanEntity> loanList) {
