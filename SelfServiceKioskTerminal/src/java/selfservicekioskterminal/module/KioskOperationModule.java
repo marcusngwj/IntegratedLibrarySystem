@@ -64,7 +64,7 @@ public class KioskOperationModule {
                 LoanEntity newLoan = new LoanEntity(bookToLend,dueDate,member); //bookEntity, endDate, memberEntity
                 
                 //Adds a new loan entity to database
-                loanEntityControllerRemote.persistNewLoanEntity(newLoan);
+                loanEntityControllerRemote.createNewLoanEntity(newLoan);
                 
                 //Update this loan onto the member's list of loans
                 List<LoanEntity> updatedLoanList = member.getLoans();

@@ -14,7 +14,6 @@ import util.helper.DateHelper;
 public class FineEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private static final long FIX_FINE_RATE = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,11 +57,6 @@ public class FineEntity implements Serializable {
         this.member = member;
     }
     
-    public static long calculateFine(LoanEntity loan) {
-        long daysOverdue = DateHelper.getNumDaysFromDate(loan.getEndDate());
-        return daysOverdue * FIX_FINE_RATE;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
