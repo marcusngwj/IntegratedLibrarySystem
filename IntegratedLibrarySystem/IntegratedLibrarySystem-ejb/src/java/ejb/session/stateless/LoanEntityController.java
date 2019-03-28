@@ -44,7 +44,7 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
             }
         }
         
-        Date newDate = DateHelper.addDaysToToday(DateHelper.WEEK_OF_MONTH, DateHelper.LOAN_DURATION);
+        Date newDate = DateHelper.addDaysToToday(DateHelper.WEEK_OF_MONTH, DateHelper.WEEKS_FOR_LOAN);
         newLoan.setEndDate(newDate);
 
         em.persist(newLoan);
@@ -90,7 +90,7 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
         
         // TODO: Check reservation
         
-        Date newDueDate = DateHelper.addDaystoDate(loanToUpdate.getEndDate(), DateHelper.WEEK_OF_MONTH, DateHelper.LOAN_DURATION);
+        Date newDueDate = DateHelper.addDaystoDate(loanToUpdate.getEndDate(), DateHelper.WEEK_OF_MONTH, DateHelper.WEEKS_FOR_LOAN);
         loanToUpdate.setEndDate(newDueDate);
         
         em.merge(loanToUpdate);

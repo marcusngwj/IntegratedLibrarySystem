@@ -5,6 +5,7 @@ import ejb.session.stateless.FineEntityControllerRemote;
 import ejb.session.stateless.LoanEntityControllerRemote;
 import ejb.session.stateless.MemberEntityControllerRemote;
 import entity.BookEntity;
+import entity.FineEntity;
 import entity.LoanEntity;
 import entity.MemberEntity;
 import java.util.List;
@@ -135,9 +136,11 @@ public class LibraryOperationModule {
         
         LoanEntity loan = loanEntityControllerRemote.retrieveLoanByBookId(bookId);
         
-//        if (loanEntityControllerRemote.) {
-////            fineEntityControllerRemote.persistNewFineEntity(newFine);
-//        }
+        if (DateHelper.isDateAfterToday(loan.getEndDate())) {
+            long fineAmt = FineEntity.calculateFine(loan);
+            FineEntity newFine = new FineEntity(fineAmt, member);
+            fineEntityControllerRemote.persistNewFineEntity(newFine);
+        }
         
         loanEntityControllerRemote.deleteLoan(bookId);
         displayMessage("Book successfully returned.");
