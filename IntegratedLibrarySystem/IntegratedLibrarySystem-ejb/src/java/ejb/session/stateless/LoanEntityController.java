@@ -31,7 +31,7 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
     
     @Override
     public LoanEntity createNewLoanEntity(LoanEntity newLoan) throws LoanException {
-        Logger.log(Logger.INFO, "LoanEntityController", "persistNewLoanEntity");
+        Logger.log(Logger.INFO, "LoanEntityController", "createNewLoanEntity");
         
         List<LoanEntity> loanList = retrieveLoansByMemberId(newLoan.getMember().getMemberId());
         if (loanList.size() >= 3) {

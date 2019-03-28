@@ -4,6 +4,7 @@ import ejb.session.stateless.BookEntityControllerRemote;
 import ejb.session.stateless.FineEntityControllerRemote;
 import ejb.session.stateless.LoanEntityControllerRemote;
 import ejb.session.stateless.MemberEntityControllerRemote;
+import ejb.session.stateless.ReservationEntityControllerRemote;
 import ejb.session.stateless.StaffEntityControllerRemote;
 import entity.StaffEntity;
 import java.util.Scanner;
@@ -25,16 +26,18 @@ public class MainApp {
     
     private LoanEntityControllerRemote loanEntityControllerRemote;
     private FineEntityControllerRemote fineEntityControllerRemote;
+    private ReservationEntityControllerRemote reservationEntityControllerRemote;
 
     public MainApp() {}
     
-    public MainApp(StaffEntityControllerRemote staffEntityControllerRemote, MemberEntityControllerRemote memberEntityControllerRemote, BookEntityControllerRemote bookEntityControllerRemote, LoanEntityControllerRemote loanEntityControllerRemote, FineEntityControllerRemote fineEntityControllerRemote) {
+    public MainApp(StaffEntityControllerRemote staffEntityControllerRemote, MemberEntityControllerRemote memberEntityControllerRemote, BookEntityControllerRemote bookEntityControllerRemote, LoanEntityControllerRemote loanEntityControllerRemote, FineEntityControllerRemote fineEntityControllerRemote, ReservationEntityControllerRemote reservationEntityControllerRemote) {
         this.staffEntityControllerRemote = staffEntityControllerRemote;
         this.memberEntityControllerRemote = memberEntityControllerRemote;
         this.bookEntityControllerRemote = bookEntityControllerRemote;
         
         this.loanEntityControllerRemote = loanEntityControllerRemote;
         this.fineEntityControllerRemote = fineEntityControllerRemote;
+        this.reservationEntityControllerRemote = reservationEntityControllerRemote;
     }
     
     public void runApp() {
@@ -92,7 +95,7 @@ public class MainApp {
         final int LOGOUT = 4;
         
         registerationOperationModule = new RegisterationOperationModule(memberEntityControllerRemote);
-        libraryOperationModule = new LibraryOperationModule(memberEntityControllerRemote, bookEntityControllerRemote, loanEntityControllerRemote, fineEntityControllerRemote);
+        libraryOperationModule = new LibraryOperationModule(memberEntityControllerRemote, bookEntityControllerRemote, loanEntityControllerRemote, fineEntityControllerRemote, reservationEntityControllerRemote);
         administrationOperationModule = new AdministrationOperationModule(staffEntityControllerRemote, memberEntityControllerRemote, bookEntityControllerRemote);
                 
         while (true) {
