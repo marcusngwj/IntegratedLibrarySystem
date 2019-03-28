@@ -4,6 +4,7 @@ import ejb.session.stateless.BookEntityControllerRemote;
 import ejb.session.stateless.FineEntityControllerRemote;
 import ejb.session.stateless.LoanEntityControllerRemote;
 import ejb.session.stateless.MemberEntityControllerRemote;
+import ejb.session.stateless.ReservationEntityControllerRemote;
 import entity.BookEntity;
 import entity.FineEntity;
 import entity.LoanEntity;
@@ -31,14 +32,20 @@ public class LibraryOperationModule {
     private BookEntityControllerRemote bookEntityControllerRemote;
     private LoanEntityControllerRemote loanEntityControllerRemote;
     private FineEntityControllerRemote fineEntityControllerRemote;
+    private ReservationEntityControllerRemote reservationEntityControllerRemote;
+    
+    private ReservationManagementModule reservationManagementModule;
     
     public LibraryOperationModule() {}
 
-    public LibraryOperationModule(MemberEntityControllerRemote memberEntityControllerRemote, BookEntityControllerRemote bookEntityControllerRemote, LoanEntityControllerRemote loanEntityControllerRemote, FineEntityControllerRemote fineEntityControllerRemote) {
+    public LibraryOperationModule(MemberEntityControllerRemote memberEntityControllerRemote, BookEntityControllerRemote bookEntityControllerRemote, LoanEntityControllerRemote loanEntityControllerRemote, FineEntityControllerRemote fineEntityControllerRemote, ReservationEntityControllerRemote reservationEntityControllerRemote) {
         this.memberEntityControllerRemote = memberEntityControllerRemote;
         this.bookEntityControllerRemote = bookEntityControllerRemote;
         this.loanEntityControllerRemote = loanEntityControllerRemote;
         this.fineEntityControllerRemote = fineEntityControllerRemote;
+        this.reservationEntityControllerRemote = reservationEntityControllerRemote;
+        
+        this.reservationManagementModule = new ReservationManagementModule(reservationEntityControllerRemote);
     }
 
     public void enterLibraryOperationMode() {
@@ -190,7 +197,7 @@ public class LibraryOperationModule {
     }
     
     private void manageReservation() {
-        
+        reservationManagementModule.enterReservationMode();
     }
     
     private void displayFineTable(List<FineEntity> fineList) {

@@ -39,7 +39,7 @@ public class FineEntityController implements FineEntityControllerRemote, FineEnt
     }
     
     @Override
-    public FineEntity retrieveFineByFindId(Long fineId) throws FineNotFoundException {
+    public FineEntity retrieveFineByFineId(Long fineId) throws FineNotFoundException {
         Query query = em.createQuery("SELECT f FROM FineEntity f WHERE f.fineId = :inFineId");
         query.setParameter("inFineId", fineId);
         
@@ -61,7 +61,7 @@ public class FineEntityController implements FineEntityControllerRemote, FineEnt
     
     @Override
     public void deleteFine(Long fineId) throws FineNotFoundException {
-        FineEntity fineToRemove = retrieveFineByFindId(fineId);
+        FineEntity fineToRemove = retrieveFineByFineId(fineId);
         em.remove(fineToRemove);
     }
     

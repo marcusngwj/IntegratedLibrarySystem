@@ -10,7 +10,7 @@ public interface FineEntityControllerRemote {
     
     public FineEntity createNewFineEntity(LoanEntity loan, MemberEntity member);
     
-    public FineEntity retrieveFineByFindId(Long fineId) throws FineNotFoundException;
+    public FineEntity retrieveFineByFineId(Long fineId) throws FineNotFoundException;
      
     public List<FineEntity> retrieveFinesByMemberIdentityNumber(String memberIdentityNumber);
     
