@@ -1,9 +1,6 @@
 package ejb.session.stateless;
 
 import entity.LoanEntity;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
@@ -16,6 +13,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.LoanException;
 import util.exception.LoanNotFoundException;
+import util.helper.DateHelper;
 import util.logger.Logger;
 
 @Stateless
@@ -23,15 +21,12 @@ import util.logger.Logger;
 @Remote(LoanEntityControllerRemote.class)
 public class LoanEntityController implements LoanEntityControllerRemote, LoanEntityControllerLocal {
     
-    private static DateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
-    private static int LOAN_DURATION = 2;
-
     @PersistenceContext(unitName = "IntegratedLibrarySystem-ejbPU")
     private EntityManager em;
     
     @Override
     public LoanEntity persistNewLoanEntity(LoanEntity newLoan) throws LoanException {
-        Logger.log(Logger.SEVERE, "LoanEntityController", "persistNewLoanEntity");
+        Logger.log(Logger.INFO, "LoanEntityController", "persistNewLoanEntity");
         
         List<LoanEntity> loanList = retrieveLoansByMemberId(newLoan.getMember().getMemberId());
         if (loanList.size() >= 3) {
@@ -49,9 +44,8 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
             }
         }
         
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.WEEK_OF_MONTH, LOAN_DURATION);
-        newLoan.setEndDate(cal.getTime());
+        Date newDate = DateHelper.addDaysToToday(DateHelper.WEEK_OF_MONTH, DateHelper.LOAN_DURATION);
+        newLoan.setEndDate(newDate);
 
         em.persist(newLoan);
         em.flush();
@@ -88,9 +82,7 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
     
     @Override
     public LoanEntity updateLoan(LoanEntity loanToUpdate) throws LoanException {
-        Date today = Calendar.getInstance().getTime();
-        
-        if (today.after(loanToUpdate.getEndDate())) {
+        if (isLoanOverdue(loanToUpdate)) {
             throw new LoanException(LoanException.BOOK_IS_OVERDUE);
         }
         
@@ -98,10 +90,8 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
         
         // TODO: Check reservation
         
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(loanToUpdate.getEndDate());
-        cal.add(Calendar.WEEK_OF_MONTH, LOAN_DURATION);
-        loanToUpdate.setEndDate(cal.getTime());
+        Date newDueDate = DateHelper.addDaystoDate(loanToUpdate.getEndDate(), DateHelper.WEEK_OF_MONTH, DateHelper.LOAN_DURATION);
+        loanToUpdate.setEndDate(newDueDate);
         
         em.merge(loanToUpdate);
         
@@ -111,14 +101,11 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
     @Override
     public void deleteLoan(Long bookId) throws LoanNotFoundException {
         LoanEntity loanToRemove = retrieveLoanByBookId(bookId);
-        
-        Date today = Calendar.getInstance().getTime();
-        
-        if (today.after(loanToRemove.getEndDate())) {
-            // TODO: Generate fines
-        }
-        
         em.remove(loanToRemove);
+    }
+    
+    private static boolean isLoanOverdue(LoanEntity loan) {
+        return DateHelper.isDateAfterToday(loan.getEndDate());
     }
 
 }
