@@ -8,11 +8,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import util.helper.DateHelper;
 
 @Entity
 public class FineEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private static final long FIX_FINE_RATE = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,15 +27,12 @@ public class FineEntity implements Serializable {
     @JoinColumn(name = "MEMBERID", nullable = false)
     private MemberEntity member;
 
+    public FineEntity() {}
+
     public FineEntity(Long amount, MemberEntity member) {
-       
         this.amount = amount;
         this.member = member;
     }
-
-    public FineEntity() {
-    }
-    
     
     public Long getFineId() {
         return fineId;
@@ -57,6 +56,11 @@ public class FineEntity implements Serializable {
 
     public void setMember(MemberEntity member) {
         this.member = member;
+    }
+    
+    public static long calculateFine(LoanEntity loan) {
+        long daysOverdue = DateHelper.getNumDaysFromDate(loan.getEndDate());
+        return daysOverdue * FIX_FINE_RATE;
     }
 
     @Override

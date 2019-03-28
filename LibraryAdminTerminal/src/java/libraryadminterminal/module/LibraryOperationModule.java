@@ -1,19 +1,22 @@
 package libraryadminterminal.module;
 
 import ejb.session.stateless.BookEntityControllerRemote;
+import ejb.session.stateless.FineEntityControllerRemote;
 import ejb.session.stateless.LoanEntityControllerRemote;
 import ejb.session.stateless.MemberEntityControllerRemote;
 import entity.BookEntity;
+import entity.FineEntity;
 import entity.LoanEntity;
 import entity.MemberEntity;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Scanner;
 import util.exception.BookNotFoundException;
+import util.exception.FineNotFoundException;
 import util.exception.MemberNotFoundException;
 import util.exception.LoanException;
 import util.exception.LoanNotFoundException;
+import util.helper.DateHelper;
+import util.helper.MoneyHelper;
 
 public class LibraryOperationModule {
     private static final int LOAN_BOOK = 1;
@@ -24,18 +27,18 @@ public class LibraryOperationModule {
     private static final int MANAGE_RESERVATION = 6;
     private static final int BACK = 7;
     
-    private static DateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
-    
     private MemberEntityControllerRemote memberEntityControllerRemote;
     private BookEntityControllerRemote bookEntityControllerRemote;
     private LoanEntityControllerRemote loanEntityControllerRemote;
+    private FineEntityControllerRemote fineEntityControllerRemote;
     
     public LibraryOperationModule() {}
 
-    public LibraryOperationModule(MemberEntityControllerRemote memberEntityControllerRemote, BookEntityControllerRemote bookEntityControllerRemote, LoanEntityControllerRemote loanEntityControllerRemote) {
+    public LibraryOperationModule(MemberEntityControllerRemote memberEntityControllerRemote, BookEntityControllerRemote bookEntityControllerRemote, LoanEntityControllerRemote loanEntityControllerRemote, FineEntityControllerRemote fineEntityControllerRemote) {
         this.memberEntityControllerRemote = memberEntityControllerRemote;
         this.bookEntityControllerRemote = bookEntityControllerRemote;
         this.loanEntityControllerRemote = loanEntityControllerRemote;
+        this.fineEntityControllerRemote = fineEntityControllerRemote;
     }
 
     public void enterLibraryOperationMode() {
@@ -74,7 +77,7 @@ public class LibraryOperationModule {
                     displayMessage("Invalid option, please try again!\n");
                 }
             }
-            catch (MemberNotFoundException | BookNotFoundException | LoanNotFoundException | LoanException ex) {
+            catch (MemberNotFoundException | BookNotFoundException | LoanNotFoundException | FineNotFoundException | LoanException ex) {
                 displayMessage(ex.getMessage());
             }
             catch (NumberFormatException ex) {
@@ -101,7 +104,7 @@ public class LibraryOperationModule {
         
         LoanEntity newLoan = new LoanEntity(book, member);
         newLoan = loanEntityControllerRemote.persistNewLoanEntity(newLoan);
-        displayMessage("Successfully lent book to member. Due Date: " + FORMATTER.format(newLoan.getEndDate()));
+        displayMessage("Successfully lent book to member. Due Date: " + DateHelper.format(newLoan.getEndDate()));
     }
     
     private void viewLoanedBooks() throws MemberNotFoundException {
@@ -133,6 +136,14 @@ public class LibraryOperationModule {
         System.out.print("Enter Book ID to Return> ");
         Long bookId = Long.valueOf(scanner.nextLine().trim());
         
+        LoanEntity loan = loanEntityControllerRemote.retrieveLoanByBookId(bookId);
+        
+        if (DateHelper.isDateAfterToday(loan.getEndDate())) {
+            long fineAmt = FineEntity.calculateFine(loan);
+            FineEntity newFine = new FineEntity(fineAmt, member);
+            fineEntityControllerRemote.persistNewFineEntity(newFine);
+        }
+        
         loanEntityControllerRemote.deleteLoan(bookId);
         displayMessage("Book successfully returned.");
     }
@@ -155,15 +166,51 @@ public class LibraryOperationModule {
         
         LoanEntity loan = loanEntityControllerRemote.retrieveLoanByBookId(bookId);
         loan = loanEntityControllerRemote.updateLoan(loan);
-        displayMessage("Book successfully extended. New due date: " + FORMATTER.format(loan.getEndDate()));
+        displayMessage("Book successfully extended. New due date: " + DateHelper.format(loan.getEndDate()));
     }
     
-    private void payFines() {
+    private void payFines() throws FineNotFoundException, NumberFormatException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println();
+        System.out.println("*** ILS :: Library Operation :: Pay Fines ***\n");
+        System.out.print("Enter Member Identity Number> ");
+        String identityNumber = scanner.nextLine().trim();
+        
+        List<FineEntity> fineList = fineEntityControllerRemote.retrieveFinesByMemberIdentityNumber(identityNumber);
+        
+        displayFineTable(fineList);
+        System.out.println();
+        
+        if (fineList.size() > 0) {
+            System.out.print("Enter Fine to Settle> ");
+            Long fineId = Long.valueOf(scanner.nextLine().trim());
+            System.out.print("Select Payment Method (1: Cash, 2: Card)> ");
+            int paymentMode = Integer.valueOf(scanner.nextLine().trim());
+            fineEntityControllerRemote.deleteFine(fineId);
+            displayMessage("Fine successfully paid.");
+        }
+        else {
+            displayMessage("There are no outstanding fine.");
+        }
         
     }
     
     private void manageReservation() {
         
+    }
+    
+    private void displayFineTable(List<FineEntity> fineList) {
+        System.out.println("Unpaid Fines for Member:\n");
+        
+        String header = String.format("%-5s| %-50s", "Id", "Amount");
+        
+        String table = "";
+        for (FineEntity fine : fineList) {
+            table += "\n" + String.format("%-5s| %-50s", fine.getFineId(), MoneyHelper.format(fine.getAmount()));
+        }
+        
+        System.out.print(header);
+        System.out.println(table);
     }
     
     private void displayLoanTable(List<LoanEntity> loanList) {
@@ -173,7 +220,7 @@ public class LibraryOperationModule {
         
         String table = "";
         for (LoanEntity loan : loanList) {
-            table += "\n" + String.format("%-5s| %-50s| %-11s", loan.getBook().getBookId(), loan.getBook().getTitle(), FORMATTER.format(loan.getEndDate()));
+            table += "\n" + String.format("%-5s| %-50s| %-11s", loan.getBook().getBookId(), loan.getBook().getTitle(), DateHelper.format(loan.getEndDate()));
         }
         
         System.out.print(header);
