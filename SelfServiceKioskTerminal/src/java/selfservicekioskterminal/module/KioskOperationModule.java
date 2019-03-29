@@ -173,7 +173,7 @@ public class KioskOperationModule {
             Long fineId = Long.valueOf(scanner.nextLine().trim());
             System.out.print("Select Payment Method (1: Cash, 2: Card)> ");
             int paymentMode = Integer.valueOf(scanner.nextLine().trim());
-            fineEntityControllerRemote.deleteFine(fineId);
+            fineEntityControllerRemote.removeFine(fineId, member.getMemberId());
             displayMessage("Fine successfully paid.");
         } else {
             displayMessage("There are no outstanding fine.");

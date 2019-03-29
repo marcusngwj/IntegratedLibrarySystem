@@ -47,7 +47,7 @@ public class FineEntityController implements FineEntityControllerRemote, FineEnt
             return (FineEntity)query.getSingleResult();
         }
         catch(NoResultException | NonUniqueResultException ex) {
-            throw new FineNotFoundException("Fine with fine id " + fineId + " does not exist!");
+            throw new FineNotFoundException("Fine id " + fineId + " does not exist!");
         }
     }
     
@@ -60,8 +60,12 @@ public class FineEntityController implements FineEntityControllerRemote, FineEnt
     }
     
     @Override
-    public void deleteFine(Long fineId) throws FineNotFoundException {
+    public void removeFine(Long fineId, Long memberId) throws FineNotFoundException {
         FineEntity fineToRemove = retrieveFineByFineId(fineId);
+        if (!memberId.equals(fineToRemove.getMember().getMemberId())) {
+            throw new FineNotFoundException("Fine ID " + fineId + " is not applicable to Member ID " + memberId);
+        }
+        
         em.remove(fineToRemove);
     }
     

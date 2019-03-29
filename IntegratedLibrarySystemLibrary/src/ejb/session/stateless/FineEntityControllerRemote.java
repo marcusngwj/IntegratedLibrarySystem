@@ -14,6 +14,6 @@ public interface FineEntityControllerRemote {
      
     public List<FineEntity> retrieveFinesByMemberIdentityNumber(String memberIdentityNumber);
     
-    public void deleteFine(Long fineId) throws FineNotFoundException;
+    public void removeFine(Long fineId, Long memberId) throws FineNotFoundException;
     
 }

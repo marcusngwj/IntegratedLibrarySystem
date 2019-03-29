@@ -167,13 +167,14 @@ public class LibraryOperationModule {
         displayMessage("Book successfully extended. New due date: " + DateHelper.format(loan.getEndDate()));
     }
     
-    private void payFines() throws FineNotFoundException, NumberFormatException {
+    private void payFines() throws FineNotFoundException, MemberNotFoundException, NumberFormatException {
         Scanner scanner = new Scanner(System.in);
         System.out.println();
         System.out.println("*** ILS :: Library Operation :: Pay Fines ***\n");
         System.out.print("Enter Member Identity Number> ");
         String identityNumber = scanner.nextLine().trim();
         
+        MemberEntity member = memberEntityControllerRemote.retrieveMemberByIdentityNumber(identityNumber);
         List<FineEntity> fineList = fineEntityControllerRemote.retrieveFinesByMemberIdentityNumber(identityNumber);
         
         displayFineTable(fineList);
@@ -184,7 +185,7 @@ public class LibraryOperationModule {
             Long fineId = Long.valueOf(scanner.nextLine().trim());
             System.out.print("Select Payment Method (1: Cash, 2: Card)> ");
             int paymentMode = Integer.valueOf(scanner.nextLine().trim());
-            fineEntityControllerRemote.deleteFine(fineId);
+            fineEntityControllerRemote.removeFine(fineId, member.getMemberId());
             displayMessage("Fine successfully paid.");
         }
         else {
