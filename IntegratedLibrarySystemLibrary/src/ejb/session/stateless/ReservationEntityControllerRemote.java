@@ -12,6 +12,10 @@ public interface ReservationEntityControllerRemote {
     
     public List<ReservationEntity> retrieveReservationsByBookId(Long bookId);
     
+    public ReservationEntity retrieveTopReservationOfBookId(Long bookId) throws ReservationNotFoundException;
+    
     public void deleteReservation(Long reservationId) throws ReservationNotFoundException;
+    
+    public boolean hasOtherReservationsPriorToMember(Long memberId, Long bookId) throws ReservationNotFoundException;
     
 }

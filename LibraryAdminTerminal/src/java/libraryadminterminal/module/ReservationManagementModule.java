@@ -80,11 +80,11 @@ public class ReservationManagementModule {
     private void displayReservationTable(Long bookId, List<ReservationEntity> reservationList) {
         System.out.println("Current Reservations for Book ID " + bookId + " :\n");
         
-        String header = String.format("%-5s| %-12s| %-9s| %-100s", "Id", "Reserved On", "MemberId", "Member Name");
+        String header = String.format("%-5s| %-20s| %-9s| %-100s", "Id", "Reserved On", "MemberId", "Member Name");
         
         String table = "";
         for (ReservationEntity reservation : reservationList) {
-            table += "\n" + String.format("%-5s| %-12s| %-9s| %-100s", reservation.getReservationId(), DateHelper.format(reservation.getCreatedOn()), reservation.getMember().getMemberId(), reservation.getMember().getFullName());
+            table += "\n" + String.format("%-5s| %-20s| %-9s| %-100s", reservation.getReservationId(), DateHelper.formatTimestamp(reservation.getCreatedOn()), reservation.getMember().getMemberId(), reservation.getMember().getFullName());
         }
         
         System.out.print(header);

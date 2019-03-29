@@ -11,7 +11,11 @@ public interface ReservationEntityControllerLocal {
     public ReservationEntity retrieveReservationById(Long reservationId) throws ReservationNotFoundException;
 
     public List<ReservationEntity> retrieveReservationsByBookId(Long bookId);
-
-    public void deleteReservation(Long reservationId) throws ReservationNotFoundException;
     
+    public ReservationEntity retrieveTopReservationOfBookId(Long bookId) throws ReservationNotFoundException;
+    
+    public void deleteReservation(Long reservationId) throws ReservationNotFoundException;
+
+    public boolean hasOtherReservationsPriorToMember(Long memberId, Long bookId) throws ReservationNotFoundException;
+
 }
