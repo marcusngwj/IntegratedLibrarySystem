@@ -18,7 +18,7 @@ import util.exception.MemberExistsException;
  *
  * @author limwe
  */
-public class RegisterationKioskOperationModule {
+public class KioskRegistrationOperationModule {
     MemberEntityControllerRemote memberEntityControllerRemote;
     private final String REGISTER_SUCCESS = "You have been registered successfully!";
     private final String INVALID_ID = "Invalid ID or Duplicate Identity Number! Please try again.";
@@ -29,9 +29,9 @@ public class RegisterationKioskOperationModule {
     private final String INVALID_PHONE = "Invalid Phone Format. Please try again";
     private final String INVALID_ADDRESS = "Invalid Address Format. Please try again";
     
-    public RegisterationKioskOperationModule() {
+    public KioskRegistrationOperationModule() {
     }
-    public RegisterationKioskOperationModule(MemberEntityControllerRemote memberEntityControllerRemote) {
+    public KioskRegistrationOperationModule(MemberEntityControllerRemote memberEntityControllerRemote) {
           this.memberEntityControllerRemote = memberEntityControllerRemote;
     }
 
@@ -71,7 +71,7 @@ public class RegisterationKioskOperationModule {
                 newMember = memberEntityControllerRemote.createNewMember(newMember);
                 System.out.println(REGISTER_SUCCESS);
             } catch (MemberExistsException ex) {
-                Logger.getLogger(RegisterationKioskOperationModule.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(KioskRegistrationOperationModule.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         printInvalidMessages(idValid, securityCodeValid, nameValid, genderValid , ageValid, phoneValid, addressValid);

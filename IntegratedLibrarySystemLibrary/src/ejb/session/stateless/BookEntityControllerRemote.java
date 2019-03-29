@@ -14,6 +14,8 @@ public interface BookEntityControllerRemote {
     
     public BookEntity retrieveBookByTitle(String title) throws BookNotFoundException;
     
+    public List<BookEntity> searchBookByTitle(String title) throws BookNotFoundException;
+    
     public void updateBook(BookEntity bookEntity);
 
     public void deleteBook(Long bookId) throws BookNotFoundException;
