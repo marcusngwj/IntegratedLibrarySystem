@@ -151,8 +151,7 @@ public class KioskOperationModule {
         System.out.print("Enter Book ID to Extend> ");
         Long bookId = Long.valueOf(scanner.nextLine().trim());
 
-        LoanEntity loan = loanEntityControllerRemote.retrieveLoanByBookId(bookId);
-        loan = loanEntityControllerRemote.extendLoan(loan);
+        LoanEntity loan = loanEntityControllerRemote.extendLoan(bookId, member.getMemberId());
         displayMessage("Book successfully extended. New due date: " + DateHelper.format(loan.getEndDate()));
     }
 

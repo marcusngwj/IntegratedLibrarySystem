@@ -115,7 +115,12 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
     }
     
     @Override
-    public LoanEntity extendLoan(LoanEntity loanToUpdate) throws LoanException {
+    public LoanEntity extendLoan(Long bookId, Long memberId) throws LoanNotFoundException, LoanException {
+        LoanEntity loanToUpdate = retrieveLoanByBookId(bookId);
+        if (!memberId.equals(loanToUpdate.getMember().getMemberId())) {
+            throw new LoanNotFoundException("Member " + memberId + " is not in possession of Book " + bookId);
+        }
+        
         if (isLoanOverdue(loanToUpdate)) {
             throw new LoanException(LoanException.BOOK_IS_OVERDUE);
         }

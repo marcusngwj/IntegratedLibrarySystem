@@ -14,7 +14,7 @@ public interface LoanEntityControllerLocal {
     
     public LoanEntity retrieveLoanByBookId(Long bookId) throws LoanNotFoundException;
 
-    public LoanEntity extendLoan(LoanEntity loanToUpdate) throws LoanException;
+    public LoanEntity extendLoan(Long bookId, Long memberId) throws LoanNotFoundException, LoanException;
 
     public void removeLoan(Long bookId, Long memberId) throws LoanNotFoundException;
 }
