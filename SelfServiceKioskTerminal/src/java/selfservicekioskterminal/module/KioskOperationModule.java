@@ -15,14 +15,10 @@ import entity.FineEntity;
 import entity.LoanEntity;
 import entity.MemberEntity;
 import entity.ReservationEntity;
-import java.text.DateFormat;
 import java.util.Date;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import util.exception.BookNotFoundException;
 import util.exception.FineNotFoundException;
 import util.exception.MemberExistsException;
@@ -45,7 +41,6 @@ public class KioskOperationModule {
     private ReservationEntityControllerRemote reservationEntityControllerRemote;
 
     final int MAX_LOAN = 3;
-    private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private KioskReservationManagementModule reservationManagementModule;
 
     public KioskOperationModule() {
@@ -139,9 +134,7 @@ public class KioskOperationModule {
         System.out.print("Enter Book ID to Return> ");
         Long bookId = Long.valueOf(scanner.nextLine().trim());
 
-        LoanEntity loan = loanEntityControllerRemote.retrieveLoanByBookId(bookId);
-
-        loanEntityControllerRemote.deleteLoan(bookId);
+        loanEntityControllerRemote.removeLoan(bookId, member.getMemberId());
         displayMessage("Book successfully returned.");
     }
 
@@ -158,8 +151,7 @@ public class KioskOperationModule {
         System.out.print("Enter Book ID to Extend> ");
         Long bookId = Long.valueOf(scanner.nextLine().trim());
 
-        LoanEntity loan = loanEntityControllerRemote.retrieveLoanByBookId(bookId);
-        loan = loanEntityControllerRemote.extendLoan(loan);
+        LoanEntity loan = loanEntityControllerRemote.extendLoan(bookId, member.getMemberId());
         displayMessage("Book successfully extended. New due date: " + DateHelper.format(loan.getEndDate()));
     }
 
@@ -181,7 +173,7 @@ public class KioskOperationModule {
             Long fineId = Long.valueOf(scanner.nextLine().trim());
             System.out.print("Select Payment Method (1: Cash, 2: Card)> ");
             int paymentMode = Integer.valueOf(scanner.nextLine().trim());
-            fineEntityControllerRemote.deleteFine(fineId);
+            fineEntityControllerRemote.removeFine(fineId, member.getMemberId());
             displayMessage("Fine successfully paid.");
         } else {
             displayMessage("There are no outstanding fine.");
@@ -232,8 +224,7 @@ public class KioskOperationModule {
             }
         }
         
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(latestDate); 
+        return DateHelper.format(latestDate); 
     }
     private boolean isReserved(BookEntity currBook) {
         //If is reserved: get the list, then search for latest available due date
@@ -322,7 +313,7 @@ public class KioskOperationModule {
 
     private void printBorrowBookMain() {
         System.out.println("*** Self-Service Kiosk :: Borrow Book ***\n");
-        System.out.println("Enter Book Id: ");
+        System.out.print("Enter Book Id: ");
     }
 
     private void displayFineTable(List<FineEntity> fineList) {

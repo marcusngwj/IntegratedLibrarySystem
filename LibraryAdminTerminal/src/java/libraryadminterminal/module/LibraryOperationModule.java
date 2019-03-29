@@ -143,9 +143,7 @@ public class LibraryOperationModule {
         System.out.print("Enter Book ID to Return> ");
         Long bookId = Long.valueOf(scanner.nextLine().trim());
         
-        LoanEntity loan = loanEntityControllerRemote.retrieveLoanByBookId(bookId);
-        
-        loanEntityControllerRemote.deleteLoan(bookId);
+        loanEntityControllerRemote.removeLoan(bookId, member.getMemberId());
         displayMessage("Book successfully returned.");
     }
     
@@ -165,18 +163,18 @@ public class LibraryOperationModule {
         System.out.print("Enter Book ID to Extend> ");
         Long bookId = Long.valueOf(scanner.nextLine().trim());
         
-        LoanEntity loan = loanEntityControllerRemote.retrieveLoanByBookId(bookId);
-        loan = loanEntityControllerRemote.extendLoan(loan);
+        LoanEntity loan = loanEntityControllerRemote.extendLoan(bookId, member.getMemberId());
         displayMessage("Book successfully extended. New due date: " + DateHelper.format(loan.getEndDate()));
     }
     
-    private void payFines() throws FineNotFoundException, NumberFormatException {
+    private void payFines() throws FineNotFoundException, MemberNotFoundException, NumberFormatException {
         Scanner scanner = new Scanner(System.in);
         System.out.println();
         System.out.println("*** ILS :: Library Operation :: Pay Fines ***\n");
         System.out.print("Enter Member Identity Number> ");
         String identityNumber = scanner.nextLine().trim();
         
+        MemberEntity member = memberEntityControllerRemote.retrieveMemberByIdentityNumber(identityNumber);
         List<FineEntity> fineList = fineEntityControllerRemote.retrieveFinesByMemberIdentityNumber(identityNumber);
         
         displayFineTable(fineList);
@@ -187,7 +185,7 @@ public class LibraryOperationModule {
             Long fineId = Long.valueOf(scanner.nextLine().trim());
             System.out.print("Select Payment Method (1: Cash, 2: Card)> ");
             int paymentMode = Integer.valueOf(scanner.nextLine().trim());
-            fineEntityControllerRemote.deleteFine(fineId);
+            fineEntityControllerRemote.removeFine(fineId, member.getMemberId());
             displayMessage("Fine successfully paid.");
         }
         else {
