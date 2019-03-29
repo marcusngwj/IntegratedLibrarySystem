@@ -15,9 +15,7 @@ import entity.FineEntity;
 import entity.LoanEntity;
 import entity.MemberEntity;
 import entity.ReservationEntity;
-import java.text.DateFormat;
 import java.util.Date;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
@@ -43,7 +41,6 @@ public class KioskOperationModule {
     private ReservationEntityControllerRemote reservationEntityControllerRemote;
 
     final int MAX_LOAN = 3;
-    private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private KioskReservationManagementModule reservationManagementModule;
 
     public KioskOperationModule() {
@@ -228,8 +225,7 @@ public class KioskOperationModule {
             }
         }
         
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(latestDate); 
+        return DateHelper.format(latestDate); 
     }
     private boolean isReserved(BookEntity currBook) {
         //If is reserved: get the list, then search for latest available due date
