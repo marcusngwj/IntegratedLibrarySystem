@@ -21,8 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import util.exception.BookNotFoundException;
 import util.exception.FineNotFoundException;
 import util.exception.MemberExistsException;
@@ -139,9 +137,7 @@ public class KioskOperationModule {
         System.out.print("Enter Book ID to Return> ");
         Long bookId = Long.valueOf(scanner.nextLine().trim());
 
-        LoanEntity loan = loanEntityControllerRemote.retrieveLoanByBookId(bookId);
-
-        loanEntityControllerRemote.deleteLoan(bookId);
+        loanEntityControllerRemote.removeLoan(bookId, member.getMemberId());
         displayMessage("Book successfully returned.");
     }
 
@@ -322,7 +318,7 @@ public class KioskOperationModule {
 
     private void printBorrowBookMain() {
         System.out.println("*** Self-Service Kiosk :: Borrow Book ***\n");
-        System.out.println("Enter Book Id: ");
+        System.out.print("Enter Book Id: ");
     }
 
     private void displayFineTable(List<FineEntity> fineList) {

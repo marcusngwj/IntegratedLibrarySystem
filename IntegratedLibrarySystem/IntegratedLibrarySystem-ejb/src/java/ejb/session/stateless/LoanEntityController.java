@@ -141,8 +141,12 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
     }
     
     @Override
-    public void deleteLoan(Long bookId) throws LoanNotFoundException {
+    public void removeLoan(Long bookId, Long memberId) throws LoanNotFoundException {
         LoanEntity loan = retrieveLoanByBookId(bookId);
+        
+        if (!memberId.equals(loan.getMember().getMemberId())) {
+            throw new LoanNotFoundException("Member " + memberId + " is not in possession of Book " + bookId);
+        }
         
         if (isLoanOverdue(loan)) {
             fineEntityControllerLocal.createNewFineEntity(loan, loan.getMember());

@@ -143,9 +143,7 @@ public class LibraryOperationModule {
         System.out.print("Enter Book ID to Return> ");
         Long bookId = Long.valueOf(scanner.nextLine().trim());
         
-        LoanEntity loan = loanEntityControllerRemote.retrieveLoanByBookId(bookId);
-        
-        loanEntityControllerRemote.deleteLoan(bookId);
+        loanEntityControllerRemote.removeLoan(bookId, member.getMemberId());
         displayMessage("Book successfully returned.");
     }
     

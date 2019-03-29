@@ -12,10 +12,6 @@ import ejb.session.stateless.MemberEntityControllerRemote;
 import ejb.session.stateless.ReservationEntityControllerRemote;
 import entity.MemberEntity;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import selfservicekioskterminal.module.KioskOperationModule;
 import selfservicekioskterminal.module.KioskRegistrationOperationModule;
 import util.exception.BookNotFoundException;
@@ -101,7 +97,7 @@ public class MainApp {
             printMemberName();
             printKioskMainMenu();
             System.out.println();
-            System.out.print(">");
+            System.out.print("> ");
             Scanner scanner = new Scanner(System.in);
             try {
                 option = scanner.nextInt();
@@ -137,18 +133,10 @@ public class MainApp {
                 if (isLogout) {
                     break;
                 }
-            } catch (MemberNotFoundException ex) {
-                Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (LoanNotFoundException ex) {
-                Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (LoanException ex) {
-                Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (MemberNotFoundException | BookNotFoundException | LoanNotFoundException | LoanException | FineNotFoundException ex) {
+                System.out.println(ex.getMessage());
             } catch (NumberFormatException ex) {
-                Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (FineNotFoundException ex) {
-                Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (BookNotFoundException ex) {
-                Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("Please enter a valid numerical number.");
             }
         }
     }
@@ -188,7 +176,7 @@ public class MainApp {
 
         System.out.println();
         System.out.println("*** Self-Service :: Login ***\n");
-        System.out.print("Enter username> ");
+        System.out.print("Enter Identity Number> ");
         username = scanner.nextLine().trim();
         System.out.print("Enter Security Code> ");
         securityCode = scanner.nextLine().trim();
