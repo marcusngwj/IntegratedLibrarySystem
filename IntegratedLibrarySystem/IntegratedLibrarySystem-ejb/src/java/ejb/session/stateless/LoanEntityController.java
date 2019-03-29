@@ -1,7 +1,10 @@
 package ejb.session.stateless;
 
+import entity.BookEntity;
 import entity.FineEntity;
 import entity.LoanEntity;
+import entity.MemberEntity;
+import entity.ReservationEntity;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
@@ -15,6 +18,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.LoanException;
 import util.exception.LoanNotFoundException;
+import util.exception.ReservationNotFoundException;
 import util.helper.DateHelper;
 import util.logger.Logger;
 
@@ -28,10 +32,18 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
     
     @EJB
     private FineEntityControllerLocal fineEntityControllerLocal;
+    @EJB
+    private ReservationEntityControllerLocal reservationEntityControllerLocal;
     
+    /**
+     * The sequence in this method is important. Do not rearrange.
+     */
     @Override
     public LoanEntity createNewLoanEntity(LoanEntity newLoan) throws LoanException {
         Logger.log(Logger.INFO, "LoanEntityController", "createNewLoanEntity");
+        
+        MemberEntity member = newLoan.getMember();
+        BookEntity book = newLoan.getBook();
         
         List<LoanEntity> loanList = retrieveLoansByMemberId(newLoan.getMember().getMemberId());
         if (loanList.size() >= 3) {
@@ -43,13 +55,27 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
             throw new LoanException(LoanException.UNPAID_FINE);
         }
         
-        // TODO: Check for reservation
-        
         loanList = retrieveAllLoans();
         for (LoanEntity loan : loanList) {
             if (loan.getBook().getBookId().equals(newLoan.getBook().getBookId())) {
                 throw new LoanException(LoanException.BOOK_ON_LOAN);
             }
+        }
+        
+        try {
+            boolean hasOtherReservationsPriorToMember = reservationEntityControllerLocal.hasOtherReservationsPriorToMember(member.getMemberId(), book.getBookId());
+            if (hasOtherReservationsPriorToMember) {
+                throw new LoanException(LoanException.BOOK_IS_RESERVED);
+            }
+            else {
+                ReservationEntity reservation = reservationEntityControllerLocal.retrieveTopReservationOfBookId(book.getBookId());
+                if (member.getMemberId().equals(reservation.getMember().getMemberId())) {
+                    reservationEntityControllerLocal.deleteReservation(reservation.getReservationId());
+                }
+            }
+        }
+        catch (ReservationNotFoundException ex) {
+            Logger.log(Logger.INFO, "LoanEntityController", "createNewLoanEntity", "There were no reservations. Available for loan.");
         }
         
         Date newDate = DateHelper.addDaysToToday(DateHelper.WEEK_OF_MONTH, DateHelper.WEEKS_FOR_LOAN);
@@ -94,12 +120,17 @@ public class LoanEntityController implements LoanEntityControllerRemote, LoanEnt
             throw new LoanException(LoanException.BOOK_IS_OVERDUE);
         }
         
+        // Check if member has unpaid fines
         List<FineEntity> fineList = fineEntityControllerLocal.retrieveFinesByMemberIdentityNumber(loanToUpdate.getMember().getIdentityNumber());
         if (fineList.size() > 0) {
             throw new LoanException(LoanException.UNPAID_FINE);
         }
         
-        // TODO: Check reservation
+        // Check if book is reserved by another member
+        List<ReservationEntity> reservationList = reservationEntityControllerLocal.retrieveReservationsByBookId(loanToUpdate.getBook().getBookId());
+        if (reservationList.size() > 0) {
+            throw new LoanException(LoanException.BOOK_IS_RESERVED);
+        }
         
         Date newDueDate = DateHelper.addDaystoDate(loanToUpdate.getEndDate(), DateHelper.WEEK_OF_MONTH, DateHelper.WEEKS_FOR_LOAN);
         loanToUpdate.setEndDate(newDueDate);

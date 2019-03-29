@@ -53,8 +53,35 @@ public class ReservationEntityController implements ReservationEntityControllerR
     }
     
     @Override
+    public ReservationEntity retrieveTopReservationOfBookId(Long bookId) throws ReservationNotFoundException {
+        Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.book.bookId= :inBookId ORDER BY r.createdOn ASC");
+        query.setParameter("inBookId", bookId);
+        query.setMaxResults(1);
+        
+        try {
+            return (ReservationEntity)query.getSingleResult();
+        }
+        catch(NoResultException | NonUniqueResultException ex) {
+            throw new ReservationNotFoundException("Reservation does not exist!");
+        }
+    }
+    
+    @Override
     public void deleteReservation(Long reservationId) throws ReservationNotFoundException {
         ReservationEntity loan = retrieveReservationById(reservationId);
         em.remove(loan);
-    }    
+    }
+    
+    @Override
+    public boolean hasOtherReservationsPriorToMember(Long memberId, Long bookId) throws ReservationNotFoundException {
+        ReservationEntity topReservation = retrieveTopReservationOfBookId(bookId);
+        
+        if (topReservation!=null && !topReservation.getMember().getMemberId().equals(memberId)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
 }

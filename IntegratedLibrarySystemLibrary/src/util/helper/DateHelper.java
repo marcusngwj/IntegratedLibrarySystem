@@ -6,7 +6,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class DateHelper {
-    public static DateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+    public static DateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+    public static DateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static int WEEK_OF_MONTH = Calendar.WEEK_OF_MONTH;
     public static int WEEKS_FOR_LOAN = 2;
     
@@ -35,6 +36,10 @@ public class DateHelper {
     }
     
     public static String format(Date date) {
-        return FORMATTER.format(date);
+        return DATE_FORMATTER.format(date);
+    }
+    
+    public static String formatTimestamp(Date date) {
+        return TIMESTAMP_FORMATTER.format(date);
     }
 }
