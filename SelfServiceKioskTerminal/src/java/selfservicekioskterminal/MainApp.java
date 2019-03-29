@@ -36,21 +36,21 @@ public class MainApp {
     private BookEntityControllerRemote bookEntityControllerRemote;
     private FineEntityControllerRemote fineEntityControllerRemote;
     private ReservationEntityControllerRemote reservationEntityControllerRemote;
-    
+
     private KioskRegistrationOperationModule registerationKioskOperationModule;
     private KioskOperationModule kioskOperationModule;
- 
+
     MemberEntity currentMember;
 
-    MainApp(MemberEntityControllerRemote memberEntityControllerRemote,BookEntityControllerRemote bookEntityControllerRemote, 
-            LoanEntityControllerRemote loanEntityControllerRemote, FineEntityControllerRemote fineEntityControllerRemote, 
+    MainApp(MemberEntityControllerRemote memberEntityControllerRemote, BookEntityControllerRemote bookEntityControllerRemote,
+            LoanEntityControllerRemote loanEntityControllerRemote, FineEntityControllerRemote fineEntityControllerRemote,
             ReservationEntityControllerRemote reservationEntityControllerRemote) {
         this.memberEntityControllerRemote = memberEntityControllerRemote;
         this.bookEntityControllerRemote = bookEntityControllerRemote;
         this.loanEntityControllerRemote = loanEntityControllerRemote;
         this.fineEntityControllerRemote = fineEntityControllerRemote;
         this.reservationEntityControllerRemote = reservationEntityControllerRemote;
-        
+
     }
 
     void runApp() {
@@ -82,9 +82,7 @@ public class MainApp {
     }
 
     private void executeMainAction() {
-        printKioskMain();
-        printMemberName();
-        printKioskMainMenu();
+
         final int BORROW_BOOK = 1;
         final int VIEW_LENT_BOOK = 2;
         final int RETURN_BOOK = 3;
@@ -93,14 +91,18 @@ public class MainApp {
         final int SEARCH_BOOK = 6;
         final int RESERVE_BOOK = 7;
         final int LOGOUT = 8;
-        
-        kioskOperationModule = new KioskOperationModule(memberEntityControllerRemote, bookEntityControllerRemote, 
+
+        kioskOperationModule = new KioskOperationModule(memberEntityControllerRemote, bookEntityControllerRemote,
                 loanEntityControllerRemote, fineEntityControllerRemote, reservationEntityControllerRemote);
         int option = 0;
-        System.out.println();
-        System.out.print(">");
-        Scanner scanner = new Scanner(System.in);
+
         while (true) {
+            printKioskMain();
+            printMemberName();
+            printKioskMainMenu();
+            System.out.println();
+            System.out.print(">");
+            Scanner scanner = new Scanner(System.in);
             try {
                 option = scanner.nextInt();
                 boolean isLogout = false;

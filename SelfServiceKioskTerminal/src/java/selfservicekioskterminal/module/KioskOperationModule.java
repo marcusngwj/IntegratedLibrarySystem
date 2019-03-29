@@ -14,6 +14,7 @@ import entity.BookEntity;
 import entity.FineEntity;
 import entity.LoanEntity;
 import entity.MemberEntity;
+import entity.ReservationEntity;
 import java.text.DateFormat;
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -188,6 +189,11 @@ public class KioskOperationModule {
     }
 
     public void enterSearchBook() throws BookNotFoundException {
+        
+        /**
+         * All books with search string having partial or full match are listed.
+         * Details of whether the book is currently available, is on hold with reservation or if applicable a due date is shown.
+         */
         Scanner scanner = new Scanner(System.in);
         System.out.println();
         System.out.println("*** Self-Service Kiosk :: Search Book ***\n"
@@ -195,21 +201,48 @@ public class KioskOperationModule {
         String title = scanner.nextLine().trim();
 
         List<BookEntity> bookEntities = bookEntityControllerRemote.searchBookByTitle(title);
+//        BookEntity bookEntities = bookEntityControllerRemote.retrieveBookByTitle(title);
 
         System.out.println();
         System.out.println("Search Results:");
 
         System.out.println("Id |Title | Availability");
-
+//        System.out.println(bookEntities.getBookId() + "  | " + bookEntities.getTitle() + "  | " + "Available Now ");
         for (BookEntity currBook : bookEntities) {
             if (isLoaned(currBook)) {
                 System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + currBook.getLoan().getEndDate());
-            } else {
+            } 
+//            else if(isReserved(currBook)) {
+//                System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getAvailableReservationDate(currBook));
+//            } 
+            else {
                 System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
             }
         }
 
     }
+    private String getAvailableReservationDate(BookEntity currBook) {
+        Date latestDate = currBook.getReservations().get(0).getCreatedOn();
+        List<ReservationEntity> reservedList = currBook.getReservations();
+        
+        for(int i = 1; i < reservedList.size() ; i ++) {
+            ReservationEntity currReserved = reservedList.get(i);
+            if(currReserved.getCreatedOn().compareTo(latestDate) > 0 ) {
+                latestDate = currReserved.getCreatedOn();
+            }
+        }
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(latestDate); 
+    }
+    private boolean isReserved(BookEntity currBook) {
+        //If is reserved: get the list, then search for latest available due date
+        
+        
+        //To-Do
+        return false;
+    }
+    
     private boolean isLoaned(BookEntity currBook) {
         try {
             loanEntityControllerRemote.retrieveLoanByBookId(currBook.getBookId());

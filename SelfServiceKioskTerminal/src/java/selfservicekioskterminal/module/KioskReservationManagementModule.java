@@ -13,8 +13,13 @@ import ejb.session.stateless.ReservationEntityControllerRemote;
  */
 class KioskReservationManagementModule {
 
+    ReservationEntityControllerRemote reservationEntityControllerRemote;
+    
+    public KioskReservationManagementModule() {
+    }
+
     KioskReservationManagementModule(ReservationEntityControllerRemote reservationEntityControllerRemote) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.reservationEntityControllerRemote = reservationEntityControllerRemote;
     }
     
 }
