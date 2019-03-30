@@ -12,6 +12,8 @@ import ejb.session.stateless.MemberEntityControllerRemote;
 import ejb.session.stateless.ReservationEntityControllerRemote;
 import entity.MemberEntity;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import selfservicekioskterminal.module.KioskOperationModule;
 import selfservicekioskterminal.module.KioskRegistrationOperationModule;
 import util.exception.BookNotFoundException;
@@ -20,6 +22,7 @@ import util.exception.InvalidLoginException;
 import util.exception.LoanException;
 import util.exception.LoanNotFoundException;
 import util.exception.MemberNotFoundException;
+import util.exception.ReservationNotFoundException;
 
 /**
  *
@@ -67,7 +70,7 @@ public class MainApp {
                     executeLogin();
                     executeMainAction();
                 } catch (InvalidLoginException ex) {
-                    System.out.println(ex);
+                    System.out.println(ex.getMessage());
                 }
             } else if (response == EXIT_NUMBER) {
                 break;
@@ -133,16 +136,12 @@ public class MainApp {
                 if (isLogout) {
                     break;
                 }
-            } catch (MemberNotFoundException | BookNotFoundException | LoanNotFoundException | LoanException | FineNotFoundException ex) {
+            } catch (MemberNotFoundException | BookNotFoundException | LoanNotFoundException | LoanException | ReservationNotFoundException | FineNotFoundException ex) {
                 System.out.println(ex.getMessage());
             } catch (NumberFormatException ex) {
                 System.out.println("Please enter a valid numerical number.");
             }
         }
-    }
-
-    private void printLentSuccessMsg() {
-
     }
 
     private void printInvalidOption() {

@@ -62,7 +62,7 @@ public class ReservationEntityController implements ReservationEntityControllerR
         }
         boolean isLoaningSameBook = checkLoaningSameBook(currMember, currBook);
         if (isLoaningSameBook) {
-            throw new LoanException(LoanException.BOOK_ON_LOAN);
+            throw new LoanException(LoanException.BOOK_LOANED_NO_RESERVED);
         }
         boolean hasReserved = checkMultipleReserved(currMember, currBook);
         if (hasReserved) {
@@ -71,7 +71,7 @@ public class ReservationEntityController implements ReservationEntityControllerR
         boolean isReserved = checkReserved(currBook);
         boolean isLoaned = checkLoan(currMember, currBook);
 
-        if (isLoaned && isReserved) {
+        if ((isLoaned && isReserved) || (!isLoaned && isReserved)) {
             //get the latest reservedDate
             Date latestDate = retrieveLatestReservedDate(currBook);
 
@@ -79,25 +79,24 @@ public class ReservationEntityController implements ReservationEntityControllerR
             newReservation.setCreatedOn(newDueDate);
         } else if (isLoaned && !isReserved) {
             Date loanDueDate = retrieveLoanedDate(currBook);
-        } else if (!isLoaned && isReserved) {
-            Date latestDate = retrieveLatestReservedDate(currBook);
 
-            Date newDueDate = DateHelper.addDaystoDate(latestDate, DateHelper.WEEK_OF_MONTH, DateHelper.WEEKS_FOR_LOAN);
-            newReservation.setCreatedOn(newDueDate);
+            newReservation.setCreatedOn(loanDueDate);
         } else {
             Date newDate = DateHelper.addDaysToToday(DateHelper.WEEK_OF_MONTH, DateHelper.WEEKS_FOR_LOAN);
             newReservation.setCreatedOn(newDate);
         }
+        System.out.println(newReservation);
         em.persist(newReservation);
         em.flush();
         em.refresh(newReservation);
         return newReservation;
     }
-    
-    private Date retrieveLoanedDate(BookEntity currBook) throws LoanNotFoundException{
+
+    private Date retrieveLoanedDate(BookEntity currBook) throws LoanNotFoundException {
         LoanEntity loan = loanEntityControllerLocal.retrieveLoanByBookId(currBook.getBookId());
         return loan.getEndDate();
     }
+
     private Date retrieveLatestReservedDate(BookEntity currBook) {
         List<ReservationEntity> reservationList = retrieveReservationsByBookId(currBook.getBookId());
         Date latestDate = reservationList.get(0).getCreatedOn();
@@ -217,4 +216,20 @@ public class ReservationEntityController implements ReservationEntityControllerR
         }
     }
 
+    @Override
+    public Date retrieveLatestReservationDate(Long bookId) throws ReservationNotFoundException {
+
+        Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.book.bookId= :inBookId ORDER BY r.createdOn DESC");
+        query.setParameter("inBookId", bookId);
+        query.setMaxResults(1);
+
+        try {
+            ReservationEntity latestRes = (ReservationEntity) query.getSingleResult();
+            Date latestDate = latestRes.getCreatedOn();
+
+            return latestDate;
+        } catch (NoResultException | NonUniqueResultException ex) {
+            throw new ReservationNotFoundException("Reservation does not exist!");
+        }
+    }
 }
