@@ -41,8 +41,11 @@ public class ReservationEntity implements Serializable {
         this.createdOn = createdOn;
     }
 
-    public ReservationEntity() {
-   
+    public ReservationEntity() {}
+    
+    public ReservationEntity(BookEntity book, MemberEntity member) {
+        this.book = book;
+        this.member = member;
     }
 
     public Long getReservationId() {

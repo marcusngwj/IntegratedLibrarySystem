@@ -19,12 +19,16 @@ import java.util.Date;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import util.exception.BookNotFoundException;
 import util.exception.FineNotFoundException;
 import util.exception.MemberExistsException;
 import util.exception.LoanException;
 import util.exception.LoanNotFoundException;
 import util.exception.MemberNotFoundException;
+import util.exception.MultipleReservationException;
+import util.exception.ReservationNotFoundException;
 import util.helper.DateHelper;
 import util.helper.MoneyHelper;
 
@@ -56,66 +60,27 @@ public class KioskOperationModule {
         this.reservationManagementModule = new KioskReservationManagementModule(reservationEntityControllerRemote);
     }
 
-    public void enterBorrowBook(MemberEntity member) {
-        printBorrowBookMain();
-
-        Scanner sc = new Scanner(System.in);
-        Long currBookId = sc.nextLong();
+    public void enterBorrowBook(MemberEntity member) throws BookNotFoundException, LoanException {
 
         //Things to consider: 
         //1) Unpaid Fines  2)Member has already lent 3 books   
         //3)Book is reserved by another member with higher priority 
-//        boolean hasUnpaidFine = checkUnpaidFine(member);
-//        boolean hasLentMax = checkLentMax(member);
-//        boolean hasBeenReserved = checkReserved(currBookId);
-        boolean hasUnpaidFine = false;
-        boolean hasLentMax = false;
-        boolean hasBeenReserved = false;
+        Scanner scanner = new Scanner(System.in);
 
-        if (!hasUnpaidFine && !hasLentMax && !hasBeenReserved) {
-            //Do lent book:
-            //Create loanEntity
+        System.out.println();
+        System.out.println("*** Self-Service Kiosk :: Borrow Book ***\n");
+        System.out.print("Enter Book Id: ");
+        Long bookId = Long.valueOf(scanner.nextLine().trim());
 
-            Calendar c = Calendar.getInstance();
-            c.add(Calendar.DATE, 14);
-            Date dueDate = c.getTime();
+        BookEntity book = bookEntityControllerRemote.retrieveBookById(bookId);
 
-            try {
-                BookEntity bookToLend = bookEntityControllerRemote.retrieveBookById(currBookId);
-
-                LoanEntity newLoan = new LoanEntity(bookToLend, dueDate, member); //bookEntity, endDate, memberEntity
-
-                //Adds a new loan entity to database
-                loanEntityControllerRemote.createNewLoanEntity(newLoan);
-
-                //Update this loan onto the member's list of loans
-                List<LoanEntity> updatedLoanList = member.getLoans();
-                updatedLoanList.add(newLoan);
-                member.setLoans(updatedLoanList);
-                memberEntityControllerRemote.updateMember(member);
-
-                //Update the loan entity within book entity
-                bookToLend.setLoan(newLoan);
-                bookEntityControllerRemote.updateBook(bookToLend);
-
-                //Print Success Message
-                printLentSuccessMessage(dueDate);
-
-            } catch (LoanException stlne) {
-                System.out.println(stlne.getMessage());
-            } catch (BookNotFoundException bnfe) {
-                System.out.println(bnfe.getMessage());
-            } catch (MemberExistsException me) {
-                System.out.println(me.getMessage());
-            }
-        } else {
-            printBorrowError(hasUnpaidFine, hasLentMax, hasBeenReserved);
-        }
+        LoanEntity newLoan = new LoanEntity(book, member);
+        newLoan = loanEntityControllerRemote.createNewLoanEntity(newLoan);
+        displayMessage("Successfully lent book to member. Due Date: " + DateHelper.format(newLoan.getEndDate()));
     }
 
     public void enterViewLentBook(MemberEntity member) {
         System.out.println("*** Self-Service Kiosk :: View Lent Books ***\n");
-        System.out.println("Currently Lent Books:");
 
         List<LoanEntity> loanList = loanEntityControllerRemote.retrieveLoansByMemberId(member.getMemberId());
         displayLoanTable(loanList);
@@ -181,59 +146,131 @@ public class KioskOperationModule {
     }
 
     public void enterSearchBook() throws BookNotFoundException {
-        
+
         /**
          * All books with search string having partial or full match are listed.
-         * Details of whether the book is currently available, is on hold with reservation or if applicable a due date is shown.
+         * Details of whether the book is currently available, is on hold with
+         * reservation or if applicable a due date is shown.
          */
         Scanner scanner = new Scanner(System.in);
         System.out.println();
-        System.out.println("*** Self-Service Kiosk :: Search Book ***\n"
-                + "Enter Title to Search> ");
+        System.out.println("*** Self-Service Kiosk :: Search Book ***");
+        System.out.print("Enter Title to Search > ");
         String title = scanner.nextLine().trim();
 
         List<BookEntity> bookEntities = bookEntityControllerRemote.searchBookByTitle(title);
-//        BookEntity bookEntities = bookEntityControllerRemote.retrieveBookByTitle(title);
 
         System.out.println();
         System.out.println("Search Results:");
 
         System.out.println("Id |Title | Availability");
-//        System.out.println(bookEntities.getBookId() + "  | " + bookEntities.getTitle() + "  | " + "Available Now ");
+        //Details of whether the book is currently available, is on hold with reservation or if applicable a due date is shown.
         for (BookEntity currBook : bookEntities) {
-            if (isLoaned(currBook)) {
-                System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + currBook.getLoan().getEndDate());
-            } 
-//            else if(isReserved(currBook)) {
-//                System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getAvailableReservationDate(currBook));
-//            } 
-            else {
+            boolean onLoaned = isLoaned(currBook);
+            boolean onReserved = isReserved(currBook);
+            if (onLoaned && !onReserved) {
+                try {
+                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getBookLoanedDate(currBook));
+                } catch (LoanNotFoundException ex) {
+                    System.out.println(ex.getMessage());
+                }
+            } else if (onLoaned && onReserved || !onLoaned && onReserved) {
+                try {
+                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getAvailableReservationDate(currBook));
+                } catch (ReservationNotFoundException ex) {
+                    System.out.println(ex.getMessage());
+                }
+            } else {
                 System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
             }
         }
 
     }
-    private String getAvailableReservationDate(BookEntity currBook) {
-        Date latestDate = currBook.getReservations().get(0).getCreatedOn();
-        List<ReservationEntity> reservedList = currBook.getReservations();
+
+    public void enterReserveBook(MemberEntity member) throws BookNotFoundException, ReservationNotFoundException {
+        final String SUCCESS_RESERVED = "Book successfully reserved.";
+        Scanner scanner = new Scanner(System.in);
+        System.out.println();
+        System.out.println("*** Self-Service Kiosk :: Reserve Book ***\n");
+
+        System.out.print("Enter Title to Search> ");
+        String title = scanner.nextLine().trim();
+
+        List<BookEntity> bookEntities = bookEntityControllerRemote.searchBookByTitle(title);
+        System.out.println();
+        System.out.println("Search Results:");
+
+        System.out.println("Id |Title | Availability");
         
-        for(int i = 1; i < reservedList.size() ; i ++) {
-            ReservationEntity currReserved = reservedList.get(i);
-            if(currReserved.getCreatedOn().compareTo(latestDate) > 0 ) {
-                latestDate = currReserved.getCreatedOn();
+        for (BookEntity currBook : bookEntities) {
+            boolean onLoaned = isLoaned(currBook);
+            boolean onReserved = isReserved(currBook);
+            if (onLoaned && !onReserved) {
+                try {
+                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getBookLoanedDate(currBook));
+                } catch (LoanNotFoundException ex) {
+                    System.out.println(ex.getMessage());
+                }
+            } else if (onLoaned && onReserved || !onLoaned && onReserved) {
+                try {
+                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getAvailableReservationDate(currBook));
+                } catch (ReservationNotFoundException ex) {
+                    System.out.println(ex.getMessage());
+                }
+            } else {
+                System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
             }
         }
-        
-        return DateHelper.format(latestDate); 
+        System.out.println();
+        System.out.print("Enter Book ID to Reserve: ");
+        Long bookId = Long.valueOf(scanner.nextLine().trim());
+        BookEntity currBook = bookEntityControllerRemote.retrieveBookById(bookId);
+        ReservationEntity newReservation = new ReservationEntity(currBook, member);
+
+        try {
+            reservationEntityControllerRemote.createNewReservationEntity(newReservation);
+            //Print Reservation Success msg
+            displayMessage(SUCCESS_RESERVED);
+        } catch (LoanException le) {
+            System.out.println(le.getMessage());
+        } catch (MultipleReservationException mre) {
+            System.out.println(mre.getMessage());
+        } catch (LoanNotFoundException lnfe) {
+            System.out.println(lnfe.getMessage());
+        }
     }
+    private String getBookLoanedDate(BookEntity currBook) throws LoanNotFoundException {
+        try {
+            LoanEntity currLoan = loanEntityControllerRemote.retrieveLoanByBookId(currBook.getBookId());
+            Date bookLoanedDate = currLoan.getEndDate();
+            
+            return DateHelper.format(bookLoanedDate);
+        } catch(LoanNotFoundException lnfe) {
+            throw new LoanNotFoundException(lnfe.getMessage());
+        }
+    }
+
+    private String getAvailableReservationDate(BookEntity currBook) throws ReservationNotFoundException {
+       
+        try {
+            Date latestDate = reservationEntityControllerRemote.retrieveLatestReservationDate(currBook.getBookId());
+            
+            return DateHelper.format(latestDate);
+        } catch (ReservationNotFoundException ex) {
+           throw new ReservationNotFoundException(ex.getMessage());
+        }
+    }
+
     private boolean isReserved(BookEntity currBook) {
         //If is reserved: get the list, then search for latest available due date
         
-        
-        //To-Do
-        return false;
+        List<ReservationEntity> reservationList = reservationEntityControllerRemote.retrieveReservationsByBookId(currBook.getBookId());
+        if (reservationList.isEmpty()) {
+            return false;
+        }
+        return true;
     }
-    
+
     private boolean isLoaned(BookEntity currBook) {
         try {
             loanEntityControllerRemote.retrieveLoanByBookId(currBook.getBookId());
@@ -241,13 +278,6 @@ public class KioskOperationModule {
         } catch (LoanNotFoundException ex) {
             return false;
         }
-    }
-    public void enterReserveBook(MemberEntity member) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println();
-        System.out.println("*** Self-Service Kiosk :: Reserve Book ***\n");
-
-        System.out.println("Enter Title to Search> ");
     }
 
     private void printLentSuccessMessage(Date dueDate) {
@@ -279,41 +309,6 @@ public class KioskOperationModule {
 
         System.out.print(header);
         System.out.println(table);
-    }
-
-    private void printReserveBookMain() {
-
-    }
-
-    private boolean checkLent(Long currBookId) {
-        //To-Do
-        return true;
-    }
-
-    private boolean checkReserved(Long currBookId) {
-        //To-Do
-        return true;
-    }
-
-    private boolean checkLentMax(MemberEntity member) {
-        if (member.getLoans().size() == MAX_LOAN) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private boolean checkUnpaidFine(MemberEntity member) {
-        if (member.getFines().isEmpty()) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    private void printBorrowBookMain() {
-        System.out.println("*** Self-Service Kiosk :: Borrow Book ***\n");
-        System.out.print("Enter Book Id: ");
     }
 
     private void displayFineTable(List<FineEntity> fineList) {

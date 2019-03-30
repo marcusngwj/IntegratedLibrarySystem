@@ -66,7 +66,7 @@ public class BookEntityController implements BookEntityControllerRemote, BookEnt
     public List<BookEntity> searchBookByTitle(String title) throws BookNotFoundException {
         Query query = em.createQuery("SELECT b FROM BookEntity b WHERE b.title LIKE '%" + title + "%'");
        
-        System.out.println("Query is : " + query);
+      
         
         try {
             return (List<BookEntity>) query.getResultList();
