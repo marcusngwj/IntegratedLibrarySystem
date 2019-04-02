@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import util.exception.BookNotFoundException;
 import util.exception.FineNotFoundException;
 import util.exception.MemberExistsException;
@@ -70,13 +72,19 @@ public class KioskOperationModule {
         System.out.println();
         System.out.println("*** Self-Service Kiosk :: Borrow Book ***\n");
         System.out.print("Enter Book Id: ");
-        Long bookId = Long.valueOf(scanner.nextLine().trim());
+        String bookIdStr = scanner.nextLine().trim();
+        boolean isNum = checkNum(bookIdStr);
+        if (isNum) {
+            Long bookId = Long.valueOf(bookIdStr);
 
-        BookEntity book = bookEntityControllerRemote.retrieveBookById(bookId);
+            BookEntity book = bookEntityControllerRemote.retrieveBookById(bookId);
 
-        LoanEntity newLoan = new LoanEntity(book, member);
-        newLoan = loanEntityControllerRemote.createNewLoanEntity(newLoan);
-        displayMessage("Successfully lent book to member. Due Date: " + DateHelper.format(newLoan.getEndDate()));
+            LoanEntity newLoan = new LoanEntity(book, member);
+            newLoan = loanEntityControllerRemote.createNewLoanEntity(newLoan);
+            displayMessage("Successfully lent book to member. Due Date: " + DateHelper.format(newLoan.getEndDate()));
+        } else {
+            printInvalidBookFormat();
+        }
     }
 
     public void enterViewLentBook(MemberEntity member) {
@@ -97,10 +105,16 @@ public class KioskOperationModule {
         System.out.println();
 
         System.out.print("Enter Book ID to Return> ");
-        Long bookId = Long.valueOf(scanner.nextLine().trim());
 
-        loanEntityControllerRemote.removeLoan(bookId, member.getMemberId());
-        displayMessage("Book successfully returned.");
+        String bookIdStr = scanner.nextLine().trim();
+        boolean isNum = checkNum(bookIdStr);
+        if (isNum) {
+            Long bookId = Long.valueOf(bookIdStr);
+            loanEntityControllerRemote.removeLoan(bookId, member.getMemberId());
+            displayMessage("Book successfully returned.");
+        } else {
+            printInvalidBookFormat();
+        }
     }
 
     public void enterExtendBook(MemberEntity member) throws MemberNotFoundException, LoanNotFoundException, LoanException, NumberFormatException {
@@ -114,10 +128,15 @@ public class KioskOperationModule {
         System.out.println();
 
         System.out.print("Enter Book ID to Extend> ");
-        Long bookId = Long.valueOf(scanner.nextLine().trim());
-
-        LoanEntity loan = loanEntityControllerRemote.extendLoan(bookId, member.getMemberId());
-        displayMessage("Book successfully extended. New due date: " + DateHelper.format(loan.getEndDate()));
+        String bookIdStr = scanner.nextLine().trim();
+        boolean isNum = checkNum(bookIdStr);
+        if (isNum) {
+            Long bookId = Long.valueOf(bookIdStr);
+            LoanEntity loan = loanEntityControllerRemote.extendLoan(bookId, member.getMemberId());
+            displayMessage("Book successfully extended. New due date: " + DateHelper.format(loan.getEndDate()));
+        } else {
+            printInvalidBookFormat();
+        }
     }
 
     public void enterPayFine(MemberEntity member) throws FineNotFoundException {
@@ -135,11 +154,24 @@ public class KioskOperationModule {
 
         if (fineList.size() > 0) {
             System.out.print("Enter Fine to Settle> ");
-            Long fineId = Long.valueOf(scanner.nextLine().trim());
+            String bookIdStr = scanner.nextLine().trim();
+            boolean isNumFine = checkNum(bookIdStr);
             System.out.print("Select Payment Method (1: Cash, 2: Card)> ");
-            int paymentMode = Integer.valueOf(scanner.nextLine().trim());
-            fineEntityControllerRemote.removeFine(fineId, member.getMemberId());
-            displayMessage("Fine successfully paid.");
+            String paymentMtdStr = scanner.nextLine().trim();
+            boolean isNumPaymentMtd = checkNum(paymentMtdStr);
+            if (isNumFine && isNumPaymentMtd) {
+                Long fineId = Long.valueOf(bookIdStr);
+                int paymentMode = Integer.valueOf(paymentMtdStr);
+                fineEntityControllerRemote.removeFine(fineId, member.getMemberId());
+                displayMessage("Fine successfully paid.");
+            } else {
+                if (!isNumFine) {
+                    printInvalidFineFormat();
+                }
+                if (!isNumPaymentMtd) {
+                    printInvalidPaymentFormat();
+                }
+            }
         } else {
             displayMessage("There are no outstanding fine.");
         }
@@ -201,7 +233,7 @@ public class KioskOperationModule {
         System.out.println("Search Results:");
 
         System.out.println("Id |Title | Availability");
-        
+
         for (BookEntity currBook : bookEntities) {
             boolean onLoaned = isLoaned(currBook);
             boolean onReserved = isReserved(currBook);
@@ -223,47 +255,55 @@ public class KioskOperationModule {
         }
         System.out.println();
         System.out.print("Enter Book ID to Reserve: ");
-        Long bookId = Long.valueOf(scanner.nextLine().trim());
-        BookEntity currBook = bookEntityControllerRemote.retrieveBookById(bookId);
-        ReservationEntity newReservation = new ReservationEntity(currBook, member);
+        String bookIdStr = scanner.nextLine().trim();
+        boolean isNum = checkNum(bookIdStr);
 
-        try {
-            reservationEntityControllerRemote.createNewReservationEntity(newReservation);
-            //Print Reservation Success msg
-            displayMessage(SUCCESS_RESERVED);
-        } catch (LoanException le) {
-            System.out.println(le.getMessage());
-        } catch (MultipleReservationException mre) {
-            System.out.println(mre.getMessage());
-        } catch (LoanNotFoundException lnfe) {
-            System.out.println(lnfe.getMessage());
+        if (isNum) {
+            Long bookId = Long.valueOf(bookIdStr);
+            BookEntity currBook = bookEntityControllerRemote.retrieveBookById(bookId);
+            ReservationEntity newReservation = new ReservationEntity(currBook, member);
+
+            try {
+                reservationEntityControllerRemote.createNewReservationEntity(newReservation);
+                //Print Reservation Success msg
+                displayMessage(SUCCESS_RESERVED);
+            } catch (LoanException le) {
+                System.out.println(le.getMessage());
+            } catch (MultipleReservationException mre) {
+                System.out.println(mre.getMessage());
+            } catch (LoanNotFoundException lnfe) {
+                System.out.println(lnfe.getMessage());
+            }
+        } else {
+            printInvalidBookFormat();
         }
     }
+
     private String getBookLoanedDate(BookEntity currBook) throws LoanNotFoundException {
         try {
             LoanEntity currLoan = loanEntityControllerRemote.retrieveLoanByBookId(currBook.getBookId());
             Date bookLoanedDate = currLoan.getEndDate();
-            
+
             return DateHelper.format(bookLoanedDate);
-        } catch(LoanNotFoundException lnfe) {
+        } catch (LoanNotFoundException lnfe) {
             throw new LoanNotFoundException(lnfe.getMessage());
         }
     }
 
     private String getAvailableReservationDate(BookEntity currBook) throws ReservationNotFoundException {
-       
+
         try {
             Date latestDate = reservationEntityControllerRemote.retrieveLatestReservationDate(currBook.getBookId());
-            
+
             return DateHelper.format(latestDate);
         } catch (ReservationNotFoundException ex) {
-           throw new ReservationNotFoundException(ex.getMessage());
+            throw new ReservationNotFoundException(ex.getMessage());
         }
     }
 
     private boolean isReserved(BookEntity currBook) {
         //If is reserved: get the list, then search for latest available due date
-        
+
         List<ReservationEntity> reservationList = reservationEntityControllerRemote.retrieveReservationsByBookId(currBook.getBookId());
         if (reservationList.isEmpty()) {
             return false;
@@ -329,4 +369,28 @@ public class KioskOperationModule {
         System.out.println(message);
     }
 
+    private boolean checkNum(String optionStr) {
+        final String OPTION_PATTERN = "[0-9]+";
+        Pattern optionPattern = Pattern.compile(OPTION_PATTERN);
+        Matcher optionMatcher = optionPattern.matcher(optionStr);
+
+        if (!optionMatcher.matches()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void printInvalidBookFormat() {
+        System.out.println("Please Enter a valid book number");
+        System.out.println();
+    }
+
+    private void printInvalidFineFormat() {
+        System.out.println("Please enter a valid fine number");
+    }
+
+    private void printInvalidPaymentFormat() {
+        System.out.println("Please enter a valid payment method");
+    }
 }
