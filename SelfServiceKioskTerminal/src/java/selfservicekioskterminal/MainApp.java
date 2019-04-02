@@ -14,6 +14,8 @@ import entity.MemberEntity;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import selfservicekioskterminal.module.KioskOperationModule;
 import selfservicekioskterminal.module.KioskRegistrationOperationModule;
 import util.exception.BookNotFoundException;
@@ -103,38 +105,46 @@ public class MainApp {
             System.out.print("> ");
             Scanner scanner = new Scanner(System.in);
             try {
-                option = scanner.nextInt();
-                boolean isLogout = false;
-                switch (option) {
-                    case BORROW_BOOK:
-                        kioskOperationModule.enterBorrowBook(currentMember);
+                String optionStr = scanner.nextLine().trim();
+                boolean isNum = checkOptionNum(optionStr);
+
+                if (isNum) {
+                    option = Integer.valueOf(optionStr);
+                    boolean isLogout = false;
+                    switch (option) {
+                        case BORROW_BOOK:
+                            kioskOperationModule.enterBorrowBook(currentMember);
+                            break;
+                        case VIEW_LENT_BOOK:
+                            kioskOperationModule.enterViewLentBook(currentMember);
+                            break;
+                        case RETURN_BOOK:
+                            kioskOperationModule.enterReturnBook(currentMember);
+                            break;
+                        case EXTEND_BOOK:
+                            kioskOperationModule.enterExtendBook(currentMember);
+                            break;
+                        case PAY_FINE:
+                            kioskOperationModule.enterPayFine(currentMember);
+                            break;
+                        case SEARCH_BOOK:
+                            kioskOperationModule.enterSearchBook();
+                            break;
+                        case RESERVE_BOOK:
+                            kioskOperationModule.enterReserveBook(currentMember);
+                            break;
+                        case LOGOUT:
+                            isLogout = true;
+                            break;
+                        default:
+                            printInvalidOption();
+                    }
+                    if (isLogout) {
                         break;
-                    case VIEW_LENT_BOOK:
-                        kioskOperationModule.enterViewLentBook(currentMember);
-                        break;
-                    case RETURN_BOOK:
-                        kioskOperationModule.enterReturnBook(currentMember);
-                        break;
-                    case EXTEND_BOOK:
-                        kioskOperationModule.enterExtendBook(currentMember);
-                        break;
-                    case PAY_FINE:
-                        kioskOperationModule.enterPayFine(currentMember);
-                        break;
-                    case SEARCH_BOOK:
-                        kioskOperationModule.enterSearchBook();
-                        break;
-                    case RESERVE_BOOK:
-                        kioskOperationModule.enterReserveBook(currentMember);
-                        break;
-                    case LOGOUT:
-                        isLogout = true;
-                        break;
-                    default:
-                        printInvalidOption();
-                }
-                if (isLogout) {
-                    break;
+                    }
+                } else {
+                    printInvalidOption();
+                    
                 }
             } catch (MemberNotFoundException | BookNotFoundException | LoanNotFoundException | LoanException | ReservationNotFoundException | FineNotFoundException ex) {
                 System.out.println(ex.getMessage());
@@ -144,8 +154,21 @@ public class MainApp {
         }
     }
 
+    private boolean checkOptionNum(String optionStr) {
+        final String OPTION_PATTERN = "[0-9]+";
+        Pattern optionPattern = Pattern.compile(OPTION_PATTERN);
+        Matcher optionMatcher = optionPattern.matcher(optionStr);
+
+        if (!optionMatcher.matches()) {
+            return false;
+        }
+
+        return true;
+    }
+
     private void printInvalidOption() {
-        System.out.println("Invalid Option. Please select 1-8");
+        System.out.println("Please Enter a valid Option: (1-8)");
+        System.out.println();
     }
 
     private void printKioskMainMenu() {
