@@ -2,6 +2,7 @@ package libraryadminterminal.module;
 
 import ejb.session.stateless.MemberEntityControllerRemote;
 import entity.MemberEntity;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import util.exception.MemberEntityException;
 import util.exception.MemberExistsException;
@@ -76,9 +77,17 @@ public class RegisterationOperationModule {
     }
     
     private int getUserResponse() {
+        int input = 0;
         Scanner scanner = new Scanner(System.in);
         System.out.print("> ");
-        return scanner.nextInt();
+        try {
+            input = scanner.nextInt();
+        }
+        catch (InputMismatchException ex) {
+            displayMessage("Please enter a valid numerical number.");
+        }
+        
+        return input;
     }
     
     private String getMainMenu() {

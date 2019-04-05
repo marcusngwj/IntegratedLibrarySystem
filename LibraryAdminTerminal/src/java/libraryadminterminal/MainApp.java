@@ -7,6 +7,7 @@ import ejb.session.stateless.MemberEntityControllerRemote;
 import ejb.session.stateless.ReservationEntityControllerRemote;
 import ejb.session.stateless.StaffEntityControllerRemote;
 import entity.StaffEntity;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import libraryadminterminal.module.AdministrationOperationModule;
 import libraryadminterminal.module.LibraryOperationModule;
@@ -133,9 +134,17 @@ public class MainApp {
     }
     
     private int getUserResponse() {
+        int input = 0;
         Scanner scanner = new Scanner(System.in);
         System.out.print("> ");
-        return scanner.nextInt();
+        try {
+            input = scanner.nextInt();
+        }
+        catch (InputMismatchException ex) {
+            displayMessage("Please enter a valid numerical number.");
+        }
+        
+        return input;
     }
     
     private void displayMessage(String message) {
