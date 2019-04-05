@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import util.exception.StaffEntityException;
+import util.helper.CredentialFormatHelper;
 
 @Entity
 public class StaffEntity implements Serializable {
@@ -31,7 +33,9 @@ public class StaffEntity implements Serializable {
     public StaffEntity() {
     }
 
-    public StaffEntity(String firstName, String lastName, String username, String password) {
+    public StaffEntity(String firstName, String lastName, String username, String password) throws StaffEntityException {
+        verifyFormats(firstName, lastName, username, password);
+        
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -80,6 +84,55 @@ public class StaffEntity implements Serializable {
     
     public String getFullName() {
         return firstName + " " + lastName;
+    }
+    
+    public void updateStaff(String firstName, String lastName, String username, String password) throws StaffEntityException {
+        if (firstName.equals("")) {
+            firstName = this.firstName;
+        }
+        
+        if (lastName.equals("")) {
+            lastName = this.lastName;
+        }
+        
+        if (username.equals("")) {
+            username = this.username;
+        }
+        
+        if (password.equals("")) {
+            password = this.password;
+        }
+        
+        verifyFormats(firstName, lastName, username, password);
+        
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.password = password;
+    }
+    
+    private void verifyFormats(String firstName, String lastName, String username, String password) throws StaffEntityException {
+        String errorMessage = "";
+        
+        if (!CredentialFormatHelper.isValidNameFormat(firstName)) {
+            errorMessage += "Invalid First Name. Please try again.\n";
+        }
+        
+        if (!CredentialFormatHelper.isValidNameFormat(lastName)) {
+            errorMessage += "Invalid Last Name. Please try again.\n";
+        }
+        
+        if (!CredentialFormatHelper.isValidUsernameFormat(username)) {
+            errorMessage += "Invalid Username. Please try again.\n";
+        }
+        
+        if (!CredentialFormatHelper.isValidPasswordFormat(password)) {
+            errorMessage += "Invalid Password. Please try again.\n";
+        }
+        
+        if (!errorMessage.equals("")) {
+            throw new StaffEntityException(errorMessage);
+        }
     }
 
     @Override

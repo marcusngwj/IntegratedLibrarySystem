@@ -18,6 +18,20 @@ public class CredentialFormatHelper {
         return securityMatcher.matches();
     }
     
+    public static boolean isValidUsernameFormat(String username) {
+        final String USERNAME_PATTERN = "[a-zA-Z0-9]+";
+        Pattern usernamePattern = Pattern.compile(USERNAME_PATTERN);
+        Matcher usernameMatcher = usernamePattern.matcher(username);
+        return usernameMatcher.matches();
+    }
+    
+    public static boolean isValidPasswordFormat(String password) {
+        final String PASSWORD_PATTERN = "[a-zA-Z0-9!@#$%^&*\\(\\)-=_+\\[\\]\\{\\}\\\\|;':\",./<>?`~]+";
+        Pattern passwordPattern = Pattern.compile(PASSWORD_PATTERN);
+        Matcher passwordMatcher = passwordPattern.matcher(password);
+        return passwordMatcher.matches();
+    }
+    
     public static boolean isValidNameFormat(String name) {
         final String NAME_PATTERN = "[a-zA-Z]+";
         Pattern namePattern = Pattern.compile(NAME_PATTERN);

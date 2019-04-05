@@ -22,6 +22,7 @@ import util.exception.BookNotFoundException;
 import util.exception.MemberEntityException;
 import util.exception.MemberExistsException;
 import util.exception.MemberNotFoundException;
+import util.exception.StaffEntityException;
 import util.exception.StaffExistsException;
 import util.exception.StaffNotFoundException;
 import util.logger.Logger;
@@ -92,7 +93,7 @@ public class DataInitializationSessionBean {
             staffEntity = new StaffEntity("Barbara", "Durham", "assistant", "password");
             staffEntity = staffEntityControllerLocal.persistNewStaffEntity(staffEntity);
         }
-        catch (StaffExistsException ex) {
+        catch (StaffExistsException | StaffEntityException ex) {
             Logger.log(Logger.SEVERE, "DataInitializationSessionBean", "initializeStaffEntityTable", ex.getMessage());
         }
     }

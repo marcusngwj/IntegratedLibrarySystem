@@ -7,7 +7,6 @@ import java.util.Scanner;
 import util.exception.MemberEntityException;
 import util.exception.MemberExistsException;
 import util.exception.MemberNotFoundException;
-import util.helper.CredentialFormatHelper;
 
 public class MemberManagementModule {
     private static final int ADD_MEMBER = 1;
@@ -142,7 +141,6 @@ public class MemberManagementModule {
         memberEntityControllerRemote.updateMember(member);
         displayMessage("Member updated successfully!\n");
     }
-    
     
     private void deleteMember() throws MemberNotFoundException, NumberFormatException {
         Scanner scanner = new Scanner(System.in);

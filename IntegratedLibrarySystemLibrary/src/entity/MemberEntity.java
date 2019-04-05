@@ -231,8 +231,12 @@ public class MemberEntity implements Serializable {
             errorMessage += "Invalid Security Code. Please try again.\n";
         }
         
-        if (!CredentialFormatHelper.isValidNameFormat(firstName) || !CredentialFormatHelper.isValidNameFormat(lastName)) {
-            errorMessage += "Invalid Name. Please try again.\n";
+        if (!CredentialFormatHelper.isValidNameFormat(firstName)) {
+            errorMessage += "Invalid First Name. Please try again.\n";
+        }
+        
+        if (!CredentialFormatHelper.isValidNameFormat(lastName)) {
+            errorMessage += "Invalid Last Name. Please try again.\n";
         }
         
         if (!CredentialFormatHelper.isValidGenderFormat(gender)) {
