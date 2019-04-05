@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import util.exception.BookEntityException;
+import util.helper.CredentialFormatHelper;
 
 @Entity
 public class BookEntity implements Serializable {
@@ -37,10 +39,12 @@ public class BookEntity implements Serializable {
     public BookEntity() {
     }
 
-    public BookEntity(String title, String isbn, Integer year) {
+    public BookEntity(String title, String isbn, String year) throws BookEntityException {
+        verifyFormats(title, isbn, year);
+        
         this.title = title;
         this.isbn = isbn;
-        this.year = year;
+        this.year = Integer.valueOf(year);
     }
     
     public Long getBookId() {
@@ -89,6 +93,46 @@ public class BookEntity implements Serializable {
 
     public void setReservations(List<ReservationEntity> reservations) {
         this.reservations = reservations;
+    }
+    
+    public void updateStaff(String title, String isbn, String year) throws BookEntityException {
+        if (title.equals("")) {
+            title = this.title;
+        }
+        
+        if (isbn.equals("")) {
+            isbn = this.isbn;
+        }
+        
+        if (year.equals("")) {
+            year = this.year.toString();
+        }
+        
+        verifyFormats(title, isbn, year);
+        
+        this.title = title;
+        this.isbn = isbn;
+        this.year = Integer.valueOf(year);
+    }
+    
+    private void verifyFormats(String title, String isbn, String year) throws BookEntityException {
+        String errorMessage = "";
+        
+        if (!CredentialFormatHelper.isValidBookTitleFormat(title)) {
+            errorMessage += "Invalid Title. Please try again.\n";
+        }
+        
+        if (!CredentialFormatHelper.isValidIsbnFormat(isbn)) {
+            errorMessage += "Invalid ISBN. Please try again.\n";
+        }
+        
+        if (!CredentialFormatHelper.isValidYearFormat(year)) {
+            errorMessage += "Invalid Year. Please try again.\n";
+        }
+        
+        if (!errorMessage.equals("")) {
+            throw new BookEntityException(errorMessage);
+        }
     }
 
     @Override

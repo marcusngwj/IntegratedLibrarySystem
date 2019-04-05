@@ -26,7 +26,7 @@ public class CredentialFormatHelper {
     }
     
     public static boolean isValidPasswordFormat(String password) {
-        final String PASSWORD_PATTERN = "[a-zA-Z0-9!@#$%^&*\\(\\)-=_+\\[\\]\\{\\}\\\\|;':\",./<>?`~]+";
+        final String PASSWORD_PATTERN = ".+";
         Pattern passwordPattern = Pattern.compile(PASSWORD_PATTERN);
         Matcher passwordMatcher = passwordPattern.matcher(password);
         return passwordMatcher.matches();
@@ -65,6 +65,27 @@ public class CredentialFormatHelper {
         Pattern addressPattern = Pattern.compile(ADDRESS_PATTERN);
         Matcher addressMatcher = addressPattern.matcher(address);
         return addressMatcher.matches();
+    }
+    
+    public static boolean isValidBookTitleFormat(String title) {
+        final String TITLE_PATTERN = ".+";
+        Pattern titlePattern = Pattern.compile(TITLE_PATTERN);
+        Matcher titleMatcher = titlePattern.matcher(title);
+        return titleMatcher.matches();
+    }
+    
+    public static boolean isValidYearFormat(String year) {
+        final String YEAR_PATTERN = "[0-9]{4}";
+        Pattern yearPattern = Pattern.compile(YEAR_PATTERN);
+        Matcher yearMatcher = yearPattern.matcher(year);
+        return yearMatcher.matches();
+    }
+    
+    public static boolean isValidIsbnFormat(String isbn) {
+        final String ISBN_PATTERN = "[a-zA-Z0-9]+";
+        Pattern isbnPattern = Pattern.compile(ISBN_PATTERN);
+        Matcher isbnMatcher = isbnPattern.matcher(isbn);
+        return isbnMatcher.matches();
     }
     
     public static String convertToStandardGenderFormat(String gender) {

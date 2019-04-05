@@ -18,6 +18,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import util.exception.BookEntityException;
 import util.exception.BookNotFoundException;
 import util.exception.MemberEntityException;
 import util.exception.MemberExistsException;
@@ -111,19 +112,25 @@ public class DataInitializationSessionBean {
     }
     
     private void initializeBookEntityTable() {
-        BookEntity bookEntity = new BookEntity("The Lord of the Rings", "S18018", 1954);
-        bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
-        bookEntity = new BookEntity("Le Petit Prince", "S64921", 1943);
-        bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
-        bookEntity = new BookEntity("Harry Potter and the Philosopher's Stone", "S38101", 1997);
-        bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
-        bookEntity = new BookEntity("The Hobbit", "S19527", 1937);
-        bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
-        bookEntity = new BookEntity("And Then There Were None", "S63288", 1939);
-        bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
-        bookEntity = new BookEntity("Dream of the Red Chamber", "S32187", 1791);
-        bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
-        bookEntity = new BookEntity("The Lion, the Witch and the Wardrobe", "S74569", 1950);
-        bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+        try {
+            BookEntity bookEntity = new BookEntity("The Lord of the Rings", "S18018", "1954");
+            bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+            bookEntity = new BookEntity("Le Petit Prince", "S64921", "1943");
+            bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+            bookEntity = new BookEntity("Harry Potter and the Philosopher's Stone", "S38101", "1997");
+            bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+            bookEntity = new BookEntity("The Hobbit", "S19527", "1937");
+            bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+            bookEntity = new BookEntity("And Then There Were None", "S63288", "1939");
+            bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+            bookEntity = new BookEntity("Dream of the Red Chamber", "S32187", "1791");
+            bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+            bookEntity = new BookEntity("The Lion, the Witch and the Wardrobe", "S74569", "1950");
+            bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+        }
+        catch (BookEntityException ex) {
+            Logger.log(Logger.SEVERE, "DataInitializationSessionBean", "initializeBookEntityTable", ex.getMessage());
+        }
+        
     }
 }
