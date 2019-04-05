@@ -2,8 +2,10 @@ package libraryadminterminal.module;
 
 import ejb.session.stateless.StaffEntityControllerRemote;
 import entity.StaffEntity;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
+import util.exception.StaffEntityException;
 import util.exception.StaffExistsException;
 import util.exception.StaffNotFoundException;
 
@@ -57,7 +59,7 @@ public class StaffManagementModule {
                     displayMessage("Invalid option, please try again!\n");
                 }
             }
-            catch (StaffNotFoundException | StaffExistsException ex) {
+            catch (StaffNotFoundException | StaffExistsException | StaffEntityException ex) {
                 displayMessage(ex.getMessage());
             }
             catch (NumberFormatException ex) {
@@ -66,11 +68,10 @@ public class StaffManagementModule {
             finally {
                 System.out.println();
             }
-            
         }
     }
     
-    private void addStaff() throws StaffExistsException {
+    private void addStaff() throws StaffExistsException, StaffEntityException {
         Scanner scanner = new Scanner(System.in);
         String firstName = "";
         String lastName = "";
@@ -88,15 +89,9 @@ public class StaffManagementModule {
         System.out.print("Enter password> ");
         password = scanner.nextLine().trim();
         
-        if (firstName.length()>0 && lastName.length()>0 && username.length()>0 && password.length()>0) {
-            displayMessage("\nProcessing...");
-            StaffEntity newStaff = new StaffEntity(firstName, lastName, username, password);
-            newStaff = staffEntityControllerRemote.persistNewStaffEntity(newStaff);
-            displayMessage("Staff has been added successfully!");
-        }
-        else {
-            displayMessage("There were empty fields in your form. Please try again.");
-        }
+        StaffEntity newStaff = new StaffEntity(firstName, lastName, username, password);
+        newStaff = staffEntityControllerRemote.persistNewStaffEntity(newStaff);
+        displayMessage("Staff has been added successfully!");
     }
     
     private void viewStaffDetail() throws StaffNotFoundException {
@@ -112,7 +107,7 @@ public class StaffManagementModule {
         displayMessage(formatStaffDetail(staff));
     }
     
-    private void updateStaff() throws StaffNotFoundException, StaffExistsException, NumberFormatException {
+    private void updateStaff() throws StaffNotFoundException, StaffExistsException, StaffEntityException {
         Scanner scanner = new Scanner(System.in);
         String input = "";
         
@@ -123,34 +118,18 @@ public class StaffManagementModule {
         StaffEntity staff = staffEntityControllerRemote.retrieveStaffById(staffId);
         
         System.out.print("Enter First Name (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if (input.length() > 0) {
-            staff.setFirstName(input);
-        }
-        
+        String firstName = scanner.nextLine().trim();
         System.out.print("Enter Last Name (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if(input.length() > 0) {
-            staff.setLastName(input);
-        }
-        
+        String lastName = scanner.nextLine().trim();
         System.out.print("Enter Username (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if(input.length() > 0) {
-            staff.setUsername(input);
-        }
-        
+        String username = scanner.nextLine().trim();
         System.out.print("Enter Password (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if(input.length() > 0) {
-            staff.setPassword(input);
-        }
+        String password = scanner.nextLine().trim();
         
-        displayMessage("Updating...");
+        staff.updateStaff(firstName, lastName, username, password);
         staffEntityControllerRemote.updateStaff(staff);
         displayMessage("Staff updated successfully!\n");
     }
-    
     
     private void deleteStaff() throws StaffNotFoundException, NumberFormatException {
         Scanner scanner = new Scanner(System.in);
@@ -209,8 +188,16 @@ public class StaffManagementModule {
     }
     
     private int getUserResponse() {
+        int input = 0;
         Scanner scanner = new Scanner(System.in);
         System.out.print("> ");
-        return scanner.nextInt();
+        try {
+            input = scanner.nextInt();
+        }
+        catch (InputMismatchException ex) {
+            displayMessage("Please enter a valid numerical number.");
+        }
+        
+        return input;
     }
 }

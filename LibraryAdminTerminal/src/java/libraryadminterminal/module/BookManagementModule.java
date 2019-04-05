@@ -2,9 +2,10 @@ package libraryadminterminal.module;
 
 import ejb.session.stateless.BookEntityControllerRemote;
 import entity.BookEntity;
-import entity.StaffEntity;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
+import util.exception.BookEntityException;
 import util.exception.BookNotFoundException;
 
 public class BookManagementModule {
@@ -57,7 +58,7 @@ public class BookManagementModule {
                     displayMessage("Invalid option, please try again!\n");
                 }
             }
-            catch (BookNotFoundException ex) {
+            catch (BookNotFoundException | BookEntityException ex) {
                 displayMessage(ex.getMessage());
             }
             catch (NumberFormatException ex) {
@@ -69,7 +70,7 @@ public class BookManagementModule {
         }
     }
     
-    private void addBook() throws NumberFormatException {
+    private void addBook() throws BookEntityException {
         Scanner scanner = new Scanner(System.in);
         
         System.out.println();
@@ -79,17 +80,11 @@ public class BookManagementModule {
         System.out.print("Enter ISBN> ");
         String isbn = scanner.nextLine().trim();
         System.out.print("Enter year> ");
-        Integer year = Integer.valueOf(scanner.nextLine().trim());
+        String year = scanner.nextLine().trim();
         
-        if (title.length()>0 && isbn.length()>0 && year>=0) {
-            displayMessage("\nProcessing...");
-            BookEntity newBook = new BookEntity(title, isbn, year);
-            newBook = bookEntityControllerRemote.persistNewBookEntity(newBook);
-            displayMessage("Book has been added successfully!");
-        }
-        else {
-            displayMessage("There were invalid entries in your form. Please try again.");
-        }
+        BookEntity newBook = new BookEntity(title, isbn, year);
+        newBook = bookEntityControllerRemote.persistNewBookEntity(newBook);
+        displayMessage("Book has been added successfully!");
     }
     
     private void viewBookDetails() throws BookNotFoundException {
@@ -104,7 +99,7 @@ public class BookManagementModule {
         displayMessage(formatBookDetail(book));
     }
     
-    private void updateBook() throws BookNotFoundException, NumberFormatException {
+    private void updateBook() throws BookNotFoundException, BookEntityException, NumberFormatException {
         Scanner scanner = new Scanner(System.in);
         String input = "";
         
@@ -115,30 +110,13 @@ public class BookManagementModule {
         BookEntity book = bookEntityControllerRemote.retrieveBookById(bookId);
         
         System.out.print("Enter Title (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if (input.length() > 0) {
-            book.setTitle(input);
-        }
-        
+        String title = scanner.nextLine().trim();
         System.out.print("Enter ISBN (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if(input.length() > 0) {
-            book.setIsbn(input);
-        }
-        
+        String isbn = scanner.nextLine().trim();
         System.out.print("Enter Year (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if (input.length()>0) {
-            int year = Integer.valueOf(scanner.nextLine().trim());
-            if (year >= 0) {
-                book.setYear(year);
-            }
-            else {
-                throw new NumberFormatException();
-            }
-        }
+        String year = scanner.nextLine().trim();
         
-        displayMessage("Updating...");
+        book.updateStaff(title, isbn, year);
         bookEntityControllerRemote.updateBook(book);
         displayMessage("Book updated successfully!\n");
     }
@@ -201,8 +179,16 @@ public class BookManagementModule {
     }
     
     private int getUserResponse() {
+        int input = 0;
         Scanner scanner = new Scanner(System.in);
         System.out.print("> ");
-        return scanner.nextInt();
+        try {
+            input = scanner.nextInt();
+        }
+        catch (InputMismatchException ex) {
+            displayMessage("Please enter a valid numerical number.");
+        }
+        
+        return input;
     }
 }

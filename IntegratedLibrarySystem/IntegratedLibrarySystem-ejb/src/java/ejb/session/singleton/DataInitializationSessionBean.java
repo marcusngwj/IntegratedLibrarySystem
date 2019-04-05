@@ -18,9 +18,12 @@ import javax.ejb.LocalBean;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import util.exception.BookEntityException;
 import util.exception.BookNotFoundException;
+import util.exception.MemberEntityException;
 import util.exception.MemberExistsException;
 import util.exception.MemberNotFoundException;
+import util.exception.StaffEntityException;
 import util.exception.StaffExistsException;
 import util.exception.StaffNotFoundException;
 import util.logger.Logger;
@@ -91,37 +94,43 @@ public class DataInitializationSessionBean {
             staffEntity = new StaffEntity("Barbara", "Durham", "assistant", "password");
             staffEntity = staffEntityControllerLocal.persistNewStaffEntity(staffEntity);
         }
-        catch (StaffExistsException ex) {
+        catch (StaffExistsException | StaffEntityException ex) {
             Logger.log(Logger.SEVERE, "DataInitializationSessionBean", "initializeStaffEntityTable", ex.getMessage());
         }
     }
     
     private void initializeMemberEntityTable() {
         try {
-            MemberEntity memberEntity = new MemberEntity("S7483027A", "987654", "Tony", "Teo", "Male", 44, "87297373", "11 Tampines Ave 3");
+            MemberEntity memberEntity = new MemberEntity("S7483027A", "987654", "Tony", "Teo", "Male", "44", "87297373", "11 Tampines Ave 3");
             memberEntity = memberEntityControllerLocal.persistNewMemberEntity(memberEntity);
-            memberEntity = new MemberEntity("S8381028X", "456789", "Wendy", "Tan", "Female", 35, "97502837", "15 Computing Dr");
+            memberEntity = new MemberEntity("S8381028X", "456789", "Wendy", "Tan", "Female", "35", "97502837", "15 Computing Dr");
             memberEntity = memberEntityControllerLocal.persistNewMemberEntity(memberEntity);
         }
-        catch (MemberExistsException ex) {
-            Logger.log(Logger.SEVERE, "DataInitializationSessionBean", "initializeStaffEntityTable", ex.getMessage());
+        catch (MemberExistsException | MemberEntityException ex) {
+            Logger.log(Logger.SEVERE, "DataInitializationSessionBean", "initializeMemberEntityTable", ex.getMessage());
         }
     }
     
     private void initializeBookEntityTable() {
-        BookEntity bookEntity = new BookEntity("The Lord of the Rings", "S18018", 1954);
-        bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
-        bookEntity = new BookEntity("Le Petit Prince", "S64921", 1943);
-        bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
-        bookEntity = new BookEntity("Harry Potter and the Philosopher's Stone", "S38101", 1997);
-        bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
-        bookEntity = new BookEntity("The Hobbit", "S19527", 1937);
-        bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
-        bookEntity = new BookEntity("And Then There Were None", "S63288", 1939);
-        bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
-        bookEntity = new BookEntity("Dream of the Red Chamber", "S32187", 1791);
-        bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
-        bookEntity = new BookEntity("The Lion, the Witch and the Wardrobe", "S74569", 1950);
-        bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+        try {
+            BookEntity bookEntity = new BookEntity("The Lord of the Rings", "S18018", "1954");
+            bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+            bookEntity = new BookEntity("Le Petit Prince", "S64921", "1943");
+            bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+            bookEntity = new BookEntity("Harry Potter and the Philosopher's Stone", "S38101", "1997");
+            bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+            bookEntity = new BookEntity("The Hobbit", "S19527", "1937");
+            bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+            bookEntity = new BookEntity("And Then There Were None", "S63288", "1939");
+            bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+            bookEntity = new BookEntity("Dream of the Red Chamber", "S32187", "1791");
+            bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+            bookEntity = new BookEntity("The Lion, the Witch and the Wardrobe", "S74569", "1950");
+            bookEntity = bookEntityControllerLocal.persistNewBookEntity(bookEntity);
+        }
+        catch (BookEntityException ex) {
+            Logger.log(Logger.SEVERE, "DataInitializationSessionBean", "initializeBookEntityTable", ex.getMessage());
+        }
+        
     }
 }

@@ -9,6 +9,7 @@ import entity.BookEntity;
 import entity.FineEntity;
 import entity.LoanEntity;
 import entity.MemberEntity;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import util.exception.BookNotFoundException;
@@ -227,9 +228,17 @@ public class LibraryOperationModule {
     }
     
     private int getUserResponse() {
+        int input = 0;
         Scanner scanner = new Scanner(System.in);
         System.out.print("> ");
-        return scanner.nextInt();
+        try {
+            input = scanner.nextInt();
+        }
+        catch (InputMismatchException ex) {
+            displayMessage("Please enter a valid numerical number.");
+        }
+        
+        return input;
     }
     
     private String getMainMenu() {

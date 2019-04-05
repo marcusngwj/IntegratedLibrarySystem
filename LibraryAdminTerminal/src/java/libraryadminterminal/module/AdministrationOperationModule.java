@@ -3,6 +3,7 @@ package libraryadminterminal.module;
 import ejb.session.stateless.BookEntityControllerRemote;
 import ejb.session.stateless.MemberEntityControllerRemote;
 import ejb.session.stateless.StaffEntityControllerRemote;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class AdministrationOperationModule {
@@ -62,9 +63,17 @@ public class AdministrationOperationModule {
     }
     
     private int getUserResponse() {
+        int input = 0;
         Scanner scanner = new Scanner(System.in);
         System.out.print("> ");
-        return scanner.nextInt();
+        try {
+            input = scanner.nextInt();
+        }
+        catch (InputMismatchException ex) {
+            displayMessage("Please enter a valid numerical number.");
+        }
+        
+        return input;
     }
     
     private String getMainMenu() {
