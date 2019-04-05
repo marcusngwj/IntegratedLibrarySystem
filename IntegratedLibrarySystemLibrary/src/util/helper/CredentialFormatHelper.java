@@ -26,8 +26,8 @@ public class CredentialFormatHelper {
     }
     
     public static boolean isValidGenderFormat(String gender) {
-        final String GENDER_PATTERN = "([M|Male|male]|[F|Female|female]){1}";
-        Pattern genderPattern = Pattern.compile(GENDER_PATTERN);
+        final String GENDER_PATTERN = "(M|Male|F|Female){1}";
+        Pattern genderPattern = Pattern.compile(GENDER_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher genderMatcher = genderPattern.matcher(gender);
         return genderMatcher.matches();
     }
@@ -54,10 +54,10 @@ public class CredentialFormatHelper {
     }
     
     public static String convertToStandardGenderFormat(String gender) {
-        if(gender.equals("M") || gender.equals("male")) {
+        if(gender.equalsIgnoreCase("m") || gender.equalsIgnoreCase("male")) {
             return "Male";
         } 
-        else if(gender.equals("F") || gender.equals("female")) {
+        else if(gender.equalsIgnoreCase("f") || gender.equalsIgnoreCase("female")) {
             return "Female";
         }
         else {

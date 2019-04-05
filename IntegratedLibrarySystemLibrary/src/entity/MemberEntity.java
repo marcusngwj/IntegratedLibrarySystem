@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import util.exception.MemberEntityException;
+import util.helper.CredentialFormatHelper;
 
 @Entity
 public class MemberEntity implements Serializable {
@@ -56,15 +58,18 @@ public class MemberEntity implements Serializable {
     public MemberEntity() {
     }
 
-    public MemberEntity(String identityNumber, String securityCode, String firstName, String lastName, String gender, Integer age, String phone, String address) {
+    public MemberEntity(String identityNumber, String securityCode, String firstName, String lastName, String gender, String age, String phone, String address) throws MemberEntityException {
+        verifyFormats(identityNumber, securityCode, firstName, lastName, gender, age, phone, address);
+        
         this.identityNumber = identityNumber;
         this.securityCode = securityCode;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.gender = gender;
-        this.age = age;
+        this.gender = CredentialFormatHelper.convertToStandardGenderFormat(gender);
+        this.age = Integer.valueOf(age);
         this.phone = phone;
         this.address = address;
+        
         this.fines = new ArrayList<FineEntity>();
         this.loans = new ArrayList<LoanEntity>();
         this.reservations = new ArrayList<ReservationEntity>();
@@ -169,7 +174,88 @@ public class MemberEntity implements Serializable {
     public String getFullName() {
         return firstName + " " + lastName;
     }
-
+    
+    public void updateMemberEntity(String identityNumber, String securityCode, String firstName, String lastName, String gender, String age, String phone, String address) throws MemberEntityException {
+        if (identityNumber.equals("")) {
+            identityNumber = this.identityNumber;
+        }
+        
+        if (securityCode.equals("")) {
+            securityCode = this.securityCode;
+        }
+        
+        if (firstName.equals("")) {
+            firstName = this.firstName;
+        }
+        
+        if (lastName.equals("")) {
+            lastName = this.lastName;
+        }
+        
+        if (gender.equals("")) {
+            gender = this.gender;
+        }
+        
+        if (age.equals("")) {
+            age = this.age.toString();
+        }
+        
+        if (phone.equals("")) {
+            phone = this.phone;
+        }
+        
+        if (address.equals("")) {
+            address = this.address;
+        }
+        
+        verifyFormats(identityNumber, securityCode, firstName, lastName, gender, age, phone, address);
+        
+        this.identityNumber = identityNumber;
+        this.securityCode = securityCode;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = CredentialFormatHelper.convertToStandardGenderFormat(gender);;
+        this.age = Integer.valueOf(age);
+        this.phone = phone;
+        this.address = address;
+    }
+    
+    private void verifyFormats(String identityNumber, String securityCode, String firstName, String lastName, String gender, String age, String phone, String address) throws MemberEntityException {
+        String errorMessage = "";
+        
+        if (!CredentialFormatHelper.isValidMemberIdentityNumberFormat(identityNumber)) {
+            errorMessage += "Invalid ID or Duplicate Identity Number! Please try again.\n";
+        }
+        
+        if (!CredentialFormatHelper.isValidSecurityCodeFormat(securityCode)) {
+            errorMessage += "Invalid Security Code. Please try again.\n";
+        }
+        
+        if (!CredentialFormatHelper.isValidNameFormat(firstName) || !CredentialFormatHelper.isValidNameFormat(lastName)) {
+            errorMessage += "Invalid Name. Please try again.\n";
+        }
+        
+        if (!CredentialFormatHelper.isValidGenderFormat(gender)) {
+            errorMessage += "Invalid Gender Format. Please try again.\n";
+        }
+        
+        if (!CredentialFormatHelper.isValidAgeFormat(age)) {
+            errorMessage += "Invalid Age Format. Please try again.\n";
+        }
+        
+        if (!CredentialFormatHelper.isValidPhoneFormat(phone)) {
+            errorMessage += "Invalid Phone Format. Please try again.\n";
+        }
+        
+        if (!CredentialFormatHelper.isValidAddressFormat(address)) {
+            errorMessage += "Invalid Address Format. Please try again.\n";
+        }
+        
+        if (!errorMessage.equals("")) {
+            throw new MemberEntityException(errorMessage);
+        }
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

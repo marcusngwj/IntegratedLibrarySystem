@@ -4,8 +4,10 @@ import ejb.session.stateless.MemberEntityControllerRemote;
 import entity.MemberEntity;
 import java.util.List;
 import java.util.Scanner;
+import util.exception.MemberEntityException;
 import util.exception.MemberExistsException;
 import util.exception.MemberNotFoundException;
+import util.helper.CredentialFormatHelper;
 
 public class MemberManagementModule {
     private static final int ADD_MEMBER = 1;
@@ -57,7 +59,7 @@ public class MemberManagementModule {
                     displayMessage("Invalid option, please try again!\n");
                 }
             }
-            catch (MemberNotFoundException | MemberExistsException ex) {
+            catch (MemberNotFoundException | MemberExistsException | MemberEntityException ex) {
                 displayMessage(ex.getMessage());
             }
             catch (NumberFormatException ex) {
@@ -70,7 +72,7 @@ public class MemberManagementModule {
         }
     }
     
-    private void addMember() throws MemberExistsException, NumberFormatException {
+    private void addMember() throws MemberExistsException, MemberEntityException {
         Scanner scanner = new Scanner(System.in);
         
         System.out.println();
@@ -86,22 +88,15 @@ public class MemberManagementModule {
         System.out.print("Enter Gender> ");
         String gender = scanner.nextLine().trim();
         System.out.print("Enter Age> ");
-        Integer age = Integer.valueOf(scanner.nextLine().trim());
+        String age = scanner.nextLine().trim();
         System.out.print("Enter Phone> ");
         String phone = scanner.nextLine().trim();
         System.out.print("Enter Addrss> ");
         String address = scanner.nextLine().trim();
-
-        if (identityNumber.length()>0 && securityCode.length()>0 && firstName.length()>0 && lastName.length()>0 
-                && gender.length()>0 && age>=0 && phone.length()>0 && address.length()>0) {
-            displayMessage("\nProcessing...");
-            MemberEntity newMember = new MemberEntity(identityNumber, securityCode, firstName, lastName, gender, age, phone, address);
-            newMember = memberEntityControllerRemote.persistNewMemberEntity(newMember);
-            displayMessage("Member has been added successfully!");
-        }
-        else {
-            displayMessage("There were empty fields in your form. Please try again.");
-        }
+        
+        MemberEntity newMember = new MemberEntity(identityNumber, securityCode, firstName, lastName, gender, age, phone, address);
+        newMember = memberEntityControllerRemote.createNewMember(newMember);
+        displayMessage("Member has been added successfully!");
     }
     
     private void viewMemberDetails() throws MemberNotFoundException {
@@ -113,10 +108,10 @@ public class MemberManagementModule {
         String identityNumber = scanner.nextLine().trim();
         
         MemberEntity staff = memberEntityControllerRemote.retrieveMemberByIdentityNumber(identityNumber);
-        displayMessage(formatStaffDetail(staff));
+        displayMessage(formatMemberDetail(staff));
     }
     
-    private void updateMember() throws MemberNotFoundException, MemberExistsException, NumberFormatException {
+    private void updateMember() throws MemberNotFoundException, MemberExistsException, MemberEntityException {
         Scanner scanner = new Scanner(System.in);
         String input = "";
         
@@ -127,61 +122,23 @@ public class MemberManagementModule {
         MemberEntity member = memberEntityControllerRemote.retrieveMemberById(memberId);
         
         System.out.print("Enter Identity Number (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if (input.length() > 0) {
-            member.setIdentityNumber(input);
-        }
-        
+        String identityNumber = scanner.nextLine().trim();
         System.out.print("Enter Security Code (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if (input.length() > 0) {
-            member.setSecurityCode(input);
-        }
-        
+        String securityCode = scanner.nextLine().trim();
         System.out.print("Enter First Name (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if(input.length() > 0) {
-            member.setFirstName(input);
-        }
-        
+        String firstName = scanner.nextLine().trim();
         System.out.print("Enter Last Name (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if(input.length() > 0) {
-            member.setLastName(input);
-        }
-        
+        String lastName = scanner.nextLine().trim();
         System.out.print("Enter Gender (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if(input.length() > 0) {
-            member.setGender(input);
-        }
-        
+        String gender = scanner.nextLine().trim();
         System.out.print("Enter Age (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if (input.length()>0) {
-            int age = Integer.valueOf(scanner.nextLine().trim());
-            if (age >= 0) {
-                member.setAge(age);
-            }
-            else {
-                throw new NumberFormatException();
-            }
-        }
-        
+        String age = scanner.nextLine().trim();
         System.out.print("Enter Phone (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if(input.length() > 0) {
-            member.setPhone(input);
-        }
-        
+        String phone = scanner.nextLine().trim();
         System.out.print("Enter Address (blank if no change)> ");
-        input = scanner.nextLine().trim();
-        if(input.length() > 0) {
-            member.setAddress(input);
-        }
+        String address = scanner.nextLine().trim();
         
-        
-        displayMessage("Updating...");
+        member.updateMemberEntity(identityNumber, securityCode, firstName, lastName, gender, age, phone, address);
         memberEntityControllerRemote.updateMember(member);
         displayMessage("Member updated successfully!\n");
     }
@@ -221,7 +178,7 @@ public class MemberManagementModule {
         displayMessage(table);
     }
     
-    private String formatStaffDetail(MemberEntity member) {
+    private String formatMemberDetail(MemberEntity member) {
         String header = formatTableRow("Id", "Identity Number", "Security Code", "First Name", "Last Name", "Gender", "Age", "Phone", "Address");
         String row = formatTableRow(member.getMemberId().toString(), member.getIdentityNumber(), member.getSecurityCode(), 
                 member.getFirstName(), member.getLastName(), member.getGender(), member.getAge().toString(), 

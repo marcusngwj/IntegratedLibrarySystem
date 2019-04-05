@@ -3,6 +3,7 @@ package libraryadminterminal.module;
 import ejb.session.stateless.MemberEntityControllerRemote;
 import entity.MemberEntity;
 import java.util.Scanner;
+import util.exception.MemberEntityException;
 import util.exception.MemberExistsException;
 
 public class RegisterationOperationModule {
@@ -38,7 +39,7 @@ public class RegisterationOperationModule {
                     displayMessage("Invalid option, please try again!\n");
                 }
             }
-            catch (MemberExistsException ex) {
+            catch (MemberExistsException | MemberEntityException ex) {
                 displayMessage(ex.getMessage());
             }
             finally {
@@ -47,7 +48,7 @@ public class RegisterationOperationModule {
         }
     }
     
-    private void registerNewMember() throws MemberExistsException{
+    private void registerNewMember() throws MemberExistsException, MemberEntityException {
         Scanner scanner = new Scanner(System.in);
         
         System.out.println();
@@ -63,22 +64,15 @@ public class RegisterationOperationModule {
         System.out.print("Enter Gender> ");
         String gender = scanner.nextLine().trim();
         System.out.print("Enter Age> ");
-        Integer age = Integer.valueOf(scanner.nextLine().trim());
+        String age = scanner.nextLine().trim();
         System.out.print("Enter Phone> ");
         String phone = scanner.nextLine().trim();
         System.out.print("Enter Addrss> ");
         String address = scanner.nextLine().trim();
 
-        if (identityNumber.length()>0 && securityCode.length()>0 && firstName.length()>0 && lastName.length()>0 
-                && gender.length()>0 && age>=0 && phone.length()>0 && address.length()>0) {
-            displayMessage("\nProcessing...");
-            MemberEntity newMember = new MemberEntity(identityNumber, securityCode, firstName, lastName, gender, age, phone, address);
-            newMember = memberEntityControllerRemote.persistNewMemberEntity(newMember);
-            displayMessage("Member has been registered successfully!\n");
-        }
-        else {
-            displayMessage("There were empty fields in your form. Please try again.");
-        }
+        MemberEntity newMember = new MemberEntity(identityNumber, securityCode, firstName, lastName, gender, age, phone, address);
+        newMember = memberEntityControllerRemote.persistNewMemberEntity(newMember);
+        displayMessage("Member has been registered successfully!\n");
     }
     
     private int getUserResponse() {
