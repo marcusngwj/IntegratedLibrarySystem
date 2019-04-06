@@ -156,7 +156,7 @@ public class StaffManagementModule {
     
     private void viewAllStaff() {
         List<StaffEntity> staffList = staffEntityControllerRemote.retrieveAllStaffs();
-        String table = formatTableRow("Id", "First Name", "Last Name", "Username", "Password");
+        String table = getTableHeader();
         for (StaffEntity staff : staffList) {
             table += "\n" + formatTableRow(staff.getStaffId().toString(), staff.getFirstName(), staff.getLastName(), staff.getUsername(), staff.getPassword());
         }
@@ -164,13 +164,17 @@ public class StaffManagementModule {
     }
     
     private String formatStaffDetail(StaffEntity staff) {
-        String header = formatTableRow("Id", "First Name", "Last Name", "Username", "Password");
+        String header = getTableHeader();
         String row = formatTableRow(staff.getStaffId().toString(), staff.getFirstName(), staff.getLastName(), staff.getUsername(), staff.getPassword());
         return header + "\n" + row;
     }
     
     private String formatTableRow(String id, String firstName, String lastName, String username, String password) {
         return String.format("%-5s| %-50s| %-50s| %-50s| %-50s", id, firstName, lastName, username, password);
+    }
+    
+    private String getTableHeader() {
+        return formatTableRow("Id", "First Name", "Last Name", "Username", "Password");
     }
     
     private String getMainMenu() {

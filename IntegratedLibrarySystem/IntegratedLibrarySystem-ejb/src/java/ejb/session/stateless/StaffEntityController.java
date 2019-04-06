@@ -14,6 +14,7 @@ import util.exception.InvalidLoginException;
 import util.exception.StaffExistsException;
 import util.exception.StaffNotFoundException;
 import util.logger.Logger;
+import util.helper.CryptographicHelper;
 
 @Stateless
 @Local(StaffEntityControllerLocal.class)
@@ -92,15 +93,20 @@ public class StaffEntityController implements StaffEntityControllerRemote, Staff
     
     @Override
     public StaffEntity staffLogin(String username, String password) throws InvalidLoginException {
-        Logger.log(Logger.INFO, "StaffEntityController", "staffLogin", username + " || " + password);
-        Query query = em.createQuery("SELECT s FROM StaffEntity s WHERE s.username = :inUsername AND s.password = :inPassword");
-        query.setParameter("inUsername", username);
-        query.setParameter("inPassword", password);
+        Logger.log(Logger.INFO, "StaffEntityController", "staffLogin", username);
         
         try {
-            return (StaffEntity)query.getSingleResult();
+            StaffEntity staffEntity = retrieveStaffByUsername(username);
+            String passwordHash = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + staffEntity.getSalt()));
+            
+            if(staffEntity.getPassword().equals(passwordHash)) {
+                return staffEntity;
+            }
+            else {
+                throw new InvalidLoginException("Username does not exist or invalid password!");
+            }
         }
-        catch(NoResultException | NonUniqueResultException ex) {
+        catch(StaffNotFoundException | NoResultException | NonUniqueResultException ex) {
             throw new InvalidLoginException(InvalidLoginException.INVALID_CREDENTIALS);
         }
     }
