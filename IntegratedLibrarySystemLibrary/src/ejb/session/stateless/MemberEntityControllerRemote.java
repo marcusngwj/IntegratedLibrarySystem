@@ -22,6 +22,6 @@ public interface MemberEntityControllerRemote {
     
     public MemberEntity createNewMember(MemberEntity memberEntity) throws MemberExistsException;
     
-    public MemberEntity memberLogin(String username, String password) throws InvalidLoginException;
+    public MemberEntity memberLogin(String identityNumber, String securityCode) throws InvalidLoginException;
     
 }
