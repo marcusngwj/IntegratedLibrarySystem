@@ -13,6 +13,7 @@ import javax.persistence.Query;
 import util.exception.MemberExistsException;
 import util.exception.InvalidLoginException;
 import util.exception.MemberNotFoundException;
+import util.helper.CryptographicHelper;
 import util.logger.Logger;
 
 @Stateless
@@ -113,17 +114,22 @@ public class MemberEntityController implements MemberEntityControllerRemote, Mem
     }
 
     @Override
-    public MemberEntity memberLogin(String username, String password) throws InvalidLoginException{
-        Logger.log(Logger.INFO, "MemberEntityController", "memberLogin", username + " || " + password);
-        Query query = em.createQuery("SELECT m FROM MemberEntity m WHERE m.identityNumber = :inIdentityNumber AND m.securityCode = :inSecurityCode");
-        query.setParameter("inIdentityNumber", username);
-        query.setParameter("inSecurityCode", password);
+    public MemberEntity memberLogin(String identityNumber, String securityCode) throws InvalidLoginException{
+        Logger.log(Logger.INFO, "MemberEntityController", "memberLogin", identityNumber);
         
         try {
-            return (MemberEntity)query.getSingleResult();
+            MemberEntity memberEntity = retrieveMemberByIdentityNumber(identityNumber);
+            String securityCodeHash = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(securityCode + memberEntity.getSalt()));
+            
+            if(memberEntity.getSecurityCode().equals(securityCodeHash)) {
+                return memberEntity;
+            }
+            else {
+                throw new InvalidLoginException(InvalidLoginException.INVALID_MEMBER_CREDENTIALS);
+            }
         }
-        catch(NoResultException | NonUniqueResultException ex) {
-            throw new InvalidLoginException(InvalidLoginException.INVALID_CREDENTIALS);
+        catch(MemberNotFoundException | NoResultException | NonUniqueResultException ex) {
+            throw new InvalidLoginException(InvalidLoginException.INVALID_MEMBER_CREDENTIALS);
         }
     }
     

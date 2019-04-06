@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import util.exception.MemberEntityException;
 import util.helper.CredentialFormatHelper;
+import util.helper.CryptographicHelper;
 
 @Entity
 public class MemberEntity implements Serializable {
@@ -45,6 +46,9 @@ public class MemberEntity implements Serializable {
 
     @Column(length = 255, nullable = false)
     private String address;
+    
+    @Column(length = 32, nullable = false)
+    private String salt;
 
     @OneToMany(mappedBy = "member")
     private List<LoanEntity> loans;
@@ -56,13 +60,16 @@ public class MemberEntity implements Serializable {
     private List<ReservationEntity> reservations;
 
     public MemberEntity() {
+        this.salt = CryptographicHelper.getInstance().generateRandomString(32);
     }
 
     public MemberEntity(String identityNumber, String securityCode, String firstName, String lastName, String gender, String age, String phone, String address) throws MemberEntityException {
+        this();
+        
         verifyFormats(identityNumber, securityCode, firstName, lastName, gender, age, phone, address);
         
         this.identityNumber = identityNumber;
-        this.securityCode = securityCode;
+        this.setSecurityCode(securityCode);
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = CredentialFormatHelper.convertToStandardGenderFormat(gender);
@@ -96,7 +103,7 @@ public class MemberEntity implements Serializable {
     }
 
     public void setSecurityCode(String securityCode) {
-        this.securityCode = securityCode;
+        this.securityCode = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(securityCode + this.salt));
     }
 
     public String getFirstName() {
@@ -146,6 +153,14 @@ public class MemberEntity implements Serializable {
     public void setAddress(String address) {
         this.address = address;
     }
+    
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
 
     public List<LoanEntity> getLoans() {
         return loans;
@@ -180,10 +195,6 @@ public class MemberEntity implements Serializable {
             identityNumber = this.identityNumber;
         }
         
-        if (securityCode.equals("")) {
-            securityCode = this.securityCode;
-        }
-        
         if (firstName.equals("")) {
             firstName = this.firstName;
         }
@@ -208,10 +219,15 @@ public class MemberEntity implements Serializable {
             address = this.address;
         }
         
-        verifyFormats(identityNumber, securityCode, firstName, lastName, gender, age, phone, address);
+        if (securityCode.equals("")) {
+            verifyFormats(identityNumber, firstName, lastName, gender, age, phone, address);
+        }
+        else {
+            verifyFormats(identityNumber, securityCode, firstName, lastName, gender, age, phone, address);
+            this.setSecurityCode(securityCode);
+        }
         
         this.identityNumber = identityNumber;
-        this.securityCode = securityCode;
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = CredentialFormatHelper.convertToStandardGenderFormat(gender);;
@@ -220,15 +236,11 @@ public class MemberEntity implements Serializable {
         this.address = address;
     }
     
-    private void verifyFormats(String identityNumber, String securityCode, String firstName, String lastName, String gender, String age, String phone, String address) throws MemberEntityException {
+    private void verifyFormats(String identityNumber, String firstName, String lastName, String gender, String age, String phone, String address) throws MemberEntityException {
         String errorMessage = "";
         
         if (!CredentialFormatHelper.isValidMemberIdentityNumberFormat(identityNumber)) {
             errorMessage += "Invalid ID or Duplicate Identity Number! Please try again.\n";
-        }
-        
-        if (!CredentialFormatHelper.isValidSecurityCodeFormat(securityCode)) {
-            errorMessage += "Invalid Security Code. Please try again.\n";
         }
         
         if (!CredentialFormatHelper.isValidNameFormat(firstName)) {
@@ -253,6 +265,25 @@ public class MemberEntity implements Serializable {
         
         if (!CredentialFormatHelper.isValidAddressFormat(address)) {
             errorMessage += "Invalid Address Format. Please try again.\n";
+        }
+        
+        if (!errorMessage.equals("")) {
+            throw new MemberEntityException(errorMessage);
+        }
+    }
+    
+    private void verifyFormats(String identityNumber, String securityCode, String firstName, String lastName, String gender, String age, String phone, String address) throws MemberEntityException {
+        String errorMessage = "";
+        
+        try {
+            verifyFormats(identityNumber, firstName, lastName, gender, age, phone, address);
+        }
+        catch (MemberEntityException ex) {
+            errorMessage += ex.getMessage();
+        }
+        
+        if (!CredentialFormatHelper.isValidSecurityCodeFormat(securityCode)) {
+            errorMessage += "Invalid Security Code. Please try again.\n";
         }
         
         if (!errorMessage.equals("")) {

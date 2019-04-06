@@ -115,18 +115,19 @@ public class StaffEntity implements Serializable {
         }
         
         if (password.equals("")) {
-            password = this.password;
+            verifyFormats(firstName, lastName, username);
         }
-        
-        verifyFormats(firstName, lastName, username, password);
+        else {
+            verifyFormats(firstName, lastName, username, password);
+            this.setPassword(password);
+        }
         
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
-        this.setPassword(password);
     }
     
-    private void verifyFormats(String firstName, String lastName, String username, String password) throws StaffEntityException {
+    private void verifyFormats(String firstName, String lastName, String username) throws StaffEntityException {
         String errorMessage = "";
         
         if (!CredentialFormatHelper.isValidNameFormat(firstName)) {
@@ -139,6 +140,21 @@ public class StaffEntity implements Serializable {
         
         if (!CredentialFormatHelper.isValidUsernameFormat(username)) {
             errorMessage += "Invalid Username. Please try again.\n";
+        }
+        
+        if (!errorMessage.equals("")) {
+            throw new StaffEntityException(errorMessage);
+        }
+    }
+    
+    private void verifyFormats(String firstName, String lastName, String username, String password) throws StaffEntityException {
+        String errorMessage = "";
+        
+        try {
+            verifyFormats(firstName, lastName, username);
+        }
+        catch (StaffEntityException ex) {
+            errorMessage += ex.getMessage();
         }
         
         if (!CredentialFormatHelper.isValidPasswordFormat(password)) {
