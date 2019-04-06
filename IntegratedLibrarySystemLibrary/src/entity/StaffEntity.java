@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import util.exception.StaffEntityException;
 import util.helper.CredentialFormatHelper;
+import util.helper.CryptographicHelper;
 
 @Entity
 public class StaffEntity implements Serializable {
@@ -29,17 +30,23 @@ public class StaffEntity implements Serializable {
 
     @Column(length = 50, nullable = false)
     private String password;
+    
+    @Column(length = 32, nullable = false)
+    private String salt;
 
     public StaffEntity() {
+        this.salt = CryptographicHelper.getInstance().generateRandomString(32);
     }
 
     public StaffEntity(String firstName, String lastName, String username, String password) throws StaffEntityException {
+        this();
+        
         verifyFormats(firstName, lastName, username, password);
         
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
-        this.password = password;
+        this.setPassword(password);
     }
 
     public Long getStaffId() {
@@ -79,7 +86,15 @@ public class StaffEntity implements Serializable {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.salt));
+    }
+    
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
     
     public String getFullName() {
@@ -108,7 +123,7 @@ public class StaffEntity implements Serializable {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
-        this.password = password;
+        this.setPassword(password);
     }
     
     private void verifyFormats(String firstName, String lastName, String username, String password) throws StaffEntityException {
