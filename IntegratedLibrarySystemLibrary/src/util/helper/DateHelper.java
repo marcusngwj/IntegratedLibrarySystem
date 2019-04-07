@@ -7,7 +7,7 @@ import java.util.Date;
 
 public class DateHelper {
     public static DateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
-    public static DateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static DateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     public static int WEEK_OF_MONTH = Calendar.WEEK_OF_MONTH;
     public static int WEEKS_FOR_LOAN = 2;
     public static int SATURDAY = Calendar.SATURDAY;
