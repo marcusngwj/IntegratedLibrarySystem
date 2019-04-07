@@ -1,0 +1,310 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI (http://jax-ws.java.net). RI's version is Metro/2.3.2-b608 (trunk-7979; 2015-01-21T12:50:19+0000) JAXWS-RI/2.2.11-b150120.1832 JAXWS-API/2.2.12 JAXB-RI/2.2.12-b141219.1637 JAXB-API/2.2.13-b141020.1521 svn-revision#unknown. --><xs:schema xmlns:tns="http://ws.session.ejb/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://ws.session.ejb/">
+
+<xs:element name="BookNotFoundException" type="tns:BookNotFoundException"/>
+
+<xs:element name="FineNotFoundException" type="tns:FineNotFoundException"/>
+
+<xs:element name="InvalidLoginException" type="tns:InvalidLoginException"/>
+
+<xs:element name="LoanException" type="tns:LoanException"/>
+
+<xs:element name="LoanNotFoundException" type="tns:LoanNotFoundException"/>
+
+<xs:element name="MultipleReservationException" type="tns:MultipleReservationException"/>
+
+<xs:element name="ReservationNotFoundException" type="tns:ReservationNotFoundException"/>
+
+<xs:element name="bookEntity" type="tns:bookEntity"/>
+
+<xs:element name="createNewReservationEntity" type="tns:createNewReservationEntity"/>
+
+<xs:element name="createNewReservationEntityResponse" type="tns:createNewReservationEntityResponse"/>
+
+<xs:element name="extendLoan" type="tns:extendLoan"/>
+
+<xs:element name="extendLoanResponse" type="tns:extendLoanResponse"/>
+
+<xs:element name="fineEntity" type="tns:fineEntity"/>
+
+<xs:element name="loanEntity" type="tns:loanEntity"/>
+
+<xs:element name="memberEntity" type="tns:memberEntity"/>
+
+<xs:element name="memberLogin" type="tns:memberLogin"/>
+
+<xs:element name="memberLoginResponse" type="tns:memberLoginResponse"/>
+
+<xs:element name="removeFine" type="tns:removeFine"/>
+
+<xs:element name="removeFineResponse" type="tns:removeFineResponse"/>
+
+<xs:element name="removeLoan" type="tns:removeLoan"/>
+
+<xs:element name="removeLoanResponse" type="tns:removeLoanResponse"/>
+
+<xs:element name="reservationEntity" type="tns:reservationEntity"/>
+
+<xs:element name="retrieveBookById" type="tns:retrieveBookById"/>
+
+<xs:element name="retrieveBookByIdResponse" type="tns:retrieveBookByIdResponse"/>
+
+<xs:element name="retrieveFinesByMemberIdentityNumber" type="tns:retrieveFinesByMemberIdentityNumber"/>
+
+<xs:element name="retrieveFinesByMemberIdentityNumberResponse" type="tns:retrieveFinesByMemberIdentityNumberResponse"/>
+
+<xs:element name="retrieveLatestReservationDate" type="tns:retrieveLatestReservationDate"/>
+
+<xs:element name="retrieveLatestReservationDateResponse" type="tns:retrieveLatestReservationDateResponse"/>
+
+<xs:element name="retrieveLoanByBookId" type="tns:retrieveLoanByBookId"/>
+
+<xs:element name="retrieveLoanByBookIdResponse" type="tns:retrieveLoanByBookIdResponse"/>
+
+<xs:element name="retrieveLoansByMemberId" type="tns:retrieveLoansByMemberId"/>
+
+<xs:element name="retrieveLoansByMemberIdResponse" type="tns:retrieveLoansByMemberIdResponse"/>
+
+<xs:element name="retrieveReservationsByBookId" type="tns:retrieveReservationsByBookId"/>
+
+<xs:element name="retrieveReservationsByBookIdResponse" type="tns:retrieveReservationsByBookIdResponse"/>
+
+<xs:element name="searchBookByTitle" type="tns:searchBookByTitle"/>
+
+<xs:element name="searchBookByTitleResponse" type="tns:searchBookByTitleResponse"/>
+
+<xs:complexType name="searchBookByTitle">
+<xs:sequence>
+<xs:element name="title" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="searchBookByTitleResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:bookEntity" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="bookEntity">
+<xs:sequence>
+<xs:element name="bookId" type="xs:long" minOccurs="0"/>
+<xs:element name="title" type="xs:string" minOccurs="0"/>
+<xs:element name="isbn" type="xs:string" minOccurs="0"/>
+<xs:element name="year" type="xs:int" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="BookNotFoundException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="retrieveLoansByMemberId">
+<xs:sequence>
+<xs:element name="memberId" type="xs:long" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="retrieveLoansByMemberIdResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:loanEntity" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="loanEntity">
+<xs:sequence>
+<xs:element name="loanId" type="xs:long" minOccurs="0"/>
+<xs:element name="book" type="tns:bookEntity" minOccurs="0"/>
+<xs:element name="endDate" type="xs:dateTime" minOccurs="0"/>
+<xs:element name="member" type="tns:memberEntity" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="memberEntity">
+<xs:sequence>
+<xs:element name="memberId" type="xs:long" minOccurs="0"/>
+<xs:element name="identityNumber" type="xs:string" minOccurs="0"/>
+<xs:element name="securityCode" type="xs:string" minOccurs="0"/>
+<xs:element name="firstName" type="xs:string" minOccurs="0"/>
+<xs:element name="lastName" type="xs:string" minOccurs="0"/>
+<xs:element name="gender" type="xs:string" minOccurs="0"/>
+<xs:element name="age" type="xs:int" minOccurs="0"/>
+<xs:element name="phone" type="xs:string" minOccurs="0"/>
+<xs:element name="address" type="xs:string" minOccurs="0"/>
+<xs:element name="salt" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="removeLoan">
+<xs:sequence>
+<xs:element name="bookId" type="xs:long" minOccurs="0"/>
+<xs:element name="memberId" type="xs:long" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="removeLoanResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="LoanNotFoundException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="retrieveReservationsByBookId">
+<xs:sequence>
+<xs:element name="bookId" type="xs:long" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="retrieveReservationsByBookIdResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:reservationEntity" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="reservationEntity">
+<xs:sequence>
+<xs:element name="reservationId" type="xs:long" minOccurs="0"/>
+<xs:element name="book" type="tns:bookEntity" minOccurs="0"/>
+<xs:element name="member" type="tns:memberEntity" minOccurs="0"/>
+<xs:element name="createdOn" type="xs:dateTime" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="extendLoan">
+<xs:sequence>
+<xs:element name="bookId" type="xs:long" minOccurs="0"/>
+<xs:element name="memberId" type="xs:long" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="extendLoanResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:loanEntity" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="LoanException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="retrieveLatestReservationDate">
+<xs:sequence>
+<xs:element name="bookId" type="xs:long" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="retrieveLatestReservationDateResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:dateTime" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="ReservationNotFoundException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="createNewReservationEntity">
+<xs:sequence>
+<xs:element name="newReservation" type="tns:reservationEntity" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="createNewReservationEntityResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:reservationEntity" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="MultipleReservationException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="memberLogin">
+<xs:sequence>
+<xs:element name="username" type="xs:string" minOccurs="0"/>
+<xs:element name="password" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="memberLoginResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:memberEntity" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="InvalidLoginException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="retrieveBookById">
+<xs:sequence>
+<xs:element name="bookId" type="xs:long" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="retrieveBookByIdResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:bookEntity" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="retrieveLoanByBookId">
+<xs:sequence>
+<xs:element name="bookId" type="xs:long" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="retrieveLoanByBookIdResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:loanEntity" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="retrieveFinesByMemberIdentityNumber">
+<xs:sequence>
+<xs:element name="memberIdentityNumber" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="retrieveFinesByMemberIdentityNumberResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:fineEntity" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="fineEntity">
+<xs:sequence>
+<xs:element name="fineId" type="xs:long" minOccurs="0"/>
+<xs:element name="amount" type="xs:long" minOccurs="0"/>
+<xs:element name="member" type="tns:memberEntity" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="removeFine">
+<xs:sequence>
+<xs:element name="fineId" type="xs:long" minOccurs="0"/>
+<xs:element name="memberId" type="xs:long" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="removeFineResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="FineNotFoundException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>

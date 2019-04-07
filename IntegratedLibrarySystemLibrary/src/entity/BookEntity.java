@@ -9,10 +9,24 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 import util.exception.BookEntityException;
 import util.helper.CredentialFormatHelper;
 
 @Entity
+@XmlRootElement
+@XmlAccessorType(value = XmlAccessType.FIELD)
+@XmlType(name = "bookEntity", propOrder = {
+    "bookId",
+    "title",
+    "isbn",
+    "year"
+})
+
 public class BookEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -30,9 +44,11 @@ public class BookEntity implements Serializable {
     @Column(nullable = false)
     private Integer year;
 
+    @XmlTransient
     @OneToOne(mappedBy = "book", optional = true)
     private LoanEntity loan;
 
+    @XmlTransient
     @OneToMany(mappedBy = "book")
     private List<ReservationEntity> reservations;
 
