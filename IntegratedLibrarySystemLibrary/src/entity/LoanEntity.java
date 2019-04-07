@@ -12,8 +12,18 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 @Entity
+@XmlRootElement
+@XmlType(name = "loanEntity", propOrder = {
+    "loanId",
+    "book",
+    "endDate",
+    "member"
+})
+
 public class LoanEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;

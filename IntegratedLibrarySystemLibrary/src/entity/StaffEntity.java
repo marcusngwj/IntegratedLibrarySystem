@@ -6,11 +6,22 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import util.exception.StaffEntityException;
 import util.helper.CredentialFormatHelper;
 import util.helper.CryptographicHelper;
 
 @Entity
+@XmlRootElement
+@XmlType(name = "staffEntity", propOrder = {
+    "staffId",
+    "firstName",
+    "lastName",
+    "username",
+    "password"
+})
+
 public class StaffEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
