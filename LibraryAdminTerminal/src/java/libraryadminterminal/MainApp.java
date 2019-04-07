@@ -7,12 +7,14 @@ import ejb.session.stateless.MemberEntityControllerRemote;
 import ejb.session.stateless.ReservationEntityControllerRemote;
 import ejb.session.stateless.StaffEntityControllerRemote;
 import entity.StaffEntity;
+import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import libraryadminterminal.module.AdministrationOperationModule;
 import libraryadminterminal.module.LibraryOperationModule;
 import libraryadminterminal.module.RegisterationOperationModule;
 import util.exception.InvalidLoginException;
+import util.helper.DateHelper;
 
 public class MainApp {
     private StaffEntity currentStaff;
@@ -47,7 +49,14 @@ public class MainApp {
         
         while(true) {
             int response = 0;
-            displayMessage(getWelcomeMessage());
+            
+            if (isLibraryOpen()) {
+                displayMessage(getWelcomeMessage());
+            }
+            else {
+                displayMessage(getLibraryIsClosedMessage());
+                break;
+            }
             
             while(response != LOGIN_OPERATION && response != EXIT_OPERATION) {
                 response = getUserResponse();
@@ -130,7 +139,16 @@ public class MainApp {
             
             System.out.println();
         }
+    }
+    
+    private boolean isLibraryOpen() {
+        Date now = DateHelper.getCurrentDate();      
+        boolean isSaturday = DateHelper.isGivenDay(now, DateHelper.SATURDAY);
+        boolean isSunday = DateHelper.isGivenDay(now, DateHelper.SUNDAY);
+        boolean isBefore9am = DateHelper.isBeforeGivenHour(now, 9);
+        boolean isAfter5pm = DateHelper.isAfterGivenHour(now, 17);
         
+        return !(isSaturday || isSunday || isBefore9am || isAfter5pm);
     }
     
     private int getUserResponse() {
@@ -158,6 +176,12 @@ public class MainApp {
                "2: Library Operation\n" +
                "3: Administration Operation\n" +
                "4: Logout\n";
+    }
+    
+    private String getLibraryIsClosedMessage() {
+        return "*** Welcome to Library Admin Terminal ***\n\n" +
+               "Sorry, the library loan desk is currently closed.\n" +
+               "Opening Hours: Monday to Friday, from 09:00 to 17:00.\n";
     }
     
     private String getWelcomeMessage() {
