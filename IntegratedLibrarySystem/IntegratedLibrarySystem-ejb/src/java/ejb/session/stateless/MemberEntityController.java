@@ -2,6 +2,7 @@ package ejb.session.stateless;
 
 import entity.MemberEntity;
 import java.util.List;
+import javax.ejb.EJBException;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -9,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import util.exception.MemberExistsException;
 import util.exception.InvalidLoginException;
@@ -88,7 +90,15 @@ public class MemberEntityController implements MemberEntityControllerRemote, Mem
     @Override
     public void deleteMember(Long memberId) throws MemberNotFoundException {
         MemberEntity memberToRemove = retrieveMemberById(memberId);
-        em.remove(memberToRemove);
+        
+        try {
+            em.remove(memberToRemove);
+            em.flush();
+        } catch(PersistenceException ejb) {
+            throw new MemberNotFoundException("Member has an existing loan and fine or member");
+        } catch (Exception e) {
+            throw new MemberNotFoundException("Member has an existing loan and fine or member does not exists");
+        }
     }
 
     @Override

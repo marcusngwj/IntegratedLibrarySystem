@@ -199,22 +199,36 @@ public class KioskOperationModule {
         //Details of whether the book is currently available, is on hold with reservation or if applicable a due date is shown.
         for (BookEntity currBook : bookEntities) {
             boolean onLoaned = isLoaned(currBook);
-            boolean onReserved = isReserved(currBook);
-            if (onLoaned && !onReserved) {
+             boolean onReserved = isReserved(currBook);
+            if(onLoaned) {
                 try {
-                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getBookLoanedDate(currBook));
+                   System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getBookLoanedDate(currBook));
                 } catch (LoanNotFoundException ex) {
                     System.out.println(ex.getMessage());
-                }
-            } else if (onLoaned && onReserved || !onLoaned && onReserved) {
-                try {
-                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getAvailableReservationDate(currBook));
-                } catch (ReservationNotFoundException ex) {
-                    System.out.println(ex.getMessage());
-                }
+                }   
             } else {
-                System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
+                if(onReserved) {
+                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available but is Reserved");
+                } else {
+                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
+                }
             }
+//            boolean onReserved = isReserved(currBook);
+//            if (onLoaned ) {
+//                try {
+//                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getBookLoanedDate(currBook));
+//                } catch (LoanNotFoundException ex) {
+//                    System.out.println(ex.getMessage());
+//                }
+//            } else if (onLoaned && onReserved || !onLoaned && onReserved) {
+//                try {
+//                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getAvailableReservationDate(currBook));
+//                } catch (ReservationNotFoundException ex) {
+//                    System.out.println(ex.getMessage());
+//                }
+//            } else {
+//                System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
+//            }
         }
 
     }
@@ -237,21 +251,35 @@ public class KioskOperationModule {
         for (BookEntity currBook : bookEntities) {
             boolean onLoaned = isLoaned(currBook);
             boolean onReserved = isReserved(currBook);
-            if (onLoaned && !onReserved) {
-                try {
+
+            if(onLoaned) {
+               try {
                     System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getBookLoanedDate(currBook));
                 } catch (LoanNotFoundException ex) {
                     System.out.println(ex.getMessage());
                 }
-            } else if (onLoaned && onReserved || !onLoaned && onReserved) {
-                try {
-                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getAvailableReservationDate(currBook));
-                } catch (ReservationNotFoundException ex) {
-                    System.out.println(ex.getMessage());
-                }
             } else {
-                System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
+                if(onReserved) {
+                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available but is Reserved");
+                } else {
+                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
+                }
             }
+//            if (onLoaned && !onReserved) {
+//                try {
+//                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getBookLoanedDate(currBook));
+//                } catch (LoanNotFoundException ex) {
+//                    System.out.println(ex.getMessage());
+//                }
+//            } else if (onLoaned && onReserved || !onLoaned && onReserved) {
+//                try {
+//                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getAvailableReservationDate(currBook));
+//                } catch (ReservationNotFoundException ex) {
+//                    System.out.println(ex.getMessage());
+//                }
+//            } else {
+//                System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
+//            }
         }
         System.out.println();
         System.out.print("Enter Book ID to Reserve: ");
