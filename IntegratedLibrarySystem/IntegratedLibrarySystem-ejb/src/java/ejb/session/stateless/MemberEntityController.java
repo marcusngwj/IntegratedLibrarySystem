@@ -9,9 +9,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import util.exception.MemberExistsException;
 import util.exception.InvalidLoginException;
+import util.exception.MemberEntityException;
 import util.exception.MemberNotFoundException;
 import util.helper.CryptographicHelper;
 import util.logger.Logger;
@@ -86,9 +88,16 @@ public class MemberEntityController implements MemberEntityControllerRemote, Mem
     }
     
     @Override
-    public void deleteMember(Long memberId) throws MemberNotFoundException {
-        MemberEntity memberToRemove = retrieveMemberById(memberId);
-        em.remove(memberToRemove);
+    public void deleteMember(Long memberId) throws MemberNotFoundException, MemberEntityException {
+        try {
+            MemberEntity memberToRemove = retrieveMemberById(memberId);
+            em.remove(memberToRemove);
+            em.flush();
+        }
+        catch (PersistenceException ex) {
+            throw new MemberEntityException("Unable to delete member. Member has not returned a book, has reserved a book or has outstanding fines.");
+        }
+        
     }
 
     @Override
