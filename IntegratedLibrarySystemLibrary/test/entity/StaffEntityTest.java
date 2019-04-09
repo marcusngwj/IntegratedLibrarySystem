@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import util.exception.StaffEntityException;
-import util.exception.StaffExistsException;
 
 public class StaffEntityTest {
     
@@ -42,28 +41,48 @@ public class StaffEntityTest {
         assertNotNull(staffEntity);
     }
     
+    @Test
+    public void test2_NewStaff_FirstName_HasWhitespace_Valid() throws StaffEntityException {
+        StaffEntity staffEntity = new StaffEntity("Linda Jeremial", "Chua", "manager", "password");
+        assertNotNull(staffEntity);
+    }
+    
     @Test(expected = StaffEntityException.class)
-    public void test2_NewStaff_InvalidFirstName_Digits_ExceptionThrown() throws StaffEntityException {
+    public void test3_NewStaff_FirstName_Digits_ExceptionThrown() throws StaffEntityException {
         StaffEntity staffEntity = new StaffEntity("123", "Chua", "manager", "password");
     }
     
     @Test(expected = StaffEntityException.class)
-    public void test3_NewStaff_InvalidFirstName_SpecialCharacters_ExceptionThrown() throws StaffEntityException {
+    public void test4_NewStaff_FirstName_SpecialCharacters_ExceptionThrown() throws StaffEntityException {
         StaffEntity staffEntity = new StaffEntity("!@#$@#", "Chua", "manager", "password");
     }
     
     @Test(expected = StaffEntityException.class)
-    public void test4_NewStaff_InvalidFirstName_Digits_ExceptionThrown() throws StaffEntityException {
-        StaffEntity staffEntity = new StaffEntity("Linda", "123", "manager", "password");
+    public void test5_NewStaff_FirstName_LengthLargerThan50_ExceptionThrown() throws StaffEntityException {
+        StaffEntity staffEntity = new StaffEntity("Aloysius Brandon Charlie Dephanie Elizabeth Felicia", "Chua", "manager", "password");
+    }
+    
+    @Test
+    public void test6_NewStaff_Username_SpecialCharacters_Valid() throws StaffEntityException {
+        StaffEntity staffEntity = new StaffEntity("Linda", "Chua", "manager123", "password");
+        assertNotNull(staffEntity);
     }
     
     @Test(expected = StaffEntityException.class)
-    public void test5_NewStaff_InvalidLastName_SpecialCharacters_ExceptionThrown() throws StaffEntityException {
-        StaffEntity staffEntity = new StaffEntity("Linda", "^%T#$%", "manager", "password");
+    public void test7_NewStaff_Username_HasWhitespace_ExceptionThrown() throws StaffEntityException {
+        StaffEntity staffEntity = new StaffEntity("Linda", "Chua", "manager 123", "password");
+        assertNotNull(staffEntity);
     }
     
     @Test(expected = StaffEntityException.class)
-    public void test6_NewStaff_InvalidUsername_SpecialCharacters_ExceptionThrown() throws StaffEntityException {
-        StaffEntity staffEntity = new StaffEntity("Linda", "Chua", "manager123@#$", "password");
+    public void test8_NewStaff_Username_LengthLargerThan50_ExceptionThrown() throws StaffEntityException {
+        StaffEntity staffEntity = new StaffEntity("Linda", "Chua", "supercalifragilisticexpialidocioussupercalifragilisticexpialidocious", "password");
+        assertNotNull(staffEntity);
+    }
+    
+    @Test(expected = StaffEntityException.class)
+    public void test9_NewStaff_Password_LengthLargerThan50_ExceptionThrown() throws StaffEntityException {
+        StaffEntity staffEntity = new StaffEntity("Linda", "Chua", "manager", "supercalifragilisticexpialidocioussupercalifragilisticexpialidocious");
+        assertNotNull(staffEntity);
     }
 }
