@@ -139,27 +139,48 @@ public class LibraryOperationModule {
         System.out.println();
         System.out.println("Search Results:");
 
-        System.out.println("Id |Title | Availability");
+        String header = String.format("%-5s| %-50s| %-20s", "Id", "Title", "Availability");
+        String table = "";
+        System.out.print(header);
 
         for (BookEntity currBook : bookEntities) {
             boolean onLoaned = isLoaned(currBook);
             boolean onReserved = isReserved(currBook);
-            if (onLoaned && !onReserved) {
-                try {
-                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getBookLoanedDate(currBook));
-                } catch (LoanNotFoundException_Exception ex) {
-                    System.out.println(ex.getMessage());
-                }
-            } else if (onLoaned && onReserved || !onLoaned && onReserved) {
-                try {
-                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getAvailableReservationDate(currBook));
-                } catch (ReservationNotFoundException_Exception ex) {
+             if(onLoaned) {
+               try {
+                    //System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getBookLoanedDate(currBook));
+                     table += "\n" + String.format("%-5s| %-50s| Due on %-20s", currBook.getBookId(), currBook.getTitle(), getBookLoanedDate(currBook));
+               } catch (LoanNotFoundException_Exception ex) {
                     System.out.println(ex.getMessage());
                 }
             } else {
-                System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
+                if(onReserved) {
+                    String msg = "Available but is Reserved";
+                    table += "\n" + String.format("%-5s| %-50s| %-20s", currBook.getBookId(), currBook.getTitle(), msg);
+                   // System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available but is Reserved");
+                } else {
+                    String msg = "Available Now";
+                    table += "\n" + String.format("%-5s| %-50s| %-20s", currBook.getBookId(), currBook.getTitle(), msg);
+                    //System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
+                }
             }
+//            if (onLoaned && !onReserved) {
+//                try {
+//                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getBookLoanedDate(currBook));
+//                } catch (LoanNotFoundException_Exception ex) {
+//                    System.out.println(ex.getMessage());
+//                }
+//            } else if (onLoaned && onReserved || !onLoaned && onReserved) {
+//                try {
+//                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getAvailableReservationDate(currBook));
+//                } catch (ReservationNotFoundException_Exception ex) {
+//                    System.out.println(ex.getMessage());
+//                }
+//            } else {
+//                System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
+//            }
         }
+        System.out.println(table);
         System.out.println();
         System.out.print("Enter Book ID to Reserve: ");
         String bookIdStr = scanner.nextLine().trim();
