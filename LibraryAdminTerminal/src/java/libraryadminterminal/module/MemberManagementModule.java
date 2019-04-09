@@ -143,7 +143,7 @@ public class MemberManagementModule {
         displayMessage("Member updated successfully!\n");
     }
     
-    private void deleteMember() throws MemberNotFoundException, NumberFormatException {
+    private void deleteMember() throws MemberNotFoundException, MemberEntityException, NumberFormatException {
         Scanner scanner = new Scanner(System.in);
         String input = "";
         
