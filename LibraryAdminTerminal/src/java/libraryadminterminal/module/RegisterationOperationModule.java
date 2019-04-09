@@ -68,7 +68,7 @@ public class RegisterationOperationModule {
         String age = scanner.nextLine().trim();
         System.out.print("Enter Phone> ");
         String phone = scanner.nextLine().trim();
-        System.out.print("Enter Addrss> ");
+        System.out.print("Enter Address> ");
         String address = scanner.nextLine().trim();
 
         MemberEntity newMember = new MemberEntity(identityNumber, securityCode, firstName, lastName, gender, age, phone, address);
