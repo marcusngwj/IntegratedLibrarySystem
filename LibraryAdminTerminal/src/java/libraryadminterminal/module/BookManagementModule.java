@@ -122,7 +122,7 @@ public class BookManagementModule {
     }
     
     
-    private void deleteBook() throws BookNotFoundException, NumberFormatException {
+    private void deleteBook() throws BookNotFoundException, BookEntityException, NumberFormatException {
         Scanner scanner = new Scanner(System.in);
         String input = "";
         

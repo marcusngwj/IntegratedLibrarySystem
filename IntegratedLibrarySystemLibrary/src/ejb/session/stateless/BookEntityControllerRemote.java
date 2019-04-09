@@ -2,6 +2,7 @@ package ejb.session.stateless;
 
 import entity.BookEntity;
 import java.util.List;
+import util.exception.BookEntityException;
 import util.exception.BookNotFoundException;
 
 public interface BookEntityControllerRemote {
@@ -18,6 +19,6 @@ public interface BookEntityControllerRemote {
     
     public void updateBook(BookEntity bookEntity);
 
-    public void deleteBook(Long bookId) throws BookNotFoundException;
+    public void deleteBook(Long bookId) throws BookNotFoundException, BookEntityException;
     
 }

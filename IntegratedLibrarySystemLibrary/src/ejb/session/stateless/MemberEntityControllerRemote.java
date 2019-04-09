@@ -5,6 +5,7 @@ import java.util.List;
 
 import util.exception.MemberExistsException;
 import util.exception.InvalidLoginException;
+import util.exception.MemberEntityException;
 import util.exception.MemberNotFoundException;
 
 public interface MemberEntityControllerRemote {
@@ -18,7 +19,7 @@ public interface MemberEntityControllerRemote {
     
     public void updateMember(MemberEntity memberToUpdate) throws MemberExistsException;
 
-    public void deleteMember(Long memberId) throws MemberNotFoundException;
+    public void deleteMember(Long memberId) throws MemberNotFoundException, MemberEntityException;
     
     public MemberEntity createNewMember(MemberEntity memberEntity) throws MemberExistsException;
     

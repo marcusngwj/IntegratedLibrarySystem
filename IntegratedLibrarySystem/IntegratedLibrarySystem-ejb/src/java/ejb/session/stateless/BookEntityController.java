@@ -9,8 +9,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import util.exception.BookEntityException;
 import util.exception.BookNotFoundException;
+import util.logger.Logger;
 
 @Stateless
 @Local(BookEntityControllerLocal.class)
@@ -65,9 +68,7 @@ public class BookEntityController implements BookEntityControllerRemote, BookEnt
     @Override
     public List<BookEntity> searchBookByTitle(String title) throws BookNotFoundException {
         Query query = em.createQuery("SELECT b FROM BookEntity b WHERE b.title LIKE '%" + title + "%'");
-       
-      
-        
+
         try {
             return (List<BookEntity>) query.getResultList();
         }
@@ -83,8 +84,17 @@ public class BookEntityController implements BookEntityControllerRemote, BookEnt
     }
     
     @Override
-    public void deleteBook(Long bookId) throws BookNotFoundException {
-        BookEntity bookToRemove = retrieveBookById(bookId);
-        em.remove(bookToRemove);
+    public void deleteBook(Long bookId) throws BookNotFoundException, BookEntityException {
+        Logger.log(Logger.INFO, "BookEntityController", "deleteBook");
+        
+        try {
+            BookEntity bookToRemove = retrieveBookById(bookId);
+            em.remove(bookToRemove);
+            em.flush();
+        }
+        catch (PersistenceException ex) {
+            throw new BookEntityException("Unable to delete book. The book may be on loan or under reservation.");
+        }
+        
     }
 }
