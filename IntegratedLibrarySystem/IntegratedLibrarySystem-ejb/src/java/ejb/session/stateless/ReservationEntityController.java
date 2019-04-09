@@ -71,20 +71,24 @@ public class ReservationEntityController implements ReservationEntityControllerR
         boolean isReserved = checkReserved(currBook);
         boolean isLoaned = checkLoan(currMember, currBook);
 
-        if ((isLoaned && isReserved) || (!isLoaned && isReserved)) {
-            //get the latest reservedDate
-            Date latestDate = retrieveLatestReservedDate(currBook);
+//        if ((isLoaned && isReserved) || (!isLoaned && isReserved)) {
+//            //get the latest reservedDate
+//            Date latestDate = retrieveLatestReservedDate(currBook);
+//
+//            Date newDueDate = DateHelper.addDaystoDate(latestDate, DateHelper.WEEK_OF_MONTH, DateHelper.WEEKS_FOR_LOAN);
+//            newReservation.setCreatedOn(newDueDate);
+//        } else if (isLoaned && !isReserved) {
+//            Date loanDueDate = retrieveLoanedDate(currBook);
+//
+//            newReservation.setCreatedOn(loanDueDate);
+//        } else {
+//            Date newDate = DateHelper.addDaysToToday(DateHelper.WEEK_OF_MONTH, DateHelper.WEEKS_FOR_LOAN);
+//            newReservation.setCreatedOn(newDate);
+//        }
 
-            Date newDueDate = DateHelper.addDaystoDate(latestDate, DateHelper.WEEK_OF_MONTH, DateHelper.WEEKS_FOR_LOAN);
-            newReservation.setCreatedOn(newDueDate);
-        } else if (isLoaned && !isReserved) {
-            Date loanDueDate = retrieveLoanedDate(currBook);
-
-            newReservation.setCreatedOn(loanDueDate);
-        } else {
-            Date newDate = DateHelper.addDaysToToday(DateHelper.WEEK_OF_MONTH, DateHelper.WEEKS_FOR_LOAN);
-            newReservation.setCreatedOn(newDate);
-        }
+        Date newDueDate = DateHelper.getCurrentDate();
+        newReservation.setCreatedOn(newDueDate);
+        
         System.out.println(newReservation);
         em.persist(newReservation);
         em.flush();

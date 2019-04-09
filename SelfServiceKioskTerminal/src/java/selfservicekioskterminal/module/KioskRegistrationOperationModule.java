@@ -43,6 +43,7 @@ public class KioskRegistrationOperationModule {
             MemberEntity newMember = new MemberEntity(identityNumber, securityCode, firstName, lastName, gender, age, phone, address);
             newMember = memberEntityControllerRemote.createNewMember(newMember);
             System.out.println(REGISTER_SUCCESS);
+            System.out.println();
         } catch (MemberExistsException | MemberEntityException ex) {
             Logger.getLogger(KioskRegistrationOperationModule.class.getName()).log(Level.SEVERE, null, ex);
         }
