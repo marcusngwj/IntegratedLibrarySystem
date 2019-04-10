@@ -62,22 +62,30 @@ public class MainApp {
         while (true) {
             int response = 0;
             printKioskWelcomeMessage();
-            response = getUserResponse();
-
-            if (response == REGISTER_NUMBER) {
-                registerationKioskOperationModule = new KioskRegistrationOperationModule(memberEntityControllerRemote);
-                registerationKioskOperationModule.doRegisterMember();
-            } else if (response == LOGIN_NUMBER) {
-                try {
-                    executeLogin();
-                    executeMainAction();
-                } catch (InvalidLoginException ex) {
-                    System.out.println(ex.getMessage());
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("> ");
+            String intStr = scanner.nextLine().trim();
+            boolean isNum = checkOptionNum(intStr);
+            
+            if (isNum) {
+                response = Integer.valueOf(intStr);
+                if (response == REGISTER_NUMBER) {
+                    registerationKioskOperationModule = new KioskRegistrationOperationModule(memberEntityControllerRemote);
+                    registerationKioskOperationModule.doRegisterMember();
+                } else if (response == LOGIN_NUMBER) {
+                    try {
+                        executeLogin();
+                        executeMainAction();
+                    } catch (InvalidLoginException ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                } else if (response == EXIT_NUMBER) {
+                    break;
+                } else {
+                    printInvalidResponseMessage();
                 }
-            } else if (response == EXIT_NUMBER) {
-                break;
             } else {
-                printInvalidResponseMessage();
+                printInvalidStartOption();
             }
         }
     }
@@ -144,7 +152,7 @@ public class MainApp {
                     }
                 } else {
                     printInvalidOption();
-                    
+
                 }
             } catch (MemberNotFoundException | BookNotFoundException | LoanNotFoundException | LoanException | ReservationNotFoundException | FineNotFoundException ex) {
                 System.out.println(ex.getMessage());
@@ -170,7 +178,11 @@ public class MainApp {
         System.out.println("Please Enter a valid Option: (1-8)");
         System.out.println();
     }
-
+    
+    private void printInvalidStartOption() {
+        System.out.println("Please Enter a valid Option: (1-3)");
+        System.out.println();
+    }
     private void printKioskMainMenu() {
         System.out.println("1: Borrow Book");
         System.out.println("2: View Lent Books");
@@ -226,9 +238,10 @@ public class MainApp {
         System.out.println("*** Self-Service Kiosk :: Register ***\n");
     }
 
-    private int getUserResponse() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("> ");
-        return scanner.nextInt();
-    }
+//    private int getUserResponse() {
+//        
+//        
+//        checkOptionNumber(intStr);
+//        return scanner.nextInt();
+//    }
 }
