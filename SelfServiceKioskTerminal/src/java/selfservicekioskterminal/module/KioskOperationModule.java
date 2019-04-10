@@ -144,8 +144,6 @@ public class KioskOperationModule {
         System.out.println();
         System.out.println("*** Self-Service Kiosk :: Pay Fines ***\n");
 
-        System.out.println("Unpaid Fines for Member:");
-
         String identityNumber = member.getIdentityNumber();
         List<FineEntity> fineList = fineEntityControllerRemote.retrieveFinesByMemberIdentityNumber(identityNumber);
 

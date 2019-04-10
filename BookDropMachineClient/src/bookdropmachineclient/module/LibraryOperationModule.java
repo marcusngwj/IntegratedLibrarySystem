@@ -93,8 +93,6 @@ public class LibraryOperationModule {
         System.out.println();
         System.out.println("*** BDM Client :: Pay Fines ***\n");
 
-        System.out.println("Unpaid Fines for Member:");
-
         String identityNumber = member.getIdentityNumber();
         List<FineEntity> fineList = WebService.retrieveFinesByMemberIdentityNumber(identityNumber);
 
