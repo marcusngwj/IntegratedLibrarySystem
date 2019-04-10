@@ -5,6 +5,7 @@
  */
 package selfservicekioskterminal;
 
+import com.sun.xml.rpc.processor.modeler.j2ee.xml.displayNameType;
 import ejb.session.stateless.BookEntityControllerRemote;
 import ejb.session.stateless.FineEntityControllerRemote;
 import ejb.session.stateless.LoanEntityControllerRemote;
@@ -78,6 +79,8 @@ public class MainApp {
                         executeMainAction();
                     } catch (InvalidLoginException ex) {
                         System.out.println(ex.getMessage());
+                    } catch (Exception ex) {
+                        System.out.println("Unknown error occured\n");
                     }
                 } else if (response == EXIT_NUMBER) {
                     break;
