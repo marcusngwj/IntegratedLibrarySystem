@@ -113,28 +113,33 @@ public class MainApp {
             
             displayMessage(getMainMenu());
             
-            while (response!=REGISTRATION_OPERATION && response!=LIBRARY_OPERATION && response!=ADMINISTRATION_OPERATION && response!= LOGOUT) {
-                response = getUserResponse();
+            try {
+                while (response!=REGISTRATION_OPERATION && response!=LIBRARY_OPERATION && response!=ADMINISTRATION_OPERATION && response!= LOGOUT) {
+                    response = getUserResponse();
+                }
+
+                if (response == REGISTRATION_OPERATION) {
+                    System.out.println();
+                    registerationOperationModule.enterRegisterationOperationMode();
+                }
+                else if (response == LIBRARY_OPERATION) {
+                    System.out.println();
+                    libraryOperationModule.enterLibraryOperationMode();
+                }
+                else if (response == ADMINISTRATION_OPERATION) {
+                    administrationOperationModule.enterAdministrationOperationMode();
+                }
+                else if (response == LOGOUT) {
+                    System.out.println();
+                    displayMessage("You have successfully logout!");
+                    break;
+                }
+                else {
+                    displayMessage("Invalid option, please try again!\n");
+                }
             }
-            
-            if (response == REGISTRATION_OPERATION) {
-                System.out.println();
-                registerationOperationModule.enterRegisterationOperationMode();
-            }
-            else if (response == LIBRARY_OPERATION) {
-                System.out.println();
-                libraryOperationModule.enterLibraryOperationMode();
-            }
-            else if (response == ADMINISTRATION_OPERATION) {
-                administrationOperationModule.enterAdministrationOperationMode();
-            }
-            else if (response == LOGOUT) {
-                System.out.println();
-                displayMessage("You have successfully logout!");
-                break;
-            }
-            else {
-                displayMessage("Invalid option, please try again!\n");
+            catch (Exception ex) {
+                displayMessage("Unknown error occured");
             }
             
             System.out.println();
