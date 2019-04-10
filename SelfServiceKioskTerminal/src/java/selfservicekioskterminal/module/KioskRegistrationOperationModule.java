@@ -45,7 +45,8 @@ public class KioskRegistrationOperationModule {
             System.out.println(REGISTER_SUCCESS);
             System.out.println();
         } catch (MemberExistsException | MemberEntityException ex) {
-            Logger.getLogger(KioskRegistrationOperationModule.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(KioskRegistrationOperationModule.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex.getMessage());
         }
     }
 }
