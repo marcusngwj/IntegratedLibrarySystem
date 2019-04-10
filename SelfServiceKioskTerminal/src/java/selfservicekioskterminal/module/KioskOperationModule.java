@@ -29,7 +29,7 @@ import util.exception.MemberExistsException;
 import util.exception.LoanException;
 import util.exception.LoanNotFoundException;
 import util.exception.MemberNotFoundException;
-import util.exception.MultipleReservationException;
+import util.exception.ReservationException;
 import util.exception.ReservationNotFoundException;
 import util.helper.DateHelper;
 import util.helper.MoneyHelper;
@@ -310,7 +310,7 @@ public class KioskOperationModule {
                 displayMessage(SUCCESS_RESERVED);
             } catch (LoanException le) {
                 System.out.println(le.getMessage());
-            } catch (MultipleReservationException mre) {
+            } catch (ReservationException mre) {
                 System.out.println(mre.getMessage());
             } catch (LoanNotFoundException lnfe) {
                 System.out.println(lnfe.getMessage());

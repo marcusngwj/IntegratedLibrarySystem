@@ -19,7 +19,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.LoanException;
 import util.exception.LoanNotFoundException;
-import util.exception.MultipleReservationException;
+import util.exception.ReservationException;
 import util.exception.ReservationNotFoundException;
 import util.helper.DateHelper;
 import util.logger.Logger;
@@ -45,7 +45,7 @@ public class ReservationEntityController implements ReservationEntityControllerR
     private LoanEntityControllerLocal loanEntityControllerLocal;
 
     @Override
-    public ReservationEntity createNewReservationEntity(ReservationEntity newReservation) throws LoanException, MultipleReservationException, LoanNotFoundException {
+    public ReservationEntity createNewReservationEntity(ReservationEntity newReservation) throws LoanException, ReservationException, LoanNotFoundException {
         Logger.log(Logger.INFO, "ReservationEntityController", "createNewReservationEntity");
         /*
         • Member can reserve books that are already lent or on with other reservations using his/her member identity number.
@@ -57,43 +57,52 @@ public class ReservationEntityController implements ReservationEntityControllerR
         MemberEntity currMember = newReservation.getMember();
         BookEntity currBook = newReservation.getBook();
         boolean hasUnpaidFines = checkUnpaidFines(currMember);
-        if (hasUnpaidFines) {
-            throw new LoanException(LoanException.UNPAID_FINE);
-        }
-        boolean isLoaningSameBook = checkLoaningSameBook(currMember, currBook);
-        if (isLoaningSameBook) {
-            throw new LoanException(LoanException.BOOK_LOANED_NO_RESERVED);
-        }
-        boolean hasReserved = checkMultipleReserved(currMember, currBook);
-        if (hasReserved) {
-            throw new MultipleReservationException(MultipleReservationException.MULTIPLE_RESERVCATION);
-        }
+
         boolean isReserved = checkReserved(currBook);
-        boolean isLoaned = checkLoan(currMember, currBook);
+        boolean isLoaned = checkLoan(currBook);
+        //Member can reserve books that are already lent or on with other reservations using his/her member identity number.
+        if (isLoaned || isReserved) {
+            //Members with unpaid fines cannot reserve books.
+            if (hasUnpaidFines) {
+                throw new LoanException(LoanException.UNPAID_FINE);
+            }
+            //Member cannot reserve books currently loaned by him/her.
+            boolean isLoaningSameBook = checkLoaningSameBook(currMember, currBook);
+            if (isLoaningSameBook) {
+                throw new LoanException(LoanException.BOOK_LOANED_NO_RESERVED);
+            }
+            //Member cannot make multiple reservations on the same book.
+            boolean hasReserved = checkMultipleReserved(currMember, currBook);
+            if (hasReserved) {
+                throw new ReservationException(ReservationException.MULTIPLE_RESERVATION);
+            }
+            //Books that are currently available in the library i.e. not on loan cannot be reserved
+            boolean isAvailable = checkAvailability(currBook);
+            if (isAvailable) {
+                throw new ReservationException(ReservationException.NO_LOAN_RESERVATION);
+            }
+            
+            Date newDueDate = DateHelper.getCurrentDate();
+            newReservation.setCreatedOn(newDueDate);
+            //System.out.println(newReservation);
+            em.persist(newReservation);
+            em.flush();
+            em.refresh(newReservation);
+            return newReservation;
+        } else {
+            throw new LoanException("Member can reserve books that are already lent or on with other reservations using his/her member identity number.");
+        }
+    }
 
-//        if ((isLoaned && isReserved) || (!isLoaned && isReserved)) {
-//            //get the latest reservedDate
-//            Date latestDate = retrieveLatestReservedDate(currBook);
-//
-//            Date newDueDate = DateHelper.addDaystoDate(latestDate, DateHelper.WEEK_OF_MONTH, DateHelper.WEEKS_FOR_LOAN);
-//            newReservation.setCreatedOn(newDueDate);
-//        } else if (isLoaned && !isReserved) {
-//            Date loanDueDate = retrieveLoanedDate(currBook);
-//
-//            newReservation.setCreatedOn(loanDueDate);
-//        } else {
-//            Date newDate = DateHelper.addDaysToToday(DateHelper.WEEK_OF_MONTH, DateHelper.WEEKS_FOR_LOAN);
-//            newReservation.setCreatedOn(newDate);
-//        }
-
-        Date newDueDate = DateHelper.getCurrentDate();
-        newReservation.setCreatedOn(newDueDate);
-        
-        System.out.println(newReservation);
-        em.persist(newReservation);
-        em.flush();
-        em.refresh(newReservation);
-        return newReservation;
+    private boolean checkAvailability(BookEntity currBook) throws ReservationException {
+        //Check if book is currently on loan
+        try {
+            LoanEntity loan = loanEntityControllerLocal.retrieveLoanByBookId(currBook.getBookId());
+            //Return false since it is currently on loan
+            return false;
+        } catch (LoanNotFoundException lnfe) {
+            return true;
+        }
     }
 
     private Date retrieveLoanedDate(BookEntity currBook) throws LoanNotFoundException {
@@ -121,7 +130,7 @@ public class ReservationEntityController implements ReservationEntityControllerR
         }
     }
 
-    private boolean checkLoan(MemberEntity currMember, BookEntity currBook) {
+    private boolean checkLoan(BookEntity currBook) {
         try {
             LoanEntity loan = loanEntityControllerLocal.retrieveLoanByBookId(currBook.getBookId());
             return true;
@@ -152,7 +161,7 @@ public class ReservationEntityController implements ReservationEntityControllerR
             return false;
         } else {
             for (int i = 0; i < loanList.size(); i++) {
-                Long loanedBookId = loanList.get(i).getLoanId();
+                Long loanedBookId = loanList.get(i).getBook().getBookId();
                 if (loanedBookId.equals(currBook.getBookId())) {
                     return true;
                 }

@@ -22,7 +22,7 @@ import util.exception.FineNotFoundException;
 import util.exception.InvalidLoginException;
 import util.exception.LoanException;
 import util.exception.LoanNotFoundException;
-import util.exception.MultipleReservationException;
+import util.exception.ReservationException;
 import util.exception.ReservationNotFoundException;
 
 @WebService(serviceName = "IntegratedLibraryWebService")
@@ -97,7 +97,7 @@ public class IntegratedLibraryWebService {
     }
 
     @WebMethod(operationName = "createNewReservationEntity")
-    public ReservationEntity createNewReservationEntity(@WebParam(name = "newReservation") ReservationEntity newReservation) throws LoanException, MultipleReservationException, LoanNotFoundException {
+    public ReservationEntity createNewReservationEntity(@WebParam(name = "newReservation") ReservationEntity newReservation) throws LoanException, ReservationException, LoanNotFoundException {
         return reservationEntityControllerLocal.createNewReservationEntity(newReservation);
     }
 }
