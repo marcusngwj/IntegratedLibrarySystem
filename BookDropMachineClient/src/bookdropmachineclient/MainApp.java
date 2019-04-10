@@ -41,7 +41,9 @@ public class MainApp {
                             libraryOperationModule = new LibraryOperationModule(currentMemberEntity);
                             menuMain();
                         } catch (InvalidLoginException_Exception ex) {
-                            System.err.println(ex.getMessage());
+                            System.out.println(ex.getMessage());
+                        } catch (Exception ex) {
+                            System.out.println("Unknown error occured: " + ex.getMessage() + "\n");
                         }
                     } else if (response == 2) {
                         break;
@@ -125,7 +127,9 @@ public class MainApp {
                     System.out.println("Invalid option, please try again!\n");
                     scanner.nextLine();
                 } catch (LoanNotFoundException_Exception | LoanException_Exception | NumberFormatException | FineNotFoundException_Exception | BookNotFoundException_Exception | ReservationNotFoundException_Exception ex) {
-                    System.err.println(ex.getMessage());
+                    System.out.println(ex.getMessage());
+                } catch (Exception ex) {
+                    System.out.println("Unknown error occured: " + ex.getMessage() + "\n");
                 }
             }
 
