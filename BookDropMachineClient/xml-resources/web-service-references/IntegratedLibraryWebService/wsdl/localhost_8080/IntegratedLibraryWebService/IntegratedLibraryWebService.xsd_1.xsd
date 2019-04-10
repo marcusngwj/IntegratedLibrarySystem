@@ -10,7 +10,7 @@
 
 <xs:element name="LoanNotFoundException" type="tns:LoanNotFoundException"/>
 
-<xs:element name="MultipleReservationException" type="tns:MultipleReservationException"/>
+<xs:element name="ReservationException" type="tns:ReservationException"/>
 
 <xs:element name="ReservationNotFoundException" type="tns:ReservationNotFoundException"/>
 
@@ -222,7 +222,7 @@
 </xs:sequence>
 </xs:complexType>
 
-<xs:complexType name="MultipleReservationException">
+<xs:complexType name="ReservationException">
 <xs:sequence>
 <xs:element name="message" type="xs:string" minOccurs="0"/>
 </xs:sequence>

@@ -46,14 +46,14 @@
 <message name="retrieveReservationsByBookIdResponse">
 <part name="parameters" element="tns:retrieveReservationsByBookIdResponse"/>
 </message>
-<message name="memberLogin">
-<part name="parameters" element="tns:memberLogin"/>
+<message name="retrieveLatestReservationDate">
+<part name="parameters" element="tns:retrieveLatestReservationDate"/>
 </message>
-<message name="memberLoginResponse">
-<part name="parameters" element="tns:memberLoginResponse"/>
+<message name="retrieveLatestReservationDateResponse">
+<part name="parameters" element="tns:retrieveLatestReservationDateResponse"/>
 </message>
-<message name="InvalidLoginException">
-<part name="fault" element="tns:InvalidLoginException"/>
+<message name="ReservationNotFoundException">
+<part name="fault" element="tns:ReservationNotFoundException"/>
 </message>
 <message name="searchBookByTitle">
 <part name="parameters" element="tns:searchBookByTitle"/>
@@ -64,20 +64,14 @@
 <message name="BookNotFoundException">
 <part name="fault" element="tns:BookNotFoundException"/>
 </message>
-<message name="retrieveLatestReservationDate">
-<part name="parameters" element="tns:retrieveLatestReservationDate"/>
+<message name="memberLogin">
+<part name="parameters" element="tns:memberLogin"/>
 </message>
-<message name="retrieveLatestReservationDateResponse">
-<part name="parameters" element="tns:retrieveLatestReservationDateResponse"/>
+<message name="memberLoginResponse">
+<part name="parameters" element="tns:memberLoginResponse"/>
 </message>
-<message name="ReservationNotFoundException">
-<part name="fault" element="tns:ReservationNotFoundException"/>
-</message>
-<message name="retrieveBookById">
-<part name="parameters" element="tns:retrieveBookById"/>
-</message>
-<message name="retrieveBookByIdResponse">
-<part name="parameters" element="tns:retrieveBookByIdResponse"/>
+<message name="InvalidLoginException">
+<part name="fault" element="tns:InvalidLoginException"/>
 </message>
 <message name="createNewReservationEntity">
 <part name="parameters" element="tns:createNewReservationEntity"/>
@@ -85,8 +79,14 @@
 <message name="createNewReservationEntityResponse">
 <part name="parameters" element="tns:createNewReservationEntityResponse"/>
 </message>
-<message name="MultipleReservationException">
-<part name="fault" element="tns:MultipleReservationException"/>
+<message name="ReservationException">
+<part name="fault" element="tns:ReservationException"/>
+</message>
+<message name="retrieveBookById">
+<part name="parameters" element="tns:retrieveBookById"/>
+</message>
+<message name="retrieveBookByIdResponse">
+<part name="parameters" element="tns:retrieveBookByIdResponse"/>
 </message>
 <message name="removeFine">
 <part name="parameters" element="tns:removeFine"/>
@@ -126,32 +126,32 @@
 <input wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/retrieveReservationsByBookIdRequest" message="tns:retrieveReservationsByBookId"/>
 <output wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/retrieveReservationsByBookIdResponse" message="tns:retrieveReservationsByBookIdResponse"/>
 </operation>
-<operation name="memberLogin">
-<input wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/memberLoginRequest" message="tns:memberLogin"/>
-<output wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/memberLoginResponse" message="tns:memberLoginResponse"/>
-<fault message="tns:InvalidLoginException" name="InvalidLoginException" wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/memberLogin/Fault/InvalidLoginException"/>
+<operation name="retrieveLatestReservationDate">
+<input wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/retrieveLatestReservationDateRequest" message="tns:retrieveLatestReservationDate"/>
+<output wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/retrieveLatestReservationDateResponse" message="tns:retrieveLatestReservationDateResponse"/>
+<fault message="tns:ReservationNotFoundException" name="ReservationNotFoundException" wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/retrieveLatestReservationDate/Fault/ReservationNotFoundException"/>
 </operation>
 <operation name="searchBookByTitle">
 <input wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/searchBookByTitleRequest" message="tns:searchBookByTitle"/>
 <output wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/searchBookByTitleResponse" message="tns:searchBookByTitleResponse"/>
 <fault message="tns:BookNotFoundException" name="BookNotFoundException" wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/searchBookByTitle/Fault/BookNotFoundException"/>
 </operation>
-<operation name="retrieveLatestReservationDate">
-<input wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/retrieveLatestReservationDateRequest" message="tns:retrieveLatestReservationDate"/>
-<output wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/retrieveLatestReservationDateResponse" message="tns:retrieveLatestReservationDateResponse"/>
-<fault message="tns:ReservationNotFoundException" name="ReservationNotFoundException" wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/retrieveLatestReservationDate/Fault/ReservationNotFoundException"/>
-</operation>
-<operation name="retrieveBookById">
-<input wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/retrieveBookByIdRequest" message="tns:retrieveBookById"/>
-<output wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/retrieveBookByIdResponse" message="tns:retrieveBookByIdResponse"/>
-<fault message="tns:BookNotFoundException" name="BookNotFoundException" wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/retrieveBookById/Fault/BookNotFoundException"/>
+<operation name="memberLogin">
+<input wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/memberLoginRequest" message="tns:memberLogin"/>
+<output wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/memberLoginResponse" message="tns:memberLoginResponse"/>
+<fault message="tns:InvalidLoginException" name="InvalidLoginException" wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/memberLogin/Fault/InvalidLoginException"/>
 </operation>
 <operation name="createNewReservationEntity">
 <input wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/createNewReservationEntityRequest" message="tns:createNewReservationEntity"/>
 <output wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/createNewReservationEntityResponse" message="tns:createNewReservationEntityResponse"/>
 <fault message="tns:LoanException" name="LoanException" wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/createNewReservationEntity/Fault/LoanException"/>
-<fault message="tns:MultipleReservationException" name="MultipleReservationException" wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/createNewReservationEntity/Fault/MultipleReservationException"/>
+<fault message="tns:ReservationException" name="ReservationException" wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/createNewReservationEntity/Fault/ReservationException"/>
 <fault message="tns:LoanNotFoundException" name="LoanNotFoundException" wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/createNewReservationEntity/Fault/LoanNotFoundException"/>
+</operation>
+<operation name="retrieveBookById">
+<input wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/retrieveBookByIdRequest" message="tns:retrieveBookById"/>
+<output wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/retrieveBookByIdResponse" message="tns:retrieveBookByIdResponse"/>
+<fault message="tns:BookNotFoundException" name="BookNotFoundException" wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/retrieveBookById/Fault/BookNotFoundException"/>
 </operation>
 <operation name="removeFine">
 <input wsam:Action="http://ws.session.ejb/IntegratedLibraryWebService/removeFineRequest" message="tns:removeFine"/>
@@ -227,7 +227,7 @@
 <soap:body use="literal"/>
 </output>
 </operation>
-<operation name="memberLogin">
+<operation name="retrieveLatestReservationDate">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -235,8 +235,8 @@
 <output>
 <soap:body use="literal"/>
 </output>
-<fault name="InvalidLoginException">
-<soap:fault name="InvalidLoginException" use="literal"/>
+<fault name="ReservationNotFoundException">
+<soap:fault name="ReservationNotFoundException" use="literal"/>
 </fault>
 </operation>
 <operation name="searchBookByTitle">
@@ -251,7 +251,7 @@
 <soap:fault name="BookNotFoundException" use="literal"/>
 </fault>
 </operation>
-<operation name="retrieveLatestReservationDate">
+<operation name="memberLogin">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -259,20 +259,8 @@
 <output>
 <soap:body use="literal"/>
 </output>
-<fault name="ReservationNotFoundException">
-<soap:fault name="ReservationNotFoundException" use="literal"/>
-</fault>
-</operation>
-<operation name="retrieveBookById">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="BookNotFoundException">
-<soap:fault name="BookNotFoundException" use="literal"/>
+<fault name="InvalidLoginException">
+<soap:fault name="InvalidLoginException" use="literal"/>
 </fault>
 </operation>
 <operation name="createNewReservationEntity">
@@ -286,11 +274,23 @@
 <fault name="LoanException">
 <soap:fault name="LoanException" use="literal"/>
 </fault>
-<fault name="MultipleReservationException">
-<soap:fault name="MultipleReservationException" use="literal"/>
+<fault name="ReservationException">
+<soap:fault name="ReservationException" use="literal"/>
 </fault>
 <fault name="LoanNotFoundException">
 <soap:fault name="LoanNotFoundException" use="literal"/>
+</fault>
+</operation>
+<operation name="retrieveBookById">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="BookNotFoundException">
+<soap:fault name="BookNotFoundException" use="literal"/>
 </fault>
 </operation>
 <operation name="removeFine">

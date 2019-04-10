@@ -16,7 +16,7 @@ import ws.client.LoanEntity;
 import ws.client.LoanException_Exception;
 import ws.client.LoanNotFoundException_Exception;
 import ws.client.MemberEntity;
-import ws.client.MultipleReservationException_Exception;
+import ws.client.ReservationException_Exception;
 import ws.client.ReservationEntity;
 import ws.client.ReservationNotFoundException_Exception;
 
@@ -195,7 +195,7 @@ public class LibraryOperationModule {
                 WebService.createNewReservationEntity(newReservation);
                 //Print Reservation Success msg
                 displayMessage(SUCCESS_RESERVED);
-            } catch (LoanException_Exception | MultipleReservationException_Exception | LoanNotFoundException_Exception le) {
+            } catch (LoanException_Exception | ReservationException_Exception | LoanNotFoundException_Exception le) {
                 System.out.println(le.getMessage());
             }
         } else {

@@ -13,7 +13,7 @@ import ws.client.LoanEntity;
 import ws.client.LoanException_Exception;
 import ws.client.LoanNotFoundException_Exception;
 import ws.client.MemberEntity;
-import ws.client.MultipleReservationException_Exception;
+import ws.client.ReservationException_Exception;
 import ws.client.ReservationEntity;
 import ws.client.ReservationNotFoundException_Exception;
 
@@ -89,7 +89,7 @@ public class WebService {
         return port.retrieveBookById(bookId);
     }
 
-    public static ReservationEntity createNewReservationEntity(ReservationEntity newReservation) throws LoanException_Exception, MultipleReservationException_Exception, LoanNotFoundException_Exception {
+    public static ReservationEntity createNewReservationEntity(ReservationEntity newReservation) throws LoanException_Exception, ReservationException_Exception, LoanNotFoundException_Exception {
         IntegratedLibraryWebService_Service service = new IntegratedLibraryWebService_Service();
         IntegratedLibraryWebService port = service.getIntegratedLibraryWebServicePort();
         return port.createNewReservationEntity(newReservation);
