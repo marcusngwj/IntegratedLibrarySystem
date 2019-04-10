@@ -12,6 +12,8 @@ import entity.MemberEntity;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import util.exception.BookNotFoundException;
 import util.exception.FineNotFoundException;
 import util.exception.MemberNotFoundException;
@@ -168,7 +170,7 @@ public class LibraryOperationModule {
         displayMessage("Book successfully extended. New due date: " + DateHelper.format(loan.getEndDate()));
     }
     
-    private void payFines() throws FineNotFoundException, MemberNotFoundException, NumberFormatException {
+    private void payFines() throws FineNotFoundException, MemberNotFoundException {
         Scanner scanner = new Scanner(System.in);
         System.out.println();
         System.out.println("*** ILS :: Library Operation :: Pay Fines ***\n");
@@ -185,9 +187,14 @@ public class LibraryOperationModule {
             System.out.print("Enter Fine to Settle> ");
             Long fineId = Long.valueOf(scanner.nextLine().trim());
             System.out.print("Select Payment Method (1: Cash, 2: Card)> ");
-            int paymentMode = Integer.valueOf(scanner.nextLine().trim());
-            fineEntityControllerRemote.removeFine(fineId, member.getMemberId());
-            displayMessage("Fine successfully paid.");
+            String paymentMode = scanner.nextLine().trim();
+            if (isValidPaymentMode(paymentMode)) {
+                fineEntityControllerRemote.removeFine(fineId, member.getMemberId());
+                displayMessage("Fine successfully paid.");
+            }
+            else {
+                displayMessage("Please enter a valid payment method.");
+            }
         }
         else {
             displayMessage("There are no outstanding fine.");
@@ -197,6 +204,13 @@ public class LibraryOperationModule {
     
     private void manageReservation() {
         reservationManagementModule.enterReservationMode();
+    }
+    
+    private boolean isValidPaymentMode(String paymentMode) {
+        final String PAYMENT_MODE_PATTERN = "[1|2]{1}";
+        Pattern pattern = Pattern.compile(PAYMENT_MODE_PATTERN);
+        Matcher matcher = pattern.matcher(paymentMode);
+        return matcher.matches();
     }
     
     private void displayFineTable(List<FineEntity> fineList) {

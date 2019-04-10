@@ -156,10 +156,9 @@ public class KioskOperationModule {
             boolean isNumFine = checkNum(bookIdStr);
             System.out.print("Select Payment Method (1: Cash, 2: Card)> ");
             String paymentMtdStr = scanner.nextLine().trim();
-            boolean isNumPaymentMtd = checkNum(paymentMtdStr);
+            boolean isNumPaymentMtd = isValidPaymentMode(paymentMtdStr);
             if (isNumFine && isNumPaymentMtd) {
                 Long fineId = Long.valueOf(bookIdStr);
-                int paymentMode = Integer.valueOf(paymentMtdStr);
                 fineEntityControllerRemote.removeFine(fineId, member.getMemberId());
                 displayMessage("Fine successfully paid.");
             } else {
@@ -218,23 +217,8 @@ public class KioskOperationModule {
                     //System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
                 }
             }
-//            boolean onReserved = isReserved(currBook);
-//            if (onLoaned ) {
-//                try {
-//                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getBookLoanedDate(currBook));
-//                } catch (LoanNotFoundException ex) {
-//                    System.out.println(ex.getMessage());
-//                }
-//            } else if (onLoaned && onReserved || !onLoaned && onReserved) {
-//                try {
-//                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getAvailableReservationDate(currBook));
-//                } catch (ReservationNotFoundException ex) {
-//                    System.out.println(ex.getMessage());
-//                }
-//            } else {
-//                System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
-//            }
         }
+        
         System.out.println(table);
     }
 
@@ -277,22 +261,8 @@ public class KioskOperationModule {
                     //System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
                 }
             }
-//            if (onLoaned && !onReserved) {
-//                try {
-//                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getBookLoanedDate(currBook));
-//                } catch (LoanNotFoundException ex) {
-//                    System.out.println(ex.getMessage());
-//                }
-//            } else if (onLoaned && onReserved || !onLoaned && onReserved) {
-//                try {
-//                    System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Due on " + getAvailableReservationDate(currBook));
-//                } catch (ReservationNotFoundException ex) {
-//                    System.out.println(ex.getMessage());
-//                }
-//            } else {
-//                System.out.println(currBook.getBookId() + "  | " + currBook.getTitle() + "  | " + "Available Now ");
-//            }
         }
+        
         System.out.println(table);
         System.out.println();
         System.out.print("Enter Book ID to Reserve: ");
@@ -420,6 +390,13 @@ public class KioskOperationModule {
         }
 
         return true;
+    }
+    
+    private boolean isValidPaymentMode(String paymentMode) {
+        final String PAYMENT_MODE_PATTERN = "[1|2]{1}";
+        Pattern pattern = Pattern.compile(PAYMENT_MODE_PATTERN);
+        Matcher matcher = pattern.matcher(paymentMode);
+        return matcher.matches();
     }
 
     private void printInvalidBookFormat() {

@@ -105,10 +105,9 @@ public class LibraryOperationModule {
             boolean isNumFine = checkNum(bookIdStr);
             System.out.print("Select Payment Method (1: Cash, 2: Card)> ");
             String paymentMtdStr = scanner.nextLine().trim();
-            boolean isNumPaymentMtd = checkNum(paymentMtdStr);
+            boolean isNumPaymentMtd = isValidPaymentMode(paymentMtdStr);
             if (isNumFine && isNumPaymentMtd) {
                 Long fineId = Long.valueOf(bookIdStr);
-                int paymentMode = Integer.valueOf(paymentMtdStr);
                 WebService.removeFine(fineId, member.getMemberId());
                 displayMessage("Fine successfully paid.");
             } else {
@@ -284,6 +283,13 @@ public class LibraryOperationModule {
         }
 
         return true;
+    }
+    
+    private boolean isValidPaymentMode(String paymentMode) {
+        final String PAYMENT_MODE_PATTERN = "[1|2]{1}";
+        Pattern pattern = Pattern.compile(PAYMENT_MODE_PATTERN);
+        Matcher matcher = pattern.matcher(paymentMode);
+        return matcher.matches();
     }
 
     private void printInvalidBookFormat() {
